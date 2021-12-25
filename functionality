@@ -1,0 +1,50 @@
+Users:
+	register
+	get profile details
+	login
+	logout
+	edit profile
+	delete profile
+
+Collection
+	Create collection
+	Get collection
+	Delete collection
+	Edit collection:
+		Add plant to collection
+		Remove plant to collection
+		Change collection info
+
+Plants:
+	add plant
+	get plant details
+	edit plant
+	delete plant
+
+	Alert Overrides:
+		add override
+		get override
+		edit override
+		delete override
+
+	Alerts:
+		Get alerts
+		dismiss alerts
+
+Devices:
+	add device
+	get device details
+	delete device
+	update device
+
+		Sensors:
+			add data
+			get data
+			delete data?
+			edit data?
+
+		Metrics:
+			add metric
+			get metrics
+			delete metric?
+			edit metric?

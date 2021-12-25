@@ -25,12 +25,19 @@ paths:
       responses:
         '201':
           description: Request succeeded and a new user has been created
+          headers:
+            'Location':
+              schema:
+                type: string
+                example: /user/15
+              description: Location of newly created user resource
+
         '400':
-          description: Request could not be completed due to invalid syntax
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '409':
-          description: User already exists
+          $ref: '#/components/responses/AlreadyExists'
 
   /user/{id}:
     parameters:
@@ -52,13 +59,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
-          description: Request could not be completed due to invalid syntax
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Request does not have permission to get user
+          $ref: '#/components/responses/NoPermission'
         '404':
-          description: User not found
+          $ref: '#/components/responses/NotFound'
     put:
       tags:
         - Users
@@ -67,13 +74,13 @@ paths:
         '204':
           description: OK. User updated
         '400':
-          description: Request could not be completed due to invalid syntax
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Request does not have permission to updae user
+          $ref: '#/components/responses/NoPermission'
         '404':
-          description: User not found
+          $ref: '#/components/responses/NotFound'
     delete:
       tags:
         - Users
@@ -82,13 +89,13 @@ paths:
         '204':
           description: OK. User deleted
         '400':
-          description: Request could not be completed due to invalid syntax
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Request does not have permission to delete user
+          $ref: '#/components/responses/NoPermission'
         '404':
-          description: User not found
+          $ref: '#/components/responses/NotFound'
 
   # TODO: query string for device type or state?
   /user/{id}/devices:
@@ -105,11 +112,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Devices'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Request does not have permission to list devices for user
+          $ref: '#/components/responses/NoPermission'
         '404':
-          description: User not found
+          $ref: '#/components/responses/NotFound'
 
   /device:
     post:
@@ -124,11 +131,11 @@ paths:
           #     schema:
           #       $ref: '#/components/schemas/User'
         '400':
-          description: Request could not be completed due to invalid syntax
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Request does not have permission to register device for the specified user
+          $ref: '#/components/responses/NoPermission'
         '422':
           description: Request contains invalid fields
 
@@ -145,7 +152,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Device'
         '404':
-          description: Device not found
+          $ref: '#/components/responses/NotFound'
     put:
       tags:
         - Device
@@ -154,13 +161,13 @@ paths:
         '204':
           description: OK. Device updated
         '400':
-          description: Request could not be completed due to invalid syntax
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Request does not have permission to updae device
+          $ref: '#/components/responses/NoPermission'
         '404':
-          description: Device not found
+          $ref: '#/components/responses/NotFound'
     delete:
       tags:
         - Device
@@ -169,13 +176,13 @@ paths:
         '204':
           description: OK. Device deleted
         '400':
-          description: Request could not be completed due to invalid syntax
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Request does not have permission to delete device
+          $ref: '#/components/responses/NoPermission'
         '404':
-          description: Device not found
+          $ref: '#/components/responses/NotFound'
 
   # TODO: query param time range
   /device/{id}/data:
@@ -191,13 +198,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/SensorDataArray'
         '400':
-          description: Request could not be completed due to invalid syntax
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Request does not have permission to post device data
+          $ref: '#/components/responses/NoPermission'
         '404':
-          description: Device not found
+          $ref: '#/components/responses/NotFound'
     post:
       tags:
         - Device
@@ -210,11 +217,11 @@ paths:
           #     schema:
           #       $ref: '#/components/schemas/User'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Request does not have permission to view device metrics
+          $ref: '#/components/responses/NoPermission'
         '404':
-          description: Device not found
+          $ref: '#/components/responses/NotFound'
         '429':
           description: Device has sent too many requests (Rate limited)
 
@@ -231,17 +238,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeviceMetrics'
         '400':
-          description: Request could not be completed due to invalid syntax
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Request does not have permission to post device metrics
+          $ref: '#/components/responses/NoPermission'
         '404':
-          description: Device not found
+          $ref: '#/components/responses/NotFound'
     post:
       tags:
         - Device
-      description: Records new device
+      description: Records new device metric
       responses:
         '200':
           description: OK
@@ -250,24 +257,80 @@ paths:
           #     schema:
           #       $ref: '#/components/schemas/User'
         '401':
-          description: Request could not be completed because user is not authenticated
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Request does not have permission to view device data
+          $ref: '#/components/responses/NoPermission'
         '404':
-          description: Device not found
+          $ref: '#/components/responses/NotFound'
         '429':
           description: Device has sent too many requests (Rate limited)
 
 components:
+  responses:
+    BadRequest:
+      description: Server was unable to process request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NoPermission:
+      description: User does not have permission to create/read/update/delete resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AlreadyExists:
+      description: Reesource already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-    User:
+    Response:
       type: object
       properties:
-        id:
+        data:
+          oneOf:
+            - type: object
+            - type: array
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+      description: Common response object
+    Error:
+      type: object
+      properties:
+        status:
           type: integer
-          description: User ID
-        email:
+          description: HTTP status code
+          example: 401
+        detail:
           type: string
+          description: Additional information on why the request failed
+          example: User not authorized to delete device
+    User:
+      allOf:
+        - $ref: '#/components/schemas/Response'
+        - type: object
+          properties:
+            id:
+              type: integer
+              description: User ID
+            email:
+              type: string
     Device:
       type: object
       properties:

@@ -9,6 +9,7 @@ Users:
 Collection
 	Create collection
 	Get collection
+		filter by name?
 	Delete collection
 	Edit collection:
 		Add plant to collection
@@ -17,6 +18,8 @@ Collection
 
 Plants:
 	add plant
+	get plants
+		filter?
 	get plant details
 	edit plant
 	delete plant
@@ -33,18 +36,29 @@ Plants:
 
 Devices:
 	add device
+	get devices
+		filter on device type
+		filter on device state
 	get device details
 	delete device
 	update device
 
-		Sensors:
-			add data
-			get data
-			delete data?
-			edit data?
+	Sensors:
+		add data
+		get data
+			filter on time
+			paginated?
+		delete data?
+		edit data?
 
-		Metrics:
-			add metric
-			get metrics
-			delete metric?
-			edit metric?
+	Metrics:
+		add metric
+		get metrics
+			filter on time
+			paginated?
+		delete metric?
+		edit metric?
+
+	Alerts:
+		Get alerts
+		dismiss alerts

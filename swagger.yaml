@@ -11,7 +11,7 @@ servers:
           - api       # Production
           - api.dev   # Development
 paths:
-  /user:
+  /users:
     post:
       tags:
         - Users
@@ -39,7 +39,7 @@ paths:
         '409':
           $ref: '#/components/responses/AlreadyExists'
 
-  /user/{id}:
+  /users/{id}:
     parameters:
       - name: id
         in: path
@@ -98,10 +98,9 @@ paths:
           $ref: '#/components/responses/NotFound'
 
   # TODO: query string for device type or state?
-  /user/{id}/devices:
+  /users/{id}/devices:
     get:
       tags:
-        - Users
         - Device
       description: Lists all devices for a user
       responses:
@@ -118,7 +117,6 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /device:
     post:
       tags:
         - Device
@@ -139,7 +137,7 @@ paths:
         '422':
           description: Request contains invalid fields
 
-  /device/{id}:
+  /users/{id}/devices/{id}:
     get:
       tags:
         - Device
@@ -185,7 +183,7 @@ paths:
           $ref: '#/components/responses/NotFound'
 
   # TODO: query param time range
-  /device/{id}/data:
+  /users/{id}/devices/{id}/data:
     get:
       tags:
         - Device
@@ -225,7 +223,7 @@ paths:
         '429':
           description: Device has sent too many requests (Rate limited)
 
-  /device/{id}/metrics:
+  /users/{id}/devices/{id}/metrics:
     get:
       tags:
         - Device
@@ -313,7 +311,7 @@ components:
     Error:
       type: object
       properties:
-        status:
+        status_code:
           type: integer
           description: HTTP status code
           example: 401

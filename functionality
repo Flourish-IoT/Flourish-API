@@ -60,5 +60,8 @@ Devices:
 		edit metric?
 
 	Alerts:
-		Get alerts
-		dismiss alerts
+		Get all alerts
+			filter by plant id or device id?
+		dismiss alert
+
+Get a

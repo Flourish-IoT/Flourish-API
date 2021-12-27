@@ -15,7 +15,7 @@ paths:
     post:
       tags:
         - Users
-      description: Creates a new user
+      description: Registers a new user
       # requestBody:
       #   required: true
         # content:
@@ -39,18 +39,13 @@ paths:
         '409':
           $ref: '#/components/responses/AlreadyExists'
 
-  /users/{id}:
+  /users/{user_id}:
     parameters:
-      - name: id
-        in: path
-        description: User ID
-        required: true
-        schema:
-          type: integer
+      - $ref: '#/components/parameters/UserID'
     get:
       tags:
         - Users
-      description: Gets information about a user
+      description: Get user profile
       responses:
         '200':
           description: OK
@@ -69,7 +64,7 @@ paths:
     put:
       tags:
         - Users
-      description: Updates a user
+      description: Update user profile
       responses:
         '204':
           description: OK. User updated
@@ -84,7 +79,7 @@ paths:
     delete:
       tags:
         - Users
-      description: Deletes a user
+      description: Delete user
       responses:
         '204':
           description: OK. User deleted
@@ -97,12 +92,42 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  # /users/{user_id}/logout:
+  #   post:
+  #     tags:
+  #       - User
+  #     description: Logs user out
+
   # TODO: query string for device type or state?
-  /users/{id}/devices:
+  /users/{user_id}/devices:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
     get:
       tags:
         - Device
       description: Lists all devices for a user
+      parameters:
+        - in: query
+          name: device_type
+          schema:
+            type: string
+            nullable: true
+            enum:
+              - 'Sensor'
+              - 'Gateway'
+              - 'Other'
+          description: Returns all devices that match the device type. If null, returns devices with any type
+        - in: query
+          name: device_state
+          schema:
+            type: string
+            nullable: true
+            enum:
+              - 'Connected'
+              - 'Connecting'
+              - 'Disconnected'
+              - 'Error'
+          description: Returns all devices that match the device state. If null, returns devices with any state
       responses:
         '200':
           description: OK
@@ -137,7 +162,10 @@ paths:
         '422':
           description: Request contains invalid fields
 
-  /users/{id}/devices/{id}:
+  /users/{user_id}/devices/{device_id}:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - $ref: '#/components/parameters/DeviceID'
     get:
       tags:
         - Device
@@ -183,7 +211,10 @@ paths:
           $ref: '#/components/responses/NotFound'
 
   # TODO: query param time range
-  /users/{id}/devices/{id}/data:
+  /users/{user_id}/devices/{device_id}/data:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - $ref: '#/components/parameters/DeviceID'
     get:
       tags:
         - Device
@@ -223,7 +254,10 @@ paths:
         '429':
           description: Device has sent too many requests (Rate limited)
 
-  /users/{id}/devices/{id}/metrics:
+  /users/{user_id}/devices/{device_id}/metrics:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - $ref: '#/components/parameters/DeviceID'
     get:
       tags:
         - Device
@@ -263,6 +297,76 @@ paths:
         '429':
           description: Device has sent too many requests (Rate limited)
 
+  /users/{user_id}/alerts:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - in: query
+        name: viewed
+        schema:
+          type: boolean
+          default: null
+          nullable: true
+        description: Return alerts which have been seen or not seen. By default returns all alerts
+      - in: query
+        name: user_plant_id
+        schema:
+          type: integer
+          default: null
+          nullable: true
+        description: Return alerts for the user plant with the specified ID
+      - in: query
+        name: device_id
+        schema:
+          type: integer
+          default: null
+          nullable: true
+        description: Return alerts for the user device with the specified ID
+    get:
+      tags:
+        - Alerts
+      description: Returns alerts for user
+      responses:
+        '200':
+          description: OK
+          # content:
+          #   application/json:
+          #     schema:
+          #       $ref: '#/components/schemas/DeviceMetrics'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/{user_id}/alerts/{alert_id}:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - in: path
+        name: alert_id
+        schema:
+          type: integer
+          nullable: false
+        description: Alert ID
+        required: true
+    delete:
+      tags:
+        - Alerts
+      description: Dismisses a alert
+      responses:
+        '204':
+          description: OK. Alert deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
   responses:
     BadRequest:
@@ -271,12 +375,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+          example:
+            status: 400
+            detail: 'Server unable to process request'
+
     NotFound:
       description: The specified resource was not found
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+          example:
+            status: 404
+            detail: 'The specified resource was not found'
     Unauthorized:
       description: Unauthorized
       content:
@@ -295,6 +406,24 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+
+  parameters:
+    UserID:
+      name: user_id
+      in: path
+      description: User ID
+      required: true
+      schema:
+        type: integer
+
+    DeviceID:
+      name: device_id
+      in: path
+      description: Device ID
+      required: true
+      schema:
+        type: integer
+
   schemas:
     Response:
       type: object

@@ -31,10 +31,27 @@ paths:
 
         '400':
           $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
         '409':
           $ref: '#/components/responses/AlreadyExists'
+
+  /users/reset_password:
+    post:
+      tags:
+        - Users
+      description: Starts a password reset
+      # requestBody:
+      #   required: true
+        # content:
+        #   application/json:
+        #     schema:
+        #       $ref: '#/components/schemas/User'
+      responses:
+        '204':
+          description: A password reset email has been sent to the specified email
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /users/{user_id}:
     parameters:
@@ -80,6 +97,25 @@ paths:
       responses:
         '204':
           description: OK. User deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/{user_id}/password:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+    put:
+      tags:
+        - Users
+      description: Update user password
+      responses:
+        '204':
+          description: OK. User password updated
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -939,3 +975,15 @@ components:
         type: string
         example: /user/15
       description: Location of newly created resource
+
+  securitySchemes:
+    name:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://domain.test/api/oauth/dialog
+          tokenUrl: https://domain.test/api/oauth/token
+          scopes:
+            read: example read scope
+            write: example write scope
+

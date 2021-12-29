@@ -27,10 +27,7 @@ paths:
           description: Request succeeded and a new user has been created
           headers:
             'Location':
-              schema:
-                type: string
-                example: /user/15
-              description: Location of newly created user resource
+              $ref: '#/components/headers/ResourceCreated'
 
         '400':
           $ref: '#/components/responses/BadRequest'
@@ -98,13 +95,12 @@ paths:
   #       - User
   #     description: Logs user out
 
-  # TODO: query string for device type or state?
   /users/{user_id}/devices:
     parameters:
       - $ref: '#/components/parameters/UserID'
     get:
       tags:
-        - Device
+        - Devices
       description: Lists all devices for a user
       parameters:
         - in: query
@@ -144,15 +140,15 @@ paths:
 
     post:
       tags:
-        - Device
+        - Devices
       description: Creates a new device
       responses:
         '201':
-          description: OK. New device created
-          # content:
-          #   application/json:
-          #     schema:
-          #       $ref: '#/components/schemas/User'
+          description: Ok. New device created
+          headers:
+            'Location':
+              $ref: '#/components/headers/ResourceCreated'
+
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -168,7 +164,7 @@ paths:
       - $ref: '#/components/parameters/DeviceID'
     get:
       tags:
-        - Device
+        - Devices
       description: Gets device information
       responses:
         '200':
@@ -181,7 +177,7 @@ paths:
           $ref: '#/components/responses/NotFound'
     put:
       tags:
-        - Device
+        - Devices
       description: Updates device information
       responses:
         '204':
@@ -196,7 +192,7 @@ paths:
           $ref: '#/components/responses/NotFound'
     delete:
       tags:
-        - Device
+        - Devices
       description: Deletes device
       responses:
         '204':
@@ -217,8 +213,8 @@ paths:
       - $ref: '#/components/parameters/DeviceID'
     get:
       tags:
-        - Device
-      description: Gets sensor readings for specified period of time
+        - Devices
+      description: Gets  readings for specified period of time
       responses:
         '200':
           description: OK
@@ -236,7 +232,7 @@ paths:
           $ref: '#/components/responses/NotFound'
     post:
       tags:
-        - Device
+        - Devices
       description: Records new sensor reading
       responses:
         '200':
@@ -260,7 +256,7 @@ paths:
       - $ref: '#/components/parameters/DeviceID'
     get:
       tags:
-        - Device
+        - Devices
       description: Gets device metrics for specified period of time
       responses:
         '200':
@@ -279,7 +275,7 @@ paths:
           $ref: '#/components/responses/NotFound'
     post:
       tags:
-        - Device
+        - Devices
       description: Records new device metric
       responses:
         '200':
@@ -297,6 +293,197 @@ paths:
         '429':
           description: Device has sent too many requests (Rate limited)
 
+
+  /users/{user_id}/plants:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+    get:
+      tags:
+        - Plants
+      description: Lists all plants for a user
+      # TODO: query for plant types?
+      # parameters:
+      responses:
+        '200':
+          description: OK
+          # content:
+            # application/json:
+              # schema:
+                # $ref: '#/components/schemas/Devices'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      tags:
+        - Plants
+      description: Creates a new plant
+      responses:
+        '201':
+          description: Ok. New plant created
+          headers:
+            'Location':
+              $ref: '#/components/headers/ResourceCreated'
+
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '422':
+          description: Request contains invalid fields
+
+  /users/{user_id}/plants/{plant_id}:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - $ref: '#/components/parameters/PlantID'
+    get:
+      tags:
+        - Plants
+      description: Gets plant information
+      responses:
+        '200':
+          description: OK
+          # content:
+          #   application/json:
+          #     schema:
+          #       $ref: '#/components/schemas/Device'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Plants
+      description: Updates plant information
+      responses:
+        '204':
+          description: OK. plant updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Plants
+      description: Deletes plant
+      responses:
+        '204':
+          description: OK. Plant deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # TODO: query param time range
+  /users/{user_id}/plants/{plant_id}/data:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - $ref: '#/components/parameters/PlantID'
+    get:
+      tags:
+        - Plants
+      description: Gets plant sensor readings for specified period of time
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorDataArray'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/{user_id}/plants/{plant_id}/overrides:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - $ref: '#/components/parameters/PlantID'
+    get:
+      tags:
+        - Plants
+      description: Gets user defined alert overrides for plant
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Plants
+      description: Creates a new user defined alert override
+      responses:
+        '201':
+          description: Ok. New override created
+          headers:
+            'Location':
+              $ref: '#/components/headers/ResourceCreated'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/{user_id}/plants/{plant_id}/overrides/{override_id}:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - $ref: '#/components/parameters/PlantID'
+      - $ref: '#/components/parameters/OverrideID'
+
+    put:
+      tags:
+        - Plants
+      description: Updates user defined override
+      responses:
+        '204':
+          description: OK. Override updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Plants
+      description: Deletes override
+      responses:
+        '204':
+          description: OK. Override deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
   /users/{user_id}/alerts:
     parameters:
       - $ref: '#/components/parameters/UserID'
@@ -308,19 +495,20 @@ paths:
           nullable: true
         description: Return alerts which have been seen or not seen. By default returns all alerts
       - in: query
-        name: user_plant_id
+        name: plant_id
         schema:
           type: integer
           default: null
           nullable: true
-        description: Return alerts for the user plant with the specified ID
+        description: Return alerts for the user plant with the specified ID. Cannot be used with device_id query parameter
       - in: query
         name: device_id
         schema:
           type: integer
           default: null
           nullable: true
-        description: Return alerts for the user device with the specified ID
+        description: Return alerts for the user device with the specified ID. Cannot be used with plant_id query parameter
+
     get:
       tags:
         - Alerts
@@ -344,17 +532,11 @@ paths:
   /users/{user_id}/alerts/{alert_id}:
     parameters:
       - $ref: '#/components/parameters/UserID'
-      - in: path
-        name: alert_id
-        schema:
-          type: integer
-          nullable: false
-        description: Alert ID
-        required: true
+      - $ref: '#/components/parameters/AlertID'
     delete:
       tags:
         - Alerts
-      description: Dismisses a alert
+      description: Dismisses an alert
       responses:
         '204':
           description: OK. Alert deleted
@@ -366,6 +548,163 @@ paths:
           $ref: '#/components/responses/NoPermission'
         '404':
           $ref: '#/components/responses/NotFound'
+
+  /users/{user_id}/alerts/{alert_id}/view:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - $ref: '#/components/parameters/AlertID'
+    post:
+      tags:
+        - Alerts
+      description: Marks alert as viewed
+      responses:
+        '204':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
+  /users/{user_id}/collections:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+    get:
+      tags:
+        - Collections
+      description: Returns all collections for user
+      responses:
+        '200':
+          description: OK
+          # content:
+          #   application/json:
+          #     schema:
+          #       $ref: '#/components/schemas/DeviceMetrics'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Collections
+      description: Creates a new collection
+      responses:
+        '201':
+          description: Ok. New collection created
+          headers:
+            'Location':
+              $ref: '#/components/headers/ResourceCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/{user_id}/collections/{collection_id}:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - $ref: '#/components/parameters/CollectionID'
+    get:
+      tags:
+        - Collections
+      description: Returns collection details
+      responses:
+        '200':
+          description: OK
+          # content:
+          #   application/json:
+          #     schema:
+          #       $ref: '#/components/schemas/DeviceMetrics'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Collections
+      description: Updates collection information
+      responses:
+        '204':
+          description: OK. Device updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Collections
+      description: Deletes a collection
+      responses:
+        '204':
+          description: OK. Collection deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/{user_id}/collections/{collection_id}/add:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - $ref: '#/components/parameters/CollectionID'
+    post:
+      tags:
+        - Collections
+      description: Adds plants to a collection
+      responses:
+        '204':
+          description: OK. Device updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/{user_id}/collections/{collection_id}/remove:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+      - $ref: '#/components/parameters/CollectionID'
+    delete:
+      tags:
+        - Collections
+      description: Removes plants from a collection
+      responses:
+        '204':
+          description: OK. Device updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
+
 
 components:
   responses:
@@ -401,7 +740,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
     AlreadyExists:
-      description: Reesource already exists
+      description: Resource already exists
       content:
         application/json:
           schema:
@@ -415,7 +754,6 @@ components:
       required: true
       schema:
         type: integer
-
     DeviceID:
       name: device_id
       in: path
@@ -423,6 +761,38 @@ components:
       required: true
       schema:
         type: integer
+    PlantID:
+      name: plant_id
+      in: path
+      description: Plant ID
+      required: true
+      schema:
+        type: integer
+    AlertID:
+      in: path
+      name: alert_id
+      schema:
+        type: integer
+        nullable: false
+      description: Alert ID
+      required: true
+    CollectionID:
+      in: path
+      name: collection_id
+      schema:
+        type: integer
+        nullable: false
+      description: Collection ID
+      required: true
+    OverrideID:
+      in: path
+      name: override_id
+      schema:
+        type: integer
+        nullable: false
+      description: Override ID
+      required: true
+
 
   schemas:
     Response:
@@ -432,6 +802,8 @@ components:
           oneOf:
             - type: object
             - type: array
+              items:
+                type: object
         errors:
           type: array
           items:
@@ -560,3 +932,10 @@ components:
         additional:
           type: object
           description: Additional metrics
+
+  headers:
+    ResourceCreated:
+      schema:
+        type: string
+        example: /user/15
+      description: Location of newly created resource

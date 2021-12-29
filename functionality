@@ -16,7 +16,7 @@ Collection
 		Remove plant to collection
 		Change collection info
 
-Plants:
+User Plants:
 	add plant
 	get plants
 		filter?
@@ -24,15 +24,11 @@ Plants:
 	edit plant
 	delete plant
 
-	Alert Overrides:
-		add override
-		get override
-		edit override
-		delete override
-
-	Alerts:
-		Get alerts
-		dismiss alerts
+Plant Definitions:
+	get plants
+	get plant
+	edit plant
+	delete plant
 
 Devices:
 	add device
@@ -59,9 +55,8 @@ Devices:
 		delete metric?
 		edit metric?
 
-	Alerts:
-		Get all alerts
-			filter by plant id or device id?
-		dismiss alert
-
-Get a
+Alerts:
+	Get alerts
+	dismiss alerts
+	mark as viewed
+	mark as unviewed?

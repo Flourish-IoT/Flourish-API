@@ -126,6 +126,25 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /users/{user_id}/verify:
+    parameters:
+      - $ref: '#/components/parameters/UserID'
+    post:
+      tags:
+        - Users
+      description: Verifies a user who recieved a verification code
+      responses:
+        '204':
+          description: OK. User has been verified
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NoPermission'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /users/{user_id}/password:
     parameters:
       - $ref: '#/components/parameters/UserID'

@@ -1,0 +1,4 @@
+schema:
+  type: string
+  example: /user/15
+description: Location of newly created resource

@@ -1,0 +1,12 @@
+UserID:
+  $ref: './ID.yaml#/UserID'
+DeviceID:
+  $ref: './ID.yaml#/DeviceID'
+PlantID:
+  $ref: './ID.yaml#/PlantID'
+AlertID:
+  $ref: './ID.yaml#/AlertID'
+CollectionID:
+  $ref: './ID.yaml#/CollectionID'
+OverrideID:
+  $ref: './ID.yaml#/OverrideID'

@@ -1,0 +1,35 @@
+User:
+  $ref: './User.yaml#/User'
+
+Error:
+  $ref: './Error.yaml'
+
+Device:
+  $ref: './Devices.yaml#/Device'
+
+Devices:
+  $ref: './Devices.yaml#/Devices'
+
+SensorData:
+  $ref: './Devices.yaml#/SensorData'
+
+SensorDataArray:
+  $ref: './Devices.yaml#/SensorDataArray'
+
+DeviceMetric:
+  $ref: './Devices.yaml#/DeviceMetric'
+
+DeviceMetrics:
+  $ref: './Devices.yaml#/DeviceMetrics'
+
+Plant:
+  $ref: './Plants.yaml#/Plant'
+
+Plants:
+  $ref: './Plants.yaml#/Plants'
+
+PlantDetail:
+  $ref: './Plants.yaml#/PlantDetail'
+
+PlantType:
+  $ref: './Plants.yaml#/PlantType'

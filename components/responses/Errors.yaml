@@ -1,0 +1,40 @@
+BadRequest:
+  description: Server was unable to process request
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/_index.yaml#/Error'
+      example:
+        status: 400
+        message: 'Server unable to process request'
+
+NotFound:
+  description: The specified resource was not found
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/_index.yaml#/Error'
+      example:
+        status: 404
+        message: 'The specified resource was not found'
+
+Unauthorized:
+  description: Unauthorized
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/_index.yaml#/Error'
+
+NoPermission:
+  description: User does not have permission to create/read/update/delete resource
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/_index.yaml#/Error'
+
+AlreadyExists:
+  description: Resource already exists
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/_index.yaml#/Error'

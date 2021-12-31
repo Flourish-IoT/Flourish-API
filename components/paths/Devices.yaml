@@ -1,0 +1,195 @@
+devices:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+  get:
+    tags:
+      - Devices
+    description: Lists all devices for a user
+    parameters:
+      - in: query
+        name: device_type
+        schema:
+          type: string
+          nullable: true
+          enum:
+            - 'Sensor'
+            - 'Gateway'
+            - 'Other'
+        description: Returns all devices that match the device type. If null, returns devices with any type
+      - in: query
+        name: device_state
+        schema:
+          type: string
+          nullable: true
+          enum:
+            - 'Connected'
+            - 'Connecting'
+            - 'Disconnected'
+            - 'Error'
+        description: Returns all devices that match the device state. If null, returns devices with any state
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/_index.yaml#/Devices'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  post:
+    tags:
+      - Devices
+    description: Creates a new device
+    responses:
+      '201':
+        description: Ok. New device created
+        headers:
+          'Location':
+            $ref: '../headers/_index.yaml#/ResourceCreated'
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '422':
+        description: Request contains invalid fields
+
+devices.device_id:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/_index.yaml#/DeviceID'
+  get:
+    tags:
+      - Devices
+    description: Gets device information
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/_index.yaml#/Device'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  put:
+    tags:
+      - Devices
+    description: Updates device information
+    responses:
+      '204':
+        description: OK. Device updated
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  delete:
+    tags:
+      - Devices
+    description: Deletes device
+    responses:
+      '204':
+        description: OK. Device deleted
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+
+# TODO: query param time range
+devices.device_id.data:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/_index.yaml#/DeviceID'
+  get:
+    tags:
+      - Devices
+    description: Gets  readings for specified period of time
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/_index.yaml#/SensorDataArray'
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  post:
+    tags:
+      - Devices
+    description: Records new sensor reading
+    responses:
+      '200':
+        description: OK
+        # content:
+        #   application/json:
+        #     schema:
+        #       $ref: '../schemas/_index.yaml#/User'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+      '429':
+        description: Device has sent too many requests (Rate limited)
+
+devices.device_id.metrics:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/_index.yaml#/DeviceID'
+  get:
+    tags:
+      - Devices
+    description: Gets device metrics for specified period of time
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/_index.yaml#/DeviceMetrics'
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  post:
+    tags:
+      - Devices
+    description: Records new device metric
+    responses:
+      '200':
+        description: OK
+        # content:
+        #   application/json:
+        #     schema:
+        #       $ref: '../schemas/_index.yaml#/User'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+      '429':
+        description: Device has sent too many requests (Rate limited)

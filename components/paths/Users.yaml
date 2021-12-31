@@ -1,0 +1,175 @@
+users:
+  post:
+    tags:
+      - Users
+    description: Registers a new user
+    # requestBody:
+    #   required: true
+      # content:
+      #   application/json:
+      #     schema:
+      #       $ref: '#/components/schemas/User'
+    responses:
+      '201':
+        description: Request succeeded and a new user has been created
+        # headers:
+        #   'Location':
+            # $ref: '#../ResourceCreated'
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '409':
+        $ref: '../responses/_index.yaml#/AlreadyExists'
+
+users.login:
+  post:
+    tags:
+      - Users
+    description: Authenticates user
+    # requestBody:
+    #   required: true
+      # content:
+      #   application/json:
+      #     schema:
+      #       $ref: '#/components/schemas/User'
+    responses:
+      '200':
+        description: User has succesfully authenticated
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+
+users.reset_password:
+  post:
+    tags:
+      - Users
+    description: Starts a password reset
+    # requestBody:
+    #   required: true
+      # content:
+      #   application/json:
+      #     schema:
+      #       $ref: '#/components/schemas/User'
+    responses:
+      '204':
+        description: A password reset email has been sent to the specified email
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+
+users.id:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+  get:
+    tags:
+      - Users
+    description: Get user profile
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/_index.yaml#/User'
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  put:
+    tags:
+      - Users
+    description: Update user profile
+    responses:
+      '204':
+        description: OK. User updated
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  delete:
+    tags:
+      - Users
+    description: Delete user
+    responses:
+      '204':
+        description: OK. User deleted
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+
+users.id.verify:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+  post:
+    tags:
+      - Users
+    description: Verifies a user who recieved a verification code
+    responses:
+      '204':
+        description: OK. User has been verified
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+
+users.id.password:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+  put:
+    tags:
+      - Users
+    description: Update user password
+    responses:
+      '204':
+        description: OK. User password updated
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+
+users.id.preferences:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+  put:
+    tags:
+      - Users
+    description: Update user preferences
+    responses:
+      '204':
+        description: OK. User preferences updated
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+
+# users.id.logout:
+#   post:
+#     tags:
+#       - User
+#     description: Logs user out

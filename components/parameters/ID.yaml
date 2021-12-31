@@ -1,0 +1,45 @@
+UserID:
+  name: user_id
+  in: path
+  description: User ID
+  required: true
+  schema:
+    type: integer
+DeviceID:
+  name: device_id
+  in: path
+  description: Device ID
+  required: true
+  schema:
+    type: integer
+PlantID:
+  name: plant_id
+  in: path
+  description: Plant ID
+  required: true
+  schema:
+    type: integer
+AlertID:
+  in: path
+  name: alert_id
+  schema:
+    type: integer
+    nullable: false
+  description: Alert ID
+  required: true
+CollectionID:
+  in: path
+  name: collection_id
+  schema:
+    type: integer
+    nullable: false
+  description: Collection ID
+  required: true
+OverrideID:
+  in: path
+  name: override_id
+  schema:
+    type: integer
+    nullable: false
+  description: Override ID
+  required: true

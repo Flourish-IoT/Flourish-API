@@ -1,0 +1,10 @@
+type: object
+properties:
+  status_code:
+    type: integer
+    description: HTTP status code
+    example: 401
+  message:
+    type: string
+    description: Additional information on why the request failed
+    example: User not authorized to delete device

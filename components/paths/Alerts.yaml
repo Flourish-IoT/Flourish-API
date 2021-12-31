@@ -1,0 +1,82 @@
+alerts:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+    - in: query
+      name: viewed
+      schema:
+        type: boolean
+        default: null
+        nullable: true
+      description: Return alerts which have been seen or not seen. By default returns all alerts
+    - in: query
+      name: plant_id
+      schema:
+        type: integer
+        default: null
+        nullable: true
+      description: Return alerts for the user plant with the specified ID. Cannot be used with device_id query parameter
+    - in: query
+      name: device_id
+      schema:
+        type: integer
+        default: null
+        nullable: true
+      description: Return alerts for the user device with the specified ID. Cannot be used with plant_id query parameter
+  get:
+    tags:
+      - Alerts
+    description: Returns active alerts for user
+    responses:
+      '200':
+        description: OK
+        # content:
+        #   application/json:
+        #     schema:
+        #       $ref: '#/components/schemas/DeviceMetrics'
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+
+alerts.alert_id:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/_index.yaml#/AlertID'
+  delete:
+    tags:
+      - Alerts
+    description: Dismisses an alert
+    responses:
+      '204':
+        description: OK. Alert deleted
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+
+alerts.alert_id.view:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/_index.yaml#/AlertID'
+  post:
+    tags:
+      - Alerts
+    description: Marks alert as viewed
+    responses:
+      '204':
+        description: OK
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+

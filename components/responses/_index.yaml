@@ -1,0 +1,10 @@
+BadRequest:
+  $ref: './Errors.yaml#/BadRequest'
+NotFound:
+  $ref: './Errors.yaml#/NotFound'
+Unauthorized:
+  $ref: './Errors.yaml#/Unauthorized'
+NoPermission:
+  $ref: './Errors.yaml#/NoPermission'
+AlreadyExists:
+  $ref: './Errors.yaml#/AlreadyExists'

@@ -1,0 +1,107 @@
+Device:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: Device ID
+    deviceType:
+      type: string
+      enum:
+        - Sensor
+        - Gateway
+        - Other
+      description: Device type
+    deviceState:
+      type: string
+      enum:
+        - Connected
+        - Connecting
+        - Disconnected
+        - Error
+      description: Last known state of the device
+    api_version:
+      type: string
+      description: Flourish API version used by the device
+    model:
+      type: string
+      description: Device model
+      nullable: true
+    software_version:
+      type: string
+      description: Software version of device
+      nullable: true
+
+Devices:
+  type: array
+  description: An array of device objects
+  items:
+    $ref: '#/Device'
+
+SensorData:
+  type: object
+  properties:
+    deviceId:
+      type: integer
+      description: Device ID
+    time:
+      type: string
+      description: Timestamp of sensor reading
+      nullable: true
+      format: date-time
+    temperature:
+      type: number
+      description: Air temperature in Celcius
+      nullable: true
+    humidity:
+      type: number
+      description: Relative air humidity
+      nullable: true
+    light:
+      type: integer
+      description: Light level in Lux
+      nullable: true
+    additional:
+      type: object
+      description: Additional sensor readings
+
+SensorDataArray:
+  type: array
+  description: An array of device sensor readings
+  items:
+    $ref: '#/SensorData'
+
+DeviceMetric:
+  type: object
+  properties:
+    deviceId:
+      type: integer
+      description: Device ID
+    time:
+      type: string
+      description: Timestamp of metric reading
+      format: date-time
+    battery_level:
+      type: number
+      description: Battery of device
+      nullable: true
+    cpu_usage:
+      type: number
+      description: CPU usage of device (in %)
+      nullable: true
+    memory_used:
+      type: number
+      description: Memory usage of device
+      nullable: true
+    memory_free:
+      type: number
+      description: Amount of free memory of device
+      nullable: true
+    additional:
+      type: object
+      description: Additional metrics
+
+DeviceMetrics:
+  type: array
+  description: An array of device metrics
+  items:
+    $ref: '#/DeviceMetric'

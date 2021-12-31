@@ -1,0 +1,204 @@
+plants:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+    # - in: query
+    #   name: collection_id
+    #   schema:
+    #     type: integer
+    #     nullable: true
+    #   description: Returns all plants in a collection
+  get:
+    tags:
+      - Plants
+    description: Lists all plants for a user
+    # TODO: query for plant types?
+    parameters:
+      - in: query
+        name: device_id
+        schema:
+          type: integer
+          nullable: true
+        description: Returns all plants associated with device
+      - in: query
+        name: plant_type_id
+        schema:
+          type: integer
+          nullable: true
+        description: Returns all plants with specified plant type
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/_index.yaml#/Plants'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  post:
+    tags:
+      - Plants
+    description: Creates a new plant
+    responses:
+      '201':
+        description: Ok. New plant created
+        headers:
+          'Location':
+            $ref: '../headers/_index.yaml#/ResourceCreated'
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '422':
+        description: Request contains invalid fields
+
+plants.plant_id:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/_index.yaml#/PlantID'
+  get:
+    tags:
+      - Plants
+    description: Gets plant information
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/_index.yaml#/PlantDetail'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  put:
+    tags:
+      - Plants
+    description: Updates plant information
+    responses:
+      '204':
+        description: OK. plant updated
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  delete:
+    tags:
+      - Plants
+    description: Deletes plant
+    responses:
+      '204':
+        description: OK. Plant deleted
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+
+# TODO: query param time range
+plants.plant_id.data:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/_index.yaml#/PlantID'
+  get:
+    tags:
+      - Plants
+    description: Gets plant sensor readings for specified period of time
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/_index.yaml#/SensorDataArray'
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+
+plants.plant_id.overrides:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/_index.yaml#/PlantID'
+  get:
+    tags:
+      - Plants
+    description: Gets user defined alert overrides for plant
+    responses:
+      '200':
+        description: OK
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  post:
+    tags:
+      - Plants
+    description: Creates a new user defined alert override
+    responses:
+      '201':
+        description: Ok. New override created
+        headers:
+          'Location':
+            $ref: '../headers/_index.yaml#/ResourceCreated'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+
+plants.plant_id.overrides.override_id:
+  parameters:
+    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/_index.yaml#/PlantID'
+    - $ref: '../parameters/_index.yaml#/OverrideID'
+  put:
+    tags:
+      - Plants
+    description: Updates user defined override
+    responses:
+      '204':
+        description: OK. Override updated
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+  delete:
+    tags:
+      - Plants
+    description: Deletes override
+    responses:
+      '204':
+        description: OK. Override deleted
+      '400':
+        $ref: '../responses/_index.yaml#/BadRequest'
+      '401':
+        $ref: '../responses/_index.yaml#/Unauthorized'
+      '403':
+        $ref: '../responses/_index.yaml#/NoPermission'
+      '404':
+        $ref: '../responses/_index.yaml#/NotFound'
+

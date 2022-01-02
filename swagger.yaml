@@ -13,7 +13,8 @@ servers:
       version:
         default: v1
         enum:
-          - v1       # Production
+          - v1
+
 paths:
   /users:
     $ref: './components/paths/Users.yaml#/users'

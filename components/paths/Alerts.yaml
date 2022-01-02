@@ -29,10 +29,10 @@ alerts:
     responses:
       '200':
         description: OK
-        # content:
-        #   application/json:
-        #     schema:
-        #       $ref: '#/components/schemas/DeviceMetrics'
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/_index.yaml#/Alerts'
       '400':
         $ref: '../responses/_index.yaml#/BadRequest'
       '401':
@@ -66,10 +66,21 @@ alerts.alert_id.view:
   parameters:
     - $ref: '../parameters/_index.yaml#/UserID'
     - $ref: '../parameters/_index.yaml#/AlertID'
-  post:
+  patch:
     tags:
       - Alerts
-    description: Marks alert as viewed
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              viewed:
+                type: boolean
+                description: Sets viewed state
+
+    description: Marks alert as viewed or not viewed
     responses:
       '204':
         description: OK

@@ -33,3 +33,18 @@ PlantDetail:
 
 PlantType:
   $ref: './Plants.yaml#/PlantType'
+
+Alert:
+  $ref: './Alerts.yaml#/Alert'
+
+Alerts:
+  $ref: './Alerts.yaml#/Alerts'
+
+Collection:
+  $ref: './Collections.yaml#/Collection'
+
+Collections:
+  $ref: './Collections.yaml#/Collections'
+
+CollectionDetail:
+  $ref: './Collections.yaml#/CollectionDetail'

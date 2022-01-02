@@ -1,0 +1,30 @@
+Alert:
+  type: object
+  properties:
+    id:
+      type: integer
+    message:
+      type: string
+      description: Alert contents
+      example: 'Plant is not getting enough sunlight'
+    severity:
+      type: string
+      enum:
+        - Info
+        - Warning
+        - Critical
+        - Error
+      description: Alert severity level
+    time:
+      type: string
+      format: date-time
+      description: Timestamp of when alert was generated
+    viewed:
+      type: boolean
+      description: Indicates whether alert has been viewed or not
+
+Alerts:
+  type: array
+  description: An array of alert objects
+  items:
+    $ref: '#/Alert'

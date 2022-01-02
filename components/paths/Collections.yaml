@@ -8,10 +8,10 @@ collections:
     responses:
       '200':
         description: OK
-        # content:
-        #   application/json:
-        #     schema:
-        #       $ref: '#/components/schemas/DeviceMetrics'
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/_index.yaml#/Collections'
       '400':
         $ref: '../responses/_index.yaml#/BadRequest'
       '401':
@@ -50,10 +50,10 @@ collections.collection_id:
     responses:
       '200':
         description: OK
-        # content:
-        #   application/json:
-        #     schema:
-        #       $ref: '#/components/schemas/DeviceMetrics'
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/_index.yaml#/CollectionDetail'
       '400':
         $ref: '../responses/_index.yaml#/BadRequest'
       '401':
@@ -97,10 +97,24 @@ collections.collection_id.add:
   parameters:
     - $ref: '../parameters/_index.yaml#/UserID'
     - $ref: '../parameters/_index.yaml#/CollectionID'
-  post:
+  patch:
     tags:
       - Collections
     description: Adds plants to a collection
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ids:
+                # viewed:
+                type: array
+                description: IDs of the plants being added to the collection
+                items:
+                  type: integer
+                example: [1, 2, 3]
     responses:
       '204':
         description: OK. Device updated
@@ -121,6 +135,20 @@ collections.collection_id.remove:
     tags:
       - Collections
     description: Removes plants from a collection
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ids:
+                # viewed:
+                type: array
+                description: IDs of the plants being removed from the collection
+                items:
+                  type: integer
+                example: [1, 2, 3]
     responses:
       '204':
         description: OK. Device updated

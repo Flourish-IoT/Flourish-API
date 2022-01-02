@@ -1,0 +1,37 @@
+Collection:
+  type: object
+  properties:
+    id:
+      type: integer
+    name:
+      type: string
+      description: Name of collection
+    creationDate:
+      type: string
+      format: date
+      description: Date of when collection was created
+
+Collections:
+  type: array
+  description: An array of collection objects
+  items:
+    $ref: '#/Collection'
+
+CollectionDetail:
+  type: object
+  properties:
+    id:
+      type: integer
+    name:
+      type: string
+      description: Name of collection
+    creationDate:
+      type: string
+      format: date
+      description: Date of when collection was created
+    items:
+      type: array
+      description: Items in collection
+      items:
+        $ref: '../schemas/_index.yaml#/Plant'
+

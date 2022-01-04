@@ -32,7 +32,13 @@ PlantDetail:
   $ref: './Plants.yaml#/PlantDetail'
 
 PlantType:
-  $ref: './Plants.yaml#/PlantType'
+  $ref: './PlantTypes.yaml#/PlantType'
+
+PlantTypes:
+  $ref: './PlantTypes.yaml#/PlantTypes'
+
+PlantTypeDetail:
+  $ref: './PlantTypes.yaml#/PlantTypeDetail'
 
 Alert:
   $ref: './Alerts.yaml#/Alert'
@@ -48,3 +54,6 @@ Collections:
 
 CollectionDetail:
   $ref: './Collections.yaml#/CollectionDetail'
+
+Paginated:
+  $ref: './Pagination.yaml#/Paginated'

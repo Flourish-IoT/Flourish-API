@@ -88,6 +88,59 @@ paths:
   /users/{user_id}/collections/{collection_id}/remove:
     $ref: './components/paths/Collections.yaml#/collections.collection_id.remove'
 
+  /plants:
+    # TODO: paginate
+    get:
+      tags:
+        - Plant Types
+      description: Returns all plant types
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: './components/schemas/_index.yaml#/Paginated'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: './components/schemas/_index.yaml#/PlantTypes'
+
+              # schema:
+              #   type: object
+              #   properties:
+              #     data:
+              #       items:
+              #         $ref: './components/schemas/_index.yaml#/PlantType'
+              # example:
+              #   data: [1, 2, 3]
+
+              # example:
+              #   data: [1]
+              #   links:
+              #     self: 'foo'
+              #     next: 'bar'
+              #     prev: 'baz'
+                  # $ref: './components/schemas/_index.yaml#/PlantTypes'
+          # $ref: './components/responses/_index.yaml#/Paginated'
+              #   $ref: './components/schemas/_index.yaml#/PlantTypes'
+          # headers:
+
+  /plants/{plant_type_id}:
+    get:
+      tags:
+        - Plant Types
+      description: Get details about plant type
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './components/schemas/_index.yaml#/PlantTypeDetail'
+
 components:
   responses:
     $ref: './components/responses/_index.yaml'

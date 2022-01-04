@@ -31,47 +31,10 @@ PlantDetail:
       type: integer
       description: ID of the device associated with the plant
     plantType:
-      $ref: '#/PlantType'
+      $ref: './_index.yaml#/PlantType'
     name:
       type: string
       description: User defined name for the plant
     picture:
       type: string
       description: URL of the picture associated with the plant
-
-PlantType:
-  type: object
-  properties:
-    plantTypeId:
-      type: integer
-      description: ID of the plant type associated with the plant
-    commonName:
-      type: string
-      description: Common name of plant
-    scientificName:
-      type: string
-      description: Scientific name of plant
-    minimum_light:
-      type: integer
-      description: Minimum light requirement of plant, in Lux
-    maximum_light:
-      type: integer
-      description: Maximum light requirement of plant, in Lux
-    minimum_temperature:
-      type: number
-      description: Minimum temperature requirement of plant, in Celcius/Fahrenheit
-    maximum_temperature:
-      type: number
-      description: Maximum temperature requirement of plant, in Celcius/Fahrenheit
-    minimum_humidity:
-      type: number
-      description: Minimum humidity requirement of plant, in relative humidity
-    maximum_humidity:
-      type: number
-      description: Maximum humidity requirement of plant, in relative humidity
-    minimum_soil_moisture:
-      type: number
-      description: Minimum soil moisture requirement of plant, in TODO
-    maximum_soil_moisture:
-      type: number
-      description: Maximum soil moisture requirement of plant, in TODO

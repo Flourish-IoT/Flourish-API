@@ -1,0 +1,18 @@
+Paginated:
+  type: object
+  properties:
+    data:
+      type: array
+      description: Items
+      items:
+        type: integer
+    links:
+      description: Pagination links
+      type: object
+      properties:
+        self:
+          type: string
+        next:
+          type: string
+        prev:
+          type: string

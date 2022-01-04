@@ -105,3 +105,18 @@ DeviceMetrics:
   description: An array of device metrics
   items:
     $ref: '#/DeviceMetric'
+
+DeviceCreation:
+  type: object
+  properties:
+    deviceType:
+      type: string
+      enum:
+        - Sensor
+        - Gateway
+        - Other
+      description: Device type
+    model:
+      type: string
+      description: Device model
+      nullable: true

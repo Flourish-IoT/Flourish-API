@@ -1,0 +1,7 @@
+Page:
+  name: page
+  in: query
+  description: Pagination page
+  required: true
+  schema:
+    type: integer

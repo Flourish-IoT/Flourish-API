@@ -24,6 +24,9 @@ Unauthorized:
     application/json:
       schema:
         $ref: '../schemas/index.yaml#/Error'
+      example:
+        status: 404
+        message: 'User is not authorized'
 
 NoPermission:
   description: User does not have permission to create/read/update/delete resource
@@ -31,6 +34,9 @@ NoPermission:
     application/json:
       schema:
         $ref: '../schemas/index.yaml#/Error'
+      example:
+        status: 403
+        message: 'User does not have permission to create resource'
 
 AlreadyExists:
   description: Resource already exists
@@ -38,3 +44,6 @@ AlreadyExists:
     application/json:
       schema:
         $ref: '../schemas/index.yaml#/Error'
+      example:
+        status: 409
+        message: 'Resource already exists'

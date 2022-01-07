@@ -16,8 +16,8 @@ servers:
           - v1
 
 paths:
-  /users:
-    $ref: './components/paths/Users.yaml#/users'
+  # /users:
+  #   $ref: './components/paths/Users.yaml#/users'
 
   /users/login:
     $ref: './components/paths/Users.yaml#/users.login'

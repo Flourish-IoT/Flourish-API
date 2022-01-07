@@ -1,6 +1,6 @@
 collections:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/UserID'
   get:
     tags:
       - Collections
@@ -11,15 +11,15 @@ collections:
         content:
           application/json:
             schema:
-              $ref: '../schemas/_index.yaml#/Collections'
+              $ref: '../schemas/index.yaml#/Collections'
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   post:
     tags:
       - Collections
@@ -29,20 +29,20 @@ collections:
         description: Ok. New collection created
         headers:
           'Location':
-            $ref: '../headers/_index.yaml#/ResourceCreated'
+            $ref: '../headers/index.yaml#/ResourceCreated'
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
 
 collections.collection_id:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
-    - $ref: '../parameters/_index.yaml#/CollectionID'
+    - $ref: '../parameters/index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/CollectionID'
   get:
     tags:
       - Collections
@@ -53,15 +53,15 @@ collections.collection_id:
         content:
           application/json:
             schema:
-              $ref: '../schemas/_index.yaml#/CollectionDetail'
+              $ref: '../schemas/index.yaml#/CollectionDetail'
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   put:
     tags:
       - Collections
@@ -70,13 +70,13 @@ collections.collection_id:
       '204':
         description: OK. Device updated
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   delete:
     tags:
       - Collections
@@ -85,18 +85,18 @@ collections.collection_id:
       '204':
         description: OK. Collection deleted
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
 
 collections.collection_id.add:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
-    - $ref: '../parameters/_index.yaml#/CollectionID'
+    - $ref: '../parameters/index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/CollectionID'
   patch:
     tags:
       - Collections
@@ -119,18 +119,18 @@ collections.collection_id.add:
       '204':
         description: OK. Device updated
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
 
 collections.collection_id.remove:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
-    - $ref: '../parameters/_index.yaml#/CollectionID'
+    - $ref: '../parameters/index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/CollectionID'
   delete:
     tags:
       - Collections
@@ -153,10 +153,10 @@ collections.collection_id.remove:
       '204':
         description: OK. Device updated
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'

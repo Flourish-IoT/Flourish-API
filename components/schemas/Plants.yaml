@@ -31,7 +31,7 @@ PlantDetail:
       type: integer
       description: ID of the device associated with the plant
     plantType:
-      $ref: './_index.yaml#/PlantType'
+      $ref: './index.yaml#/PlantType'
     name:
       type: string
       description: User defined name for the plant

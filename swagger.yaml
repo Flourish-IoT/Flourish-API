@@ -102,18 +102,18 @@ paths:
               schema:
                 type: object
                 allOf:
-                  - $ref: './components/schemas/_index.yaml#/Paginated'
+                  - $ref: './components/schemas/index.yaml#/Paginated'
                   - type: object
                     properties:
                       data:
-                        $ref: './components/schemas/_index.yaml#/PlantTypes'
+                        $ref: './components/schemas/index.yaml#/PlantTypes'
 
               # schema:
               #   type: object
               #   properties:
               #     data:
               #       items:
-              #         $ref: './components/schemas/_index.yaml#/PlantType'
+              #         $ref: './components/schemas/index.yaml#/PlantType'
               # example:
               #   data: [1, 2, 3]
 
@@ -123,9 +123,9 @@ paths:
               #     self: 'foo'
               #     next: 'bar'
               #     prev: 'baz'
-                  # $ref: './components/schemas/_index.yaml#/PlantTypes'
-          # $ref: './components/responses/_index.yaml#/Paginated'
-              #   $ref: './components/schemas/_index.yaml#/PlantTypes'
+                  # $ref: './components/schemas/index.yaml#/PlantTypes'
+          # $ref: './components/responses/index.yaml#/Paginated'
+              #   $ref: './components/schemas/index.yaml#/PlantTypes'
           # headers:
 
   /plants/{plant_type_id}:
@@ -139,17 +139,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './components/schemas/_index.yaml#/PlantTypeDetail'
+                $ref: './components/schemas/index.yaml#/PlantTypeDetail'
 
 components:
   responses:
-    $ref: './components/responses/_index.yaml'
+    $ref: './components/responses/index.yaml'
   parameters:
-    $ref: './components/parameters/_index.yaml'
+    $ref: './components/parameters/index.yaml'
   schemas:
-    $ref: './components/schemas/_index.yaml'
+    $ref: './components/schemas/index.yaml'
   headers:
-    $ref: './components/headers/_index.yaml'
+    $ref: './components/headers/index.yaml'
 
   securitySchemes:
     name:

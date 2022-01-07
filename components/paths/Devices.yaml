@@ -1,6 +1,6 @@
 devices:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/UserID'
   get:
     tags:
       - Devices
@@ -33,13 +33,13 @@ devices:
         content:
           application/json:
             schema:
-              $ref: '../schemas/_index.yaml#/Devices'
+              $ref: '../schemas/index.yaml#/Devices'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   post:
     tags:
       - Devices
@@ -49,20 +49,20 @@ devices:
         description: Ok. New device created
         headers:
           'Location':
-            $ref: '../headers/_index.yaml#/ResourceCreated'
+            $ref: '../headers/index.yaml#/ResourceCreated'
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '422':
         description: Request contains invalid fields
 
 devices.device_id:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
-    - $ref: '../parameters/_index.yaml#/DeviceID'
+    - $ref: '../parameters/index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/DeviceID'
   get:
     tags:
       - Devices
@@ -73,9 +73,9 @@ devices.device_id:
         content:
           application/json:
             schema:
-              $ref: '../schemas/_index.yaml#/Device'
+              $ref: '../schemas/index.yaml#/Device'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   put:
     tags:
       - Devices
@@ -84,13 +84,13 @@ devices.device_id:
       '204':
         description: OK. Device updated
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   delete:
     tags:
       - Devices
@@ -99,19 +99,19 @@ devices.device_id:
       '204':
         description: OK. Device deleted
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
 
 # TODO: query param time range
 devices.device_id.data:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
-    - $ref: '../parameters/_index.yaml#/DeviceID'
+    - $ref: '../parameters/index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/DeviceID'
   get:
     tags:
       - Devices
@@ -122,15 +122,15 @@ devices.device_id.data:
         content:
           application/json:
             schema:
-              $ref: '../schemas/_index.yaml#/SensorDataArray'
+              $ref: '../schemas/index.yaml#/SensorDataArray'
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   post:
     tags:
       - Devices
@@ -141,20 +141,20 @@ devices.device_id.data:
         # content:
         #   application/json:
         #     schema:
-        #       $ref: '../schemas/_index.yaml#/User'
+        #       $ref: '../schemas/index.yaml#/User'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
       '429':
         description: Device has sent too many requests (Rate limited)
 
 devices.device_id.metrics:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
-    - $ref: '../parameters/_index.yaml#/DeviceID'
+    - $ref: '../parameters/index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/DeviceID'
   get:
     tags:
       - Devices
@@ -165,15 +165,15 @@ devices.device_id.metrics:
         content:
           application/json:
             schema:
-              $ref: '../schemas/_index.yaml#/DeviceMetrics'
+              $ref: '../schemas/index.yaml#/DeviceMetrics'
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   post:
     tags:
       - Devices
@@ -184,12 +184,12 @@ devices.device_id.metrics:
         # content:
         #   application/json:
         #     schema:
-        #       $ref: '../schemas/_index.yaml#/User'
+        #       $ref: '../schemas/index.yaml#/User'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
       '429':
         description: Device has sent too many requests (Rate limited)

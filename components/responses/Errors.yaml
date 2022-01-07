@@ -3,7 +3,7 @@ BadRequest:
   content:
     application/json:
       schema:
-        $ref: '../schemas/_index.yaml#/Error'
+        $ref: '../schemas/index.yaml#/Error'
       example:
         status: 400
         message: 'Server unable to process request'
@@ -13,7 +13,7 @@ NotFound:
   content:
     application/json:
       schema:
-        $ref: '../schemas/_index.yaml#/Error'
+        $ref: '../schemas/index.yaml#/Error'
       example:
         status: 404
         message: 'The specified resource was not found'
@@ -23,18 +23,18 @@ Unauthorized:
   content:
     application/json:
       schema:
-        $ref: '../schemas/_index.yaml#/Error'
+        $ref: '../schemas/index.yaml#/Error'
 
 NoPermission:
   description: User does not have permission to create/read/update/delete resource
   content:
     application/json:
       schema:
-        $ref: '../schemas/_index.yaml#/Error'
+        $ref: '../schemas/index.yaml#/Error'
 
 AlreadyExists:
   description: Resource already exists
   content:
     application/json:
       schema:
-        $ref: '../schemas/_index.yaml#/Error'
+        $ref: '../schemas/index.yaml#/Error'

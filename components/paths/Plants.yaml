@@ -1,6 +1,6 @@
 plants:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/UserID'
     # - in: query
     #   name: collection_id
     #   schema:
@@ -31,13 +31,13 @@ plants:
         content:
           application/json:
             schema:
-              $ref: '../schemas/_index.yaml#/Plants'
+              $ref: '../schemas/index.yaml#/Plants'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   post:
     tags:
       - Plants
@@ -47,20 +47,20 @@ plants:
         description: Ok. New plant created
         headers:
           'Location':
-            $ref: '../headers/_index.yaml#/ResourceCreated'
+            $ref: '../headers/index.yaml#/ResourceCreated'
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '422':
         description: Request contains invalid fields
 
 plants.plant_id:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
-    - $ref: '../parameters/_index.yaml#/PlantID'
+    - $ref: '../parameters/index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/PlantID'
   get:
     tags:
       - Plants
@@ -71,9 +71,9 @@ plants.plant_id:
         content:
           application/json:
             schema:
-              $ref: '../schemas/_index.yaml#/PlantDetail'
+              $ref: '../schemas/index.yaml#/PlantDetail'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   put:
     tags:
       - Plants
@@ -82,13 +82,13 @@ plants.plant_id:
       '204':
         description: OK. plant updated
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   delete:
     tags:
       - Plants
@@ -97,19 +97,19 @@ plants.plant_id:
       '204':
         description: OK. Plant deleted
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
 
 # TODO: query param time range
 plants.plant_id.data:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
-    - $ref: '../parameters/_index.yaml#/PlantID'
+    - $ref: '../parameters/index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/PlantID'
   get:
     tags:
       - Plants
@@ -120,20 +120,20 @@ plants.plant_id.data:
         content:
           application/json:
             schema:
-              $ref: '../schemas/_index.yaml#/SensorDataArray'
+              $ref: '../schemas/index.yaml#/SensorDataArray'
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
 
 plants.plant_id.overrides:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
-    - $ref: '../parameters/_index.yaml#/PlantID'
+    - $ref: '../parameters/index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/PlantID'
   get:
     tags:
       - Plants
@@ -142,13 +142,13 @@ plants.plant_id.overrides:
       '200':
         description: OK
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   post:
     tags:
       - Plants
@@ -158,19 +158,19 @@ plants.plant_id.overrides:
         description: Ok. New override created
         headers:
           'Location':
-            $ref: '../headers/_index.yaml#/ResourceCreated'
+            $ref: '../headers/index.yaml#/ResourceCreated'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
 
 plants.plant_id.overrides.override_id:
   parameters:
-    - $ref: '../parameters/_index.yaml#/UserID'
-    - $ref: '../parameters/_index.yaml#/PlantID'
-    - $ref: '../parameters/_index.yaml#/OverrideID'
+    - $ref: '../parameters/index.yaml#/UserID'
+    - $ref: '../parameters/index.yaml#/PlantID'
+    - $ref: '../parameters/index.yaml#/OverrideID'
   put:
     tags:
       - Plants
@@ -179,13 +179,13 @@ plants.plant_id.overrides.override_id:
       '204':
         description: OK. Override updated
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
   delete:
     tags:
       - Plants
@@ -194,11 +194,11 @@ plants.plant_id.overrides.override_id:
       '204':
         description: OK. Override deleted
       '400':
-        $ref: '../responses/_index.yaml#/BadRequest'
+        $ref: '../responses/index.yaml#/BadRequest'
       '401':
-        $ref: '../responses/_index.yaml#/Unauthorized'
+        $ref: '../responses/index.yaml#/Unauthorized'
       '403':
-        $ref: '../responses/_index.yaml#/NoPermission'
+        $ref: '../responses/index.yaml#/NoPermission'
       '404':
-        $ref: '../responses/_index.yaml#/NotFound'
+        $ref: '../responses/index.yaml#/NotFound'
 

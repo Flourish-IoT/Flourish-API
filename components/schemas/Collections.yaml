@@ -33,5 +33,5 @@ CollectionDetail:
       type: array
       description: Items in collection
       items:
-        $ref: '../schemas/_index.yaml#/Plant'
+        $ref: '../schemas/index.yaml#/Plant'
 

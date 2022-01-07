@@ -16,8 +16,8 @@ servers:
           - v1
 
 paths:
-  # /users:
-  #   $ref: './components/paths/Users.yaml#/users'
+  /users:
+    $ref: './components/paths/Users.yaml#/users'
 
   /users/login:
     $ref: './components/paths/Users.yaml#/users.login'
@@ -25,8 +25,8 @@ paths:
   /users/reset_password:
     $ref: './components/paths/Users.yaml#/users.reset_password'
 
-  # /users/{user_id}:
-  #   $ref: './components/paths/Users.yaml#/users.id'
+  /users/{user_id}:
+    $ref: './components/paths/Users.yaml#/users.id'
 
   /users/{user_id}/verify:
     $ref: './components/paths/Users.yaml#/users.id.verify'

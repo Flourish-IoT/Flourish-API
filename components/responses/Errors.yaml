@@ -29,7 +29,7 @@ Unauthorized:
         message: 'User is not authorized'
 
 NoPermission:
-  description: User does not have permission to create/read/update/delete resource
+  description: 'User does not have permission to create/read/update/delete resource'
   content:
     application/json:
       schema:

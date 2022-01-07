@@ -130,6 +130,8 @@ paths:
 
   /plants/{plant_type_id}:
     get:
+      parameters:
+        - $ref: './components/parameters/index.yaml#/PlantTypeID'
       tags:
         - Plant Types
       description: Get details about plant type
@@ -143,13 +145,13 @@ paths:
 
 components:
   responses:
-    $ref: './components/responses/index.yaml#'
+    $ref: './components/responses/index.yaml'
   parameters:
-    $ref: './components/parameters/index.yaml#'
+    $ref: './components/parameters/index.yaml'
   schemas:
-    $ref: './components/schemas/index.yaml#'
+    $ref: './components/schemas/index.yaml'
   headers:
-    $ref: './components/headers/index.yaml#'
+    $ref: './components/headers/index.yaml'
 
   securitySchemes:
     name:

@@ -4,6 +4,8 @@ DeviceID:
   $ref: './ID.yaml#/DeviceID'
 PlantID:
   $ref: './ID.yaml#/PlantID'
+PlantTypeID:
+  $ref: './ID.yaml#/PlantTypeID'
 AlertID:
   $ref: './ID.yaml#/AlertID'
 CollectionID:

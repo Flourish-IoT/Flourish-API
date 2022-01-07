@@ -19,6 +19,13 @@ PlantID:
   required: true
   schema:
     type: integer
+PlantTypeID:
+  name: plant_type_id
+  in: path
+  description: Plant Type ID
+  required: true
+  schema:
+    type: integer
 AlertID:
   in: path
   name: alert_id

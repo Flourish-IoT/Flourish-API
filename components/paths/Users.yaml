@@ -91,8 +91,8 @@ users.id:
         $ref: '../responses/index.yaml#/BadRequest'
       '401':
         $ref: '../responses/index.yaml#/Unauthorized'
-      '403':
-        $ref: '../responses/index.yaml#/NoPermission'
+      # '403':
+      #   $ref: '../responses/index.yaml#/NoPermission'
       '404':
         $ref: '../responses/index.yaml#/NotFound'
   delete:
@@ -106,8 +106,8 @@ users.id:
         $ref: '../responses/index.yaml#/BadRequest'
       '401':
         $ref: '../responses/index.yaml#/Unauthorized'
-      '403':
-        $ref: '../responses/index.yaml#/NoPermission'
+      # '403':
+      #   $ref: '../responses/index.yaml#/NoPermission'
       '404':
         $ref: '../responses/index.yaml#/NotFound'
 

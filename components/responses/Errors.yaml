@@ -33,6 +33,7 @@ NoPermission:
   content:
     application/json:
       schema:
+        # idk why this ref acts weirdly, but the workaround is to just manually define the schema
         # $ref: '../schemas/index.yaml#/Error'
           type: object
           properties:

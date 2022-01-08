@@ -16,7 +16,6 @@ bash/zsh          $ source <venv>/bin/activate
 fish              $ source <venv>/bin/activate.fish
 
 csh/tcsh          $ source <venv>/bin/activate.csh
-
 ```
 
 ### Windows

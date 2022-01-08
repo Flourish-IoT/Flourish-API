@@ -6,7 +6,7 @@ Create a venv
 python3 -m venv venv
 ```
 
-Depending on your shell and platform, activate the venv using the appropriate command:\\
+Depending on your shell and platform, activate the venv using the appropriate command:\
 
 ### POSIX
 
@@ -17,13 +17,14 @@ fish        $ source <venv>/bin/activate.fish
 
 csh/tcsh    $ source <venv>/bin/activate.csh
 
-PowerShell Core  $ <venv>/bin/Activate.ps1
 ```
 
 ### Windows
 
 ```
 cmd.exe  C:\> <venv>\Scripts\activate.bat
+
+PowerShell Core  $ <venv>/bin/Activate.ps1
 
 PowerShell  PS C:\> <venv>\Scripts\Activate.ps1
 ```

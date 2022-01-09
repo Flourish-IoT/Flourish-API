@@ -1,6 +1,5 @@
 from enum import Enum
 from flask import Flask
-from flask_restx.api import Api
 
 class Environment(Enum):
 	dev = 'dev', 'config.DevConfig'
@@ -13,23 +12,22 @@ class Environment(Enum):
 	@classmethod
 	def get_environments(self):
 		"""
-		Returns all valid environments
+		Returns all valid environment names
 		"""
 		# extract environment name from each entry
 		return list(map(lambda x: x.env, list(self)))
 
 def create_app(env: Environment):
 	"""
-	Create Flask application
+	Create Flask application for a specific environment
 	"""
 	print(f'Creating application with environment "{env.env}", config: "{env.config}"')
 	app = Flask(__name__, instance_relative_config=False)
 	app.config.from_object(env.config)
 
 	with app.app_context():
-		# Mount version endpoints
+		# Mount versioned endpoints
 		from .v1 import blueprint as v1
 		app.register_blueprint(v1)
-
 
 		return app

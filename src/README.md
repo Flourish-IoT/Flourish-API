@@ -79,13 +79,18 @@ The file should look like:
 ```python
 from flask import Blueprint, blueprints
 from flask_restx import Api
+from ..PREVIOUS_VERSION import api as PREVIOUS_VERSION
 
 # create api
 blueprint = Blueprint('api', __name__, url_prefix='/VERSION')
 api = Api(blueprint, title='Flourish API', version='VERSION', description='API to interact with the Flourish backend')
 
-# mount endpoints
+# mount VERSION endpoints
 ...
+
+# mount PREVIOUS_VERSION endpoints as a fallback for unimplemented VERSION endpoints
+for namespace in PREVIOUS_VERSION.namespaces:
+	api.add_namespace(namespace)
 ```
 
 Add this to `src/app/__init__.py`

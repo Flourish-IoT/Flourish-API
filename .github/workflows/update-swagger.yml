@@ -21,14 +21,14 @@ jobs:
           SWAGGER_YAML: "swagger.yaml"
         run: |
           # Delete the dist directory and index.html
-          rm -fr spec/dist index.html
+          rm -fr spec/dist spec/index.html
           # Download the release
           curl -sL -o $RELEASE_TAG https://api.github.com/repos/swagger-api/swagger-ui/tarball/$RELEASE_TAG
           # Extract the dist directory
-          tar -xzf $RELEASE_TAG --strip-components=1 $(tar -tzf $RELEASE_TAG | head -1 | cut -f1 -d"/")/spec/dist
+          tar -xzf $RELEASE_TAG --strip-components=1 $(tar -tzf $RELEASE_TAG | head -1 | cut -f1 -d"/")/dist
           rm $RELEASE_TAG
-          # Move index.html to the root
-          mv spec/dist/index.html .
+          # Move index.html to the spec folder
+          mv dist/index.html ./spec
           # Fix references in index.html
           sed -i "s|https://petstore.swagger.io/v2/swagger.json|$SWAGGER_YAML|g" index.html
           sed -i "s|href=\"./|href=\"spec/dist/|g" index.html

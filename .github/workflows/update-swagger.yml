@@ -30,11 +30,11 @@ jobs:
           # Move index.html to the spec folder
           mv dist/index.html ./spec
           # Fix references in index.html
-          sed -i "s|https://petstore.swagger.io/v2/swagger.json|$SWAGGER_YAML|g" index.html
+          sed -i "s|https://petstore.swagger.io/v2/swagger.json|$SWAGGER_YAML|g" spec/index.html
           sed -i "s|href=\"./|href=\"spec/dist/|g" index.html
           sed -i "s|src=\"./|src=\"spec/dist/|g" index.html
           # Update current release
-          echo ${{ steps.swagger-ui.outputs.release_tag }} > swagger-ui.version
+          echo ${{ steps.swagger-ui.outputs.release_tag }} > spec/swagger-ui.version
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:

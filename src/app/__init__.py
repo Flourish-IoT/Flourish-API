@@ -17,7 +17,7 @@ class Environment(Enum):
 		# extract environment name from each entry
 		return list(map(lambda x: x.env, list(self)))
 
-def create_app(env: Environment):
+def create_app(env: Environment = Environment.dev) -> Flask:
 	"""
 	Create Flask application for a specific environment
 	"""

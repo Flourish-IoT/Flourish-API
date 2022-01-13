@@ -34,13 +34,17 @@ Now, run
 pip3 install -r requirements.txt
 ```
 
-# How To Run
+# How To Run Locally
 
 To run the application, enable the venv and run
 
-```
+```bash
 python3 ./src/wsgi.py         [-c=CONFIG_FILE] [--help]
 ```
+
+## Running In Production
+
+The standalone Flask application should never be used in a production environment. Use one of the start scripts in the `scripts` folder to start a production server.
 
 # Creating New Endpoints
 

@@ -12,7 +12,7 @@
     }],
 		["@codedependant/semantic-release-docker", {
       "dockerTags": ["latest", "{{version}}", "{{major}}-latest", "{{major}}.{{minor}}"],
-      "dockerImage": "Flourish",
+      "dockerImage": "flourish",
       "dockerFile": "Dockerfile",
 			"dockerLogin": false,
 			"dockerPublish": false

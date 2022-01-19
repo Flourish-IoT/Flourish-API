@@ -1,0 +1,14 @@
+{
+	branches: [
+		{name: 'release'},
+		{name: 'master', prerelease: 'beta'}
+	],
+	plugins: [
+		['@codedependant/semantic-release-docker', {
+      dockerTags: ['latest', '{{version}}', '{{major}}-latest', '{{major}}.{{minor}}'],
+      dockerImage: 'Flourish',
+      dockerFile: 'Dockerfile',
+			dockerPublish: false
+    }]
+	]
+}

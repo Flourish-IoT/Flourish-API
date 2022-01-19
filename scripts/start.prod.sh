@@ -1,6 +1,15 @@
-#!/bin/sh
+#!/bin/bash
+# set current directory to top level
+BASE_DIR="$(dirname "$0")/.."
+cd $BASE_DIR
+BASE_DIR=$(pwd)
+
+# activate venv
+VENV="$BASE_DIR/venv"
+source "$VENV/bin/activate"
+
 # set current directory to src
-SRC="$(dirname "$0")/../src"
+SRC="$BASE_DIR/src"
 cd $SRC
 
 echo "Current path:"

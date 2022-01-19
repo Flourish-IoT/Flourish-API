@@ -10,6 +10,7 @@
         {"message": "*", "release": "patch"}
       ]
     }],
+		"@semantic-release/release-notes-generator",
 		["@codedependant/semantic-release-docker", {
       "dockerTags": ["{{version}}"],
       "dockerImage": "flourish",
@@ -18,6 +19,7 @@
 			"dockerRegistry": "ghcr.io",
 			"dockerLogin": false,
 			"dockerPublish": true
-    }]
+    }],
+		"@semantic-release/github"
 	]
 }

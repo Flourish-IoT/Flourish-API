@@ -13,9 +13,11 @@
 		["@codedependant/semantic-release-docker", {
       "dockerTags": ["{{version}}"],
       "dockerImage": "flourish",
+			"dockerProject": "flourish-iot",
       "dockerFile": "Dockerfile",
+			"dockerRegistry": "ghcr.io",
 			"dockerLogin": false,
-			"dockerPublish": false
+			"dockerPublish": true
     }]
 	]
 }

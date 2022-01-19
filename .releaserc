@@ -11,7 +11,7 @@
       ]
     }],
 		["@codedependant/semantic-release-docker", {
-      "dockerTags": ["latest", "{{version}}", "{{major}}-latest", "{{major}}.{{minor}}"],
+      "dockerTags": ["{{version}}"],
       "dockerImage": "flourish",
       "dockerFile": "Dockerfile",
 			"dockerLogin": false,

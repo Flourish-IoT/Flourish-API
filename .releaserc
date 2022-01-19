@@ -1,15 +1,21 @@
 {
-	branches: [
-		{name: 'release'},
-		{name: 'master', prerelease: 'beta'}
+	"branches": [
+		{"name": "release"},
+		{"name": "master", "prerelease": "beta"}
 	],
-	plugins: [
-		['@codedependant/semantic-release-docker', {
-      dockerTags: ['latest', '{{version}}', '{{major}}-latest', '{{major}}.{{minor}}'],
-      dockerImage: 'Flourish',
-      dockerFile: 'Dockerfile',
-			dockerLogin: false,
-			dockerPublish: false
+	"plugins": [
+		["@semantic-release/commit-analyzer", {
+      "preset": "angular",
+      "releaseRules": [
+        {"message": "*", "release": "patch"}
+      ]
+    }],
+		["@codedependant/semantic-release-docker", {
+      "dockerTags": ["latest", "{{version}}", "{{major}}-latest", "{{major}}.{{minor}}"],
+      "dockerImage": "Flourish",
+      "dockerFile": "Dockerfile",
+			"dockerLogin": false,
+			"dockerPublish": false
     }]
 	]
 }

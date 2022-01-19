@@ -8,6 +8,7 @@
       dockerTags: ['latest', '{{version}}', '{{major}}-latest', '{{major}}.{{minor}}'],
       dockerImage: 'Flourish',
       dockerFile: 'Dockerfile',
+			dockerLogin: false,
 			dockerPublish: false
     }]
 	]

@@ -1,0 +1,25 @@
+{
+	"branches": [
+		{"name": "release"},
+		{"name": "master", "prerelease": "beta"}
+	],
+	"plugins": [
+		["@semantic-release/commit-analyzer", {
+      "preset": "angular",
+      "releaseRules": [
+        {"message": "*", "release": "patch"}
+      ]
+    }],
+		"@semantic-release/release-notes-generator",
+		["@codedependant/semantic-release-docker", {
+      "dockerTags": ["{{version}}"],
+      "dockerImage": "flourish",
+			"dockerProject": "flourish-iot",
+      "dockerFile": "Dockerfile",
+			"dockerRegistry": "ghcr.io",
+			"dockerLogin": false,
+			"dockerPublish": true
+    }],
+		"@semantic-release/github"
+	]
+}

@@ -2,6 +2,7 @@ import abc
 
 
 class AbstractUnitOfWork(abc.ABC):
+	users:
 	@abc.abstractmethod
 	def commit(self):
 		raise NotImplementedError

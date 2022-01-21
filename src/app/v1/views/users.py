@@ -1,5 +1,5 @@
 from flask_restx import Resource, Namespace
-from ..services.users import get_user
+from ...common.services.users import get_user
 
 api = Namespace('users', description='User related operations', path='/users')
 

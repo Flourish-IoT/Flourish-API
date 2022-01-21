@@ -31,6 +31,8 @@ PowerShell               PS C:\> <venv>\Scripts\Activate.ps1
 Now, run
 
 ```
+# Some packages require pip to be at least version 20.3
+pip3 install --upgrade pip
 pip3 install -r requirements.txt
 ```
 

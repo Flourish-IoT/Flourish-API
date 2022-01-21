@@ -1,7 +1,9 @@
 from enum import Enum
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
 class Environment(Enum):
+	local = 'local', 'config.LocalConfig'
 	dev = 'dev', 'config.DevConfig'
 	prod = 'prod', 'config.ProdConfig'
 
@@ -10,13 +12,14 @@ class Environment(Enum):
 			self.config = config
 
 	@classmethod
-	def get_environments(self):
+	def get_environments(cls):
 		"""
 		Returns all valid environment names
 		"""
 		# extract environment name from each entry
-		return list(map(lambda x: x.env, list(self)))
+		return list(map(lambda x: x.env, list(cls)))
 
+db = SQLAlchemy()
 def create_app(env: Environment = Environment.dev) -> Flask:
 	"""
 	Create Flask application for a specific environment
@@ -24,6 +27,8 @@ def create_app(env: Environment = Environment.dev) -> Flask:
 	print(f'Creating application with environment "{env.env}", config: "{env.config}"')
 	app = Flask(__name__, instance_relative_config=False)
 	app.config.from_object(env.config)
+
+	db.init_app(app)
 
 	with app.app_context():
 		# Mount versioned endpoints

@@ -38,10 +38,10 @@ pip3 install -r requirements.txt
 
 # How To Run Locally
 
-To run the application, enable the venv and run
+To run the application, enable the venv and run from the src directory
 
 ```bash
-python3 ./src/wsgi.py         [-c=CONFIG_FILE] [--help]
+python3 ./wsgi.py         [-c=CONFIG_FILE] [--help]
 ```
 
 ## Running In Production

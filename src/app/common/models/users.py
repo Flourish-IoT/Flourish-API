@@ -1,6 +1,11 @@
-from ... import db
-from flask_sqlalchemy.model import DefaultMeta
+from app import db
 from .base_model import BaseModel
+from flask_restx import fields, Model
+
+UserModel = Model('User',{
+	'user_id': fields.Integer,
+	'email': fields.String
+})
 
 class User(BaseModel):
 	__tablename__ = 'users'

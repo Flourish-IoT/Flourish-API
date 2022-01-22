@@ -5,7 +5,7 @@ from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerEr
 
 from app.core.errors import NotFoundError, ConflictError
 from app.core.services import get_user, create_user
-from app.core.models import NewUserModel, UserModel
+from app.v1.models import NewUserModel, UserModel
 from app import db
 
 api = Namespace('users', description='User related operations', path='/users')
@@ -34,7 +34,7 @@ class User(Resource):
 	@api.marshal_with(UserModel)
 	def get(self, user_id: int):
 		try:
-			user = get_user(user_id)
+			user = get_user(user_id, db.session)
 		except NotFoundError as e:
 			raise NotFound(str(e))
 		except Exception as e:

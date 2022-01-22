@@ -8,7 +8,8 @@ class Config:
 	SQLALCHEMY_ECHO = False
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
 	SQLALCHEMY_ENGINE_OPTIONS = {
-		'pool_size': 5
+		'pool_size': 5,
+		'future': True
 	}
 
 	RESTX_ERROR_404_HELP = False
@@ -34,7 +35,8 @@ class LocalConfig(Config):
 
 	SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:password@localhost/postgres'
 	SQLALCHEMY_ENGINE_OPTIONS = {
-		'pool_size': 2
+		'pool_size': 2,
+		'future': True
 	}
 
 class TestConfig(Config):

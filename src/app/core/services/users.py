@@ -4,7 +4,7 @@ from sqlalchemy.orm.session import Session
 from sqlalchemy import exc
 import logging
 
-def get_user(user_id: int):
+def get_user(user_id: int, session: Session):
 	"""Gets a user by user ID
 
 	Args:
@@ -14,17 +14,16 @@ def get_user(user_id: int):
 			NotFoundError: User not found
 
 	Returns:
-			[type]: [description]
+			User: [description]
 	"""
-
-	user = User.query.filter(User.user_id == user_id).first()
+	user = session.get(User, user_id)
 
 	if user is None:
 		raise NotFoundError(f'Could not find user with id: {user_id}')
 
 	return user
 
-def create_user(email: str, session: Session) -> int:
+def create_user(email: str, session: Session):
 	"""Creates a new user
 
 	Args:
@@ -48,7 +47,5 @@ def create_user(email: str, session: Session) -> int:
 		logging.error('Failed to create user')
 		logging.exception(e)
 		raise ConflictError('User with email already exists')
-
-	# session.refresh(user)
 
 	return user.user_id

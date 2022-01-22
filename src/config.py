@@ -36,3 +36,10 @@ class LocalConfig(Config):
 	SQLALCHEMY_ENGINE_OPTIONS = {
 		'pool_size': 2
 	}
+
+class TestConfig(Config):
+	FLASK_ENV = 'test'
+	DEBUG = True
+	TESTING = True
+
+	SQLALCHEMY_DATABASE_URI = 'sqllite://postgres:password@localhost/postgres'

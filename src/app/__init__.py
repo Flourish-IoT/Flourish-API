@@ -3,6 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 class Environment(Enum):
+	test = 'test', 'config.TestConfig'
 	local = 'local', 'config.LocalConfig'
 	dev = 'dev', 'config.DevConfig'
 	prod = 'prod', 'config.ProdConfig'

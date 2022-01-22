@@ -6,8 +6,6 @@ from .views.devices import api as device_api
 from .views.collections import api as collection_api
 from .views.alerts import api as alert_api
 
-from app.common.models.users import UserModel
-
 from flask_restx import Api
 
 # create v1 api
@@ -21,5 +19,3 @@ api.add_namespace(plant_type_api)
 api.add_namespace(device_api)
 api.add_namespace(collection_api)
 api.add_namespace(alert_api)
-
-api.models[UserModel.name] = UserModel

@@ -13,7 +13,7 @@ jobs:
         id: swagger-ui
         run: |
           echo ::set-output name=release_tag::$(curl -sL https://api.github.com/repos/swagger-api/swagger-ui/releases/latest | jq -r ".tag_name")
-          echo ::set-output name=current_tag::$(<swagger-ui.version)
+          echo ::set-output name=current_tag::$(<./spec/swagger-ui.version)
       - name: Update Swagger UI
         if: steps.swagger-ui.outputs.current_tag != steps.swagger-ui.outputs.release_tag
         env:
@@ -21,20 +21,20 @@ jobs:
           SWAGGER_YAML: "swagger.yaml"
         run: |
           # Delete the dist directory and index.html
-          rm -fr spec/dist index.html
+          rm -fr spec/dist spec/index.html
           # Download the release
           curl -sL -o $RELEASE_TAG https://api.github.com/repos/swagger-api/swagger-ui/tarball/$RELEASE_TAG
           # Extract the dist directory
-          tar -xzf $RELEASE_TAG --strip-components=1 $(tar -tzf $RELEASE_TAG | head -1 | cut -f1 -d"/")/spec/dist
+          tar -xzf $RELEASE_TAG --strip-components=1 $(tar -tzf $RELEASE_TAG | head -1 | cut -f1 -d"/")/dist
           rm $RELEASE_TAG
-          # Move index.html to the root
-          mv spec/dist/index.html .
+          # Move index.html to the spec folder
+          mv dist/index.html ./spec/
           # Fix references in index.html
-          sed -i "s|https://petstore.swagger.io/v2/swagger.json|$SWAGGER_YAML|g" index.html
-          sed -i "s|href=\"./|href=\"spec/dist/|g" index.html
-          sed -i "s|src=\"./|src=\"spec/dist/|g" index.html
+          sed -i "s|https://petstore.swagger.io/v2/swagger.json|$SWAGGER_YAML|g" ./spec/index.html
+          sed -i "s|href=\"./|href=\"spec/dist/|g" ./spec/index.html
+          sed -i "s|src=\"./|src=\"spec/dist/|g" ./spec/index.html
           # Update current release
-          echo ${{ steps.swagger-ui.outputs.release_tag }} > swagger-ui.version
+          echo ${{ steps.swagger-ui.outputs.release_tag }} > spec/swagger-ui.version
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:

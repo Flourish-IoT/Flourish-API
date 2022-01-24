@@ -1,19 +1,36 @@
-from ast import parse
-from enum import Enum
+import logging
+from flask.app import Flask
 from app import create_app, Environment
 from argparse import ArgumentParser
 
 
-if __name__ == '__main__':
+def configure_app():
 	parser = ArgumentParser(description='Flourish Backend API')
 	parser.add_argument('-c', type=str, choices=Environment.get_environments(), default=Environment.dev.env, dest='config', help='Config file to use')
-	args = parser.parse_args()
+	args, _ = parser.parse_known_args()
 
-	config = Environment[ args.config ]
+	env = Environment[ args.config ]
+	app = create_app(env)
 
-	app = create_app(config)
-	app.run()
+	return app
 
-else:
-	# TODO: handle gunicorn
-	app = create_app(Environment.dev)
+# gunicorn entrypoint
+def create_gunicorn(*args, **kwargs):
+	# parse arguments passed in through kwargs, gunicorn CLI args are useless
+	import sys
+	for k, v in kwargs.items():
+		# if single letter, assume short form argument
+		sys.argv.append(f'{"-" if len(k) == 1 else "--"}{k}')
+		sys.argv.append(v)
+
+	app = configure_app()
+
+	gunicorn_logger = logging.getLogger('gunicorn.error')
+	app.logger.handlers = gunicorn_logger.handlers
+	app.logger.setLevel(gunicorn_logger.level)
+
+	return app
+
+if __name__ == '__main__':
+	app = configure_app()
+	app.run(host='0.0.0.0')

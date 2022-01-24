@@ -31,16 +31,22 @@ PowerShell               PS C:\> <venv>\Scripts\Activate.ps1
 Now, run
 
 ```
+# Some packages require pip to be at least version 20.3
+pip3 install --upgrade pip
 pip3 install -r requirements.txt
 ```
 
-# How To Run
+# How To Run Locally
 
-To run the application, enable the venv and run
+To run the application, enable the venv and run from the src directory
 
+```bash
+python3 ./wsgi.py         [-c=CONFIG_FILE] [--help]
 ```
-python3 ./src/wsgi.py         [-c=CONFIG_FILE] [--help]
-```
+
+## Running In Production
+
+The standalone Flask application should never be used in a production environment. Use one of the start scripts in the `scripts` folder to start a production server.
 
 # Creating New Endpoints
 
@@ -79,13 +85,18 @@ The file should look like:
 ```python
 from flask import Blueprint, blueprints
 from flask_restx import Api
+from ..PREVIOUS_VERSION import api as PREVIOUS_VERSION
 
 # create api
 blueprint = Blueprint('api', __name__, url_prefix='/VERSION')
 api = Api(blueprint, title='Flourish API', version='VERSION', description='API to interact with the Flourish backend')
 
-# mount endpoints
+# mount VERSION endpoints
 ...
+
+# mount PREVIOUS_VERSION endpoints as a fallback for unimplemented VERSION endpoints
+for namespace in PREVIOUS_VERSION.namespaces:
+	api.add_namespace(namespace)
 ```
 
 Add this to `src/app/__init__.py`

@@ -6,7 +6,6 @@ colorama==0.4.4
 Flask==2.0.2
 flask-restx==0.5.1
 Flask-SQLAlchemy==2.5.1
-flask-sqlalchemy-stubs @ git+https://github.com/ssfdust/flask-sqlalchemy-stubs.git@103bf6c7802d778c87938ea9d06ee24b1e552b52
 greenlet==1.1.2
 gunicorn==20.1.0
 importlib-metadata==4.10.0

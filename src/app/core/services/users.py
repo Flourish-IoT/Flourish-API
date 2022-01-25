@@ -1,10 +1,10 @@
 from app.core.errors import NotFoundError, ConflictError
 from app.core.models import User
-from sqlalchemy.orm.session import Session
+from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc
 import logging
 
-def get_user(user_id: int, session: Session):
+def get_user(user_id: int, session: ScopedSession):
 	"""Gets a user by user ID
 
 	Args:
@@ -23,7 +23,7 @@ def get_user(user_id: int, session: Session):
 
 	return user
 
-def create_user(email: str, session: Session):
+def create_user(email: str, session: ScopedSession):
 	"""Creates a new user
 
 	Args:

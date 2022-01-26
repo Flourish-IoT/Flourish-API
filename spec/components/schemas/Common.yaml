@@ -1,0 +1,13 @@
+JWT:
+  # TODO: this will probably change
+  type: object
+  properties:
+    access_token:
+      type: string
+      example: "fdj7iksoaj2o312"
+    token_type:
+      type: string
+      example: "bearer"
+    expires_in:
+      type: number
+      example: 3600

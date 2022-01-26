@@ -2,19 +2,29 @@ users:
   post:
     tags:
       - Users
-    description: Registers a new user
-    # requestBody:
-    #   required: true
-      # content:
-      #   application/json:
-      #     schema:
-      #       $ref: '#/components/schemas/User'
+    description: Registers a new user. Email is sent a 4 digit verification code
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "foo@bar.com"
+              username:
+                type: string
+                example: John Doe
+              password:
+                type: string
+                example: "12345"
     responses:
       '201':
         description: Request succeeded and a new user has been created
-        # headers:
-        #   'Location':
-            # $ref: '#../ResourceCreated'
+        headers:
+          'Location':
+            $ref: '../headers/index.yaml#/ResourceCreated'
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
       '409':
@@ -25,15 +35,26 @@ users.login:
     tags:
       - Users
     description: Authenticates user
-    # requestBody:
-    #   required: true
-      # content:
-      #   application/json:
-      #     schema:
-      #       $ref: '#/components/schemas/User'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "foo@bar.com"
+              password:
+                type: string
+                example: "12345"
     responses:
       '200':
         description: User has succesfully authenticated
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/index.yaml#/JWT"
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
       '401':
@@ -43,13 +64,17 @@ users.reset_password:
   post:
     tags:
       - Users
-    description: Starts a password reset
-    # requestBody:
-    #   required: true
-      # content:
-      #   application/json:
-      #     schema:
-      #       $ref: '#/components/schemas/User'
+    description: Starts a password reset. User is sent a password reset email
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "foo@bar.com"
     responses:
       '204':
         description: A password reset email has been sent to the specified email
@@ -84,6 +109,19 @@ users.id:
     tags:
       - Users
     description: Update user profile
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "foo@bar.com"
+              username:
+                type: string
+                example: John Doe
     responses:
       '204':
         description: OK. User updated
@@ -98,7 +136,7 @@ users.id:
   delete:
     tags:
       - Users
-    description: Delete user
+    description: Deletes user and sends email informing them account was deleted
     responses:
       '204':
         description: OK. User deleted
@@ -118,6 +156,16 @@ users.id.verify:
     tags:
       - Users
     description: Verifies a user who recieved a verification code
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                example: 1234
     responses:
       '204':
         description: OK. User has been verified
@@ -137,6 +185,19 @@ users.id.password:
     tags:
       - Users
     description: Update user password
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+                example: "12345"
+              new_password:
+                type: string
+                example: "6789"
     responses:
       '204':
         description: OK. User password updated
@@ -156,6 +217,18 @@ users.id.preferences:
     tags:
       - Users
     description: Update user preferences
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              preferences:
+                type: object
+                properties:
+                  unit_preference:
+                    $ref: "../schemas/index.yaml#/UnitPreference"
     responses:
       '204':
         description: OK. User preferences updated
@@ -171,5 +244,16 @@ users.id.preferences:
 # users.id.logout:
 #   post:
 #     tags:
-#       - User
+#       - Users
 #     description: Logs user out
+#     responses:
+#       '204':
+#         description: OK. User preferences updated
+#       '400':
+#         $ref: '../responses/index.yaml#/BadRequest'
+#       '401':
+#         $ref: '../responses/index.yaml#/Unauthorized'
+#       '403':
+#         $ref: '../responses/index.yaml#/NoPermission'
+#       '404':
+#         $ref: '../responses/index.yaml#/NotFound'

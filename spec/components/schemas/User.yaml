@@ -6,11 +6,16 @@ User:
       description: User ID
     email:
       type: string
+    username:
+      type: string
     preferences:
       type: object
       properties:
         unit_preference:
-          type: string
-          enum:
-            - Celcius
-            - Fahrenheit
+          $ref: "#/UnitPreference"
+
+UnitPreference:
+  type: string
+  enum:
+    - Celcius
+    - Fahrenheit

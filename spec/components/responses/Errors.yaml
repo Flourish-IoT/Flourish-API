@@ -58,3 +58,13 @@ AlreadyExists:
       example:
         status: 409
         message: 'Resource already exists'
+
+InternalError:
+  description: Internal server error
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/index.yaml#/Error'
+      example:
+        status: 500
+        message: 'Internal server error'

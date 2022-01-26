@@ -38,7 +38,7 @@ paths:
     $ref: './components/paths/Users.yaml#/users.id.preferences'
 
   # /users/{user_id}/logout:
-    # $ref: './components/paths/Users.yaml#/users.id.logout'
+  #   $ref: './components/paths/Users.yaml#/users.id.logout'
 
   /users/{user_id}/devices:
     $ref: './components/paths/Devices.yaml#/devices'
@@ -46,8 +46,8 @@ paths:
   /users/{user_id}/devices/{device_id}:
     $ref: './components/paths/Devices.yaml#/devices.device_id'
 
-  /users/{user_id}/devices/{device_id}/data:
-    $ref: './components/paths/Devices.yaml#/devices.device_id.data'
+  # /users/{user_id}/devices/{device_id}/data:
+  #   $ref: './components/paths/Devices.yaml#/devices.device_id.data'
 
   /users/{user_id}/devices/{device_id}/metrics:
     $ref: './components/paths/Devices.yaml#/devices.device_id.metrics'

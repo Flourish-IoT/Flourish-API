@@ -1,0 +1,32 @@
+
+plants:
+  # TODO: paginate
+  get:
+    parameters:
+      - $ref: '../parameters/index.yaml#/Page'
+      - $ref: '../parameters/index.yaml#/Limit'
+    tags:
+      - Plant Types
+    description: Returns all plant types
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/index.yaml#/PlantTypes'
+
+plants.plant_type_id:
+  get:
+    parameters:
+      - $ref: '../parameters/index.yaml#/PlantTypeID'
+    tags:
+      - Plant Types
+    description: Get details about plant type
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/index.yaml#/PlantTypeDetail'

@@ -43,6 +43,9 @@ Plants:
 PlantDetail:
   $ref: './Plants.yaml#/PlantDetail'
 
+PlantForm:
+  $ref: './Plants.yaml#/PlantForm'
+
 PlantType:
   $ref: './PlantTypes.yaml#/PlantType'
 
@@ -72,3 +75,6 @@ Paginated:
 
 JWT:
   $ref: './Common.yaml#/JWT'
+
+TargetValues:
+  $ref: './Common.yaml#/TargetValues'

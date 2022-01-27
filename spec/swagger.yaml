@@ -70,11 +70,11 @@ paths:
   /users/{user_id}/alerts:
     $ref: './components/paths/Alerts.yaml#/alerts'
 
+  /users/{user_id}/alerts/view:
+    $ref: './components/paths/Alerts.yaml#/alerts.view'
+
   /users/{user_id}/alerts/{alert_id}:
     $ref: './components/paths/Alerts.yaml#/alerts.alert_id'
-
-  /users/{user_id}/alerts/{alert_id}/view:
-    $ref: './components/paths/Alerts.yaml#/alerts.alert_id.view'
 
   /users/{user_id}/collections:
     $ref: './components/paths/Collections.yaml#/collections'
@@ -89,59 +89,10 @@ paths:
     $ref: './components/paths/Collections.yaml#/collections.collection_id.remove'
 
   /plants:
-    # TODO: paginate
-    get:
-      tags:
-        - Plant Types
-      description: Returns all plant types
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                allOf:
-                  - $ref: './components/schemas/index.yaml#/Paginated'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: './components/schemas/index.yaml#/PlantTypes'
-
-              # schema:
-              #   type: object
-              #   properties:
-              #     data:
-              #       items:
-              #         $ref: './components/schemas/index.yaml#/PlantType'
-              # example:
-              #   data: [1, 2, 3]
-
-              # example:
-              #   data: [1]
-              #   links:
-              #     self: 'foo'
-              #     next: 'bar'
-              #     prev: 'baz'
-                  # $ref: './components/schemas/index.yaml#/PlantTypes'
-          # $ref: './components/responses/index.yaml#/Paginated'
-              #   $ref: './components/schemas/index.yaml#/PlantTypes'
-          # headers:
+    $ref: './components/paths/PlantTypes.yaml#/plants'
 
   /plants/{plant_type_id}:
-    get:
-      parameters:
-        - $ref: './components/parameters/index.yaml#/PlantTypeID'
-      tags:
-        - Plant Types
-      description: Get details about plant type
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: './components/schemas/index.yaml#/PlantTypeDetail'
+    $ref: './components/paths/PlantTypes.yaml#/plants.plant_type_id'
 
 components:
   responses:

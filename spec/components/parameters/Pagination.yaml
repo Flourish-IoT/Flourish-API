@@ -5,3 +5,10 @@ Page:
   required: true
   schema:
     type: integer
+Limit:
+  name: limit
+  in: query
+  description: Pagination limit
+  required: true
+  schema:
+    type: integer

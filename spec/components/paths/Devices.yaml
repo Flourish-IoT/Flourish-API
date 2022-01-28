@@ -231,7 +231,7 @@ devices.device_id:
                       value:
                         type: number
                         example: 12.4
-                      nominal_value:
+                      nominalValue:
                         type: number
                         example: 40
 

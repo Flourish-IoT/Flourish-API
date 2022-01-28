@@ -11,7 +11,7 @@ User:
     preferences:
       type: object
       properties:
-        unit_preference:
+        unitPreference:
           $ref: "#/UnitPreference"
 
 UnitPreference:

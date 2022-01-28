@@ -44,7 +44,7 @@ devices:
           schema:
             type: object
             properties:
-              device_type:
+              deviceType:
                 $ref: "../schemas/index.yaml#/DeviceType"
               model:
                 type: string
@@ -52,11 +52,11 @@ devices:
               name:
                 type: string
                 example: "My sensor"
-              api_version:
+              apiVersion:
                 type: string
                 nullable: true
                 example: "1.2.3"
-              software_version:
+              softwareVersion:
                 type: string
                 nullable: true
                 example: "1.2.3"
@@ -106,7 +106,7 @@ devices.device_id:
           schema:
             type: object
             properties:
-              device_type:
+              deviceType:
                 $ref: "../schemas/index.yaml#/DeviceType"
               model:
                 type: string
@@ -114,11 +114,11 @@ devices.device_id:
               name:
                 type: string
                 example: "My sensor"
-              api_version:
+              apiVersion:
                 type: string
                 nullable: true
                 example: "1.2.3"
-              software_version:
+              softwareVersion:
                 type: string
                 nullable: true
                 example: "1.2.3"
@@ -197,7 +197,7 @@ devices.device_id:
                 format: float
                 example: 24.8
                 required: false
-              soil_moisture:
+              soilMoisture:
                 type: number
                 format: float
                 example: 54.3
@@ -296,7 +296,7 @@ devices.device_id.metrics:
                 type: string
                 format: "date-time"
                 required: true
-              battery_level:
+              batteryLevel:
                 type: number
                 format: float
                 example: 75.3
@@ -306,7 +306,7 @@ devices.device_id.metrics:
                 format: float
                 example: 24.8
                 required: false
-              cpu_temperature:
+              cpuTemperature:
                 type: number
                 format: float
                 example: 54.3
@@ -321,7 +321,7 @@ devices.device_id.metrics:
                 format: integer
                 example: 1234
                 required: false
-              storage_free:
+              storageFree:
                 type: number
                 format: integer
                 example: 902

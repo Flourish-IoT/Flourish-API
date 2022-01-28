@@ -95,7 +95,7 @@ users.reset_password.validate:
           schema:
             type: object
             properties:
-              reset_code:
+              resetCode:
                 type: integer
                 example: 1234
     responses:
@@ -225,15 +225,15 @@ users.id.password:
                 password:
                   type: string
                   example: "12345"
-                new_password:
+                newPassword:
                   type: string
                   example: "6789"
             - type: object
               properties:
-                reset_code:
+                resetCode:
                   type: integer
                   example: 1234
-                new_password:
+                newPassword:
                   type: string
                   example: "6789"
     responses:
@@ -265,7 +265,7 @@ users.id.preferences:
               preferences:
                 type: object
                 properties:
-                  unit_preference:
+                  unitPreference:
                     $ref: "../schemas/index.yaml#/UnitPreference"
     responses:
       '204':

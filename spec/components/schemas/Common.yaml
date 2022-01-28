@@ -2,13 +2,13 @@ JWT:
   # TODO: this will probably change
   type: object
   properties:
-    access_token:
+    accessToken:
       type: string
       example: "fdj7iksoaj2o312"
-    token_type:
+    tokenType:
       type: string
       example: "bearer"
-    expires_in:
+    expiresIn:
       type: number
       example: 3600
 
@@ -24,7 +24,7 @@ TargetValues:
     humidity:
       type: integer
       example: 3
-    soil_moisture:
+    soilMoisture:
       type: integer
       example: 4
   description: 1-5 rating based on how close to target current value is. 3 is considered the optimal value, 1 is too low and 5 is too high

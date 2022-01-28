@@ -29,14 +29,14 @@ DeviceDetail:
           $ref: "#/DeviceType"
         deviceState:
           $ref: "#/DeviceState"
-        api_version:
+        apiVersion:
           type: string
           description: Flourish API version used by the device
         model:
           type: string
           description: Device model
           nullable: true
-        software_version:
+        softwareVersion:
           type: string
           description: Software version of device
           nullable: true
@@ -90,19 +90,19 @@ DeviceMetric:
       type: string
       description: Timestamp of metric reading
       format: date-time
-    battery_level:
+    batteryLevel:
       type: number
       description: Battery of device
       nullable: true
-    cpu_usage:
+    cpuUsage:
       type: number
       description: CPU usage of device (in %)
       nullable: true
-    memory_used:
+    memoryUsed:
       type: number
       description: Memory usage of device
       nullable: true
-    memory_free:
+    memoryFree:
       type: number
       description: Amount of free memory of device
       nullable: true

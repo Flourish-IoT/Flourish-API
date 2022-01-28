@@ -117,7 +117,7 @@ collections.collection_id.add:
                 example: [1, 2, 3]
     responses:
       '204':
-        description: OK. Device updated
+        description: OK. Collection updated
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
       '401':
@@ -149,7 +149,7 @@ collections.collection_id.remove:
                 example: [1, 2, 3]
     responses:
       '204':
-        description: OK. Device updated
+        description: OK. Collection updated
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
       '401':

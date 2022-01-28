@@ -64,7 +64,30 @@ users.reset_password:
   post:
     tags:
       - Users
-    description: Starts a password reset. User is sent a password reset email
+    description: Starts a password reset. User is sent a password reset email. The password reset code will expire in 24 hours
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "foo@bar.com"
+    responses:
+      '204':
+        description: A password reset email has been sent to the specified email
+      '400':
+        $ref: '../responses/index.yaml#/BadRequest'
+      '404':
+        $ref: '../responses/index.yaml#/NotFound'
+
+users.reset_password.validate:
+  post:
+    tags:
+      - Users
+    description: Validates a password reset code
     requestBody:
       required: true
       content:
@@ -73,21 +96,22 @@ users.reset_password:
             oneOf:
               - type: object
                 properties:
-                  email:
-                    type: string
-                    example: "foo@bar.com"
-              - type: object
-                properties:
                   reset_code:
                     type: integer
                     example: 1234
     responses:
-      '204':
-        description: A password reset email has been sent to the specified email
+      '200':
+        description: Returns result of validation
+        content:
+          application/json:
+            schema:
+              type: boolean
+              description: Whether or not code was valid
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
       '404':
         $ref: '../responses/index.yaml#/NotFound'
+
 
 users.id:
   parameters:
@@ -190,20 +214,29 @@ users.id.password:
   put:
     tags:
       - Users
-    description: Update user password
+    description: Update user password based on current password or reset code
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              password:
-                type: string
-                example: "12345"
-              new_password:
-                type: string
-                example: "6789"
+            oneOf:
+            - type: object
+              properties:
+                password:
+                  type: string
+                  example: "12345"
+                new_password:
+                  type: string
+                  example: "6789"
+            - type: object
+              properties:
+                reset_code:
+                  type: integer
+                  example: 1234
+                new_password:
+                  type: string
+                  example: "6789"
     responses:
       '204':
         description: OK. User password updated

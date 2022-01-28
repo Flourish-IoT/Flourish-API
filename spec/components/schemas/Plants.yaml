@@ -6,7 +6,7 @@ Plant:
     name:
       type: string
       description: User defined name for the plant
-    picture:
+    image:
       type: string
       description: URL of the picture associated with the plant
     targetValueRatings:

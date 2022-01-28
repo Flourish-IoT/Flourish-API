@@ -57,11 +57,11 @@ alerts.view:
               viewed:
                 type: boolean
                 description: Sets viewed state
-              alert_ids:
+              alertIds:
                 type: array
                 items:
                   type: number
-                  example: [ 1, 2, 3 ]
+                example: [1, 2, 3]
                 description: Alerts to set viewed state
 
     description: Marks alerts as viewed or not viewed

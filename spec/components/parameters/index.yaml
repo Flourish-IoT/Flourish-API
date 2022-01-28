@@ -13,8 +13,8 @@ CollectionID:
 OverrideID:
   $ref: './ID.yaml#/OverrideID'
 
-Page:
-  $ref: './Pagination.yaml#/Page'
+Offset:
+  $ref: './Pagination.yaml#/Offset'
 
 Limit:
   $ref: './Pagination.yaml#/Limit'

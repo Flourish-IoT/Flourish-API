@@ -3,7 +3,7 @@ plants:
   # TODO: paginate
   get:
     parameters:
-      - $ref: '../parameters/index.yaml#/Page'
+      - $ref: '../parameters/index.yaml#/Offset'
       - $ref: '../parameters/index.yaml#/Limit'
     tags:
       - Plant Types

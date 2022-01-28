@@ -292,7 +292,7 @@ devices.device_id.metrics:
           schema:
             type: object
             properties:
-              timestamp:
+              time:
                 type: string
                 format: "date-time"
                 required: true

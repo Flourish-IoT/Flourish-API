@@ -70,11 +70,17 @@ users.reset_password:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              email:
-                type: string
-                example: "foo@bar.com"
+            oneOf:
+              - type: object
+                properties:
+                  email:
+                    type: string
+                    example: "foo@bar.com"
+              - type: object
+                properties:
+                  reset_code:
+                    type: integer
+                    example: 1234
     responses:
       '204':
         description: A password reset email has been sent to the specified email

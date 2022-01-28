@@ -54,7 +54,13 @@ users.login:
         content:
           application/json:
             schema:
-              $ref: "../schemas/index.yaml#/JWT"
+              allOf:
+              - $ref: "../schemas/index.yaml#/JWT"
+              - type: object
+                properties:
+                  userId:
+                    type: number
+                    description: ID of the user
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
       '401':
@@ -83,11 +89,21 @@ users.reset_password:
       '404':
         $ref: '../responses/index.yaml#/NotFound'
 
-users.reset_password.validate:
+users.verify:
   post:
     tags:
       - Users
-    description: Validates a password reset code
+    parameters:
+      - in: query
+        name: code_type
+        schema:
+          type: string
+          enum:
+            - verification
+            - password_reset
+          required: true
+        description: Return alerts which have been seen or not seen. By default returns all alerts
+    description: Verifies password reset and verification codes
     requestBody:
       required: true
       content:
@@ -95,22 +111,53 @@ users.reset_password.validate:
           schema:
             type: object
             properties:
-              resetCode:
+              email:
+                type: string
+                example: 'foo@bar.com'
+              code:
                 type: integer
                 example: 1234
     responses:
       '200':
-        description: Returns result of validation
+        description: |
+          Returns result of verification.
+
+          If verifying a verification code, this acts as a login and a JWT is returned
+
+          If verifying a password_reset code, the user_id is returned
         content:
           application/json:
             schema:
-              type: boolean
-              description: Whether or not code was valid
+              oneOf:
+                - type: object
+                  properties:
+                    userId:
+                      type: integer
+                      nullable: true
+                      description: User's ID. If verification fails, this is null
+
+                - allOf:
+                  - $ref: "../schemas/index.yaml#/JWT"
+                  - type: object
+                    properties:
+                      userId:
+                        type: integer
+                        nullable: true
+                        description: User's ID. If verification fails, this is null
+
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
+      '403':
+        description: Forbidden
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/index.yaml#/Error'
+            example:
+              status: 403
+              message: 'Forbidden'
       '404':
         $ref: '../responses/index.yaml#/NotFound'
-
 
 users.id:
   parameters:
@@ -169,35 +216,6 @@ users.id:
     responses:
       '204':
         description: OK. User deleted
-      '400':
-        $ref: '../responses/index.yaml#/BadRequest'
-      '401':
-        $ref: '../responses/index.yaml#/Unauthorized'
-      '403':
-        $ref: '../responses/index.yaml#/NoPermission'
-      '404':
-        $ref: '../responses/index.yaml#/NotFound'
-
-users.id.verify:
-  parameters:
-    - $ref: '../parameters/index.yaml#/UserID'
-  post:
-    tags:
-      - Users
-    description: Verifies a user who recieved a verification code
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              code:
-                type: string
-                example: 1234
-    responses:
-      '204':
-        description: OK. User has been verified
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
       '401':

@@ -93,12 +93,11 @@ users.reset_password.validate:
       content:
         application/json:
           schema:
-            oneOf:
-              - type: object
-                properties:
-                  reset_code:
-                    type: integer
-                    example: 1234
+            type: object
+            properties:
+              reset_code:
+                type: integer
+                example: 1234
     responses:
       '200':
         description: Returns result of validation

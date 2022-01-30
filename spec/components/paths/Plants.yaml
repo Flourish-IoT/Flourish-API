@@ -27,7 +27,7 @@ plants:
           nullable: true
         description: Returns all plants with specified plant type
       - in: query
-        name: activeAlerts
+        name: active_alerts
         schema:
           type: boolean
           nullable: true

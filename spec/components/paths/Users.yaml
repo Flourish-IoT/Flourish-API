@@ -102,7 +102,7 @@ users.verify:
             - verification
             - password_reset
           required: true
-        description: Return alerts which have been seen or not seen. By default returns all alerts
+        description: Which type of code is being verified
     description: Verifies password reset and verification codes
     requestBody:
       required: true

@@ -6,14 +6,14 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select
 from sqlalchemy import exc
 
-def get_devices(user_id: int, session: ScopedSession, *, device_type_id: int | None = None, device_state_id: int | None = None):
+def get_devices(user_id: int, session: ScopedSession, *, device_type: str | None = None, device_state: str | None = None):
 	"""Gets all devices for a user
 
 	Args:
 			user_id (int): User's ID
 			session (ScopedSession): SQLALchemy database session
-			device_type_id (int, optional): ID of device type to filter by. Defaults to None.
-			device_state_id (int, optional): ID of device state to filter by. Defaults to None.
+			device_type (str, optional): Device type to filter by. Defaults to None.
+			device_state (str, optional): Device state to filter by. Defaults to None.
 
 	Raises:
 			Exception: Could not get devices for user
@@ -23,11 +23,11 @@ def get_devices(user_id: int, session: ScopedSession, *, device_type_id: int | N
 	"""
 	query = select(Device).where(Device.user_id == user_id)
 
-	if device_type_id is not None:
-		query = query.where(Device.device_type_id == device_type_id)
+	if device_type is not None:
+		query = query.where(Device.device_type == device_type)
 
-	if device_state_id is not None:
-		query = query.where(Device.device_state_id == device_state_id)
+	if device_state is not None:
+		query = query.where(Device.device_state == device_state)
 
 	try:
 		devices: List[Device] = session.execute(query).scalars().all()

@@ -5,6 +5,7 @@ from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerEr
 
 from app.core.errors import NotFoundError, ConflictError
 from app.core.services import get_user, create_user, get_devices
+from app.core.models import DeviceStateEnum, DeviceTypeEnum
 from app.v1.models import NewUserModel, UserModel, DeviceModel
 from app import db
 
@@ -33,7 +34,6 @@ class UserList(Resource):
 class User(Resource):
 	@api.marshal_with(UserModel)
 	def get(self, user_id: int):
-		# TODO: query param
 		try:
 			user = get_user(user_id, db.session)
 		except NotFoundError as e:
@@ -46,8 +46,9 @@ class User(Resource):
 		return user
 
 device_parser = reqparse.RequestParser()
-device_parser.add_argument('device_type_id', type=int, location='args')
-device_parser.add_argument('device_state_id', type=int, location='args')
+device_parser.add_argument('device_type', type=str, choices=DeviceTypeEnum.get_device_types(), location='args')
+device_parser.add_argument('device_state', type=str, choices=DeviceStateEnum.get_device_states(), location='args')
+
 @api.route('/<int:user_id>/devices')
 class UserDevices(Resource):
 	@api.expect(device_parser, strict=True)
@@ -56,7 +57,7 @@ class UserDevices(Resource):
 		args = device_parser.parse_args(strict=True)
 
 		try:
-			devices = get_devices(user_id, db.session, device_type_id=args['device_type_id'], device_state_id=args['device_state_id'])
+			devices = get_devices(user_id, db.session, device_type=args['device_type'], device_state=args['device_state'])
 		except Exception as e:
 			logging.error('Failed to get user devices')
 			logging.exception(e)

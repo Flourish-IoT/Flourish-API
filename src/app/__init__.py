@@ -21,7 +21,7 @@ class Environment(Enum):
 		return list(map(lambda x: x.env, list(cls)))
 
 db = SQLAlchemy()
-def create_app(env: Environment = Environment.dev) -> Flask:
+def create_app(env: Environment = Environment.local) -> Flask:
 	"""
 	Create Flask application for a specific environment
 	"""

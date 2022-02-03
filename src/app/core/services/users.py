@@ -1,8 +1,8 @@
+import logging
 from app.core.errors import NotFoundError, ConflictError
 from app.core.models import User
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc
-import logging
 
 def get_user(user_id: int, session: ScopedSession):
 	"""Gets a user by user ID

@@ -54,6 +54,7 @@ class UserDevices(Resource):
 	@serialize_with(NewDeviceSchema)
 	def post(self, user_id: int, body: Device):
 		print(body)
+
 		# body: dict | None = request.get_json()
 		# if body is None:
 		# 	raise BadRequest

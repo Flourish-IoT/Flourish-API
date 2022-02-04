@@ -35,8 +35,6 @@ class User(Resource):
 		except NotFoundError as e:
 			raise NotFound(str(e))
 		except Exception as e:
-			logging.error('Failed to create user')
-			logging.exception(e)
 			raise InternalServerError
 
 		return user
@@ -45,32 +43,32 @@ class User(Resource):
 class UserDevices(Resource):
 	@serialize_with(DeviceRequestQueryParamSchema, location=Location.QUERY_PARAMETER)
 	@marshal_list_with(DeviceSummary)
-	def get(self, user_id: int, query: Dict[str, str]):
+	def get(self, user_id: int, query: dict):
 		try:
 			devices = get_devices(user_id, db.session, device_type=query['device_type'], device_state=query['device_state'])
 		except Exception as e:
-			logging.error('Failed to get user devices')
-			logging.exception(e)
 			raise InternalServerError
 
 		return devices
 
 	@serialize_with(NewDeviceSchema)
-	def post(self, user_id: int):
-		body: dict | None = request.get_json()
-		if body is None:
-			raise BadRequest
+	def post(self, user_id: int, body: Device):
+		print(body)
 
-		try:
-			device = Device(
-				user_id = user_id,
-				model = body['model'],
-				device_type = body['device_type'],
-				device_state = DeviceStateEnum.Connecting.value,
-				name = body.get('name'),
-				api_version = body.get('api_version'),
-				software_version = body.get('software_version'),
-			)
-			# device_id = create_device()
-		except Exception as e:
-			pass
+		# body: dict | None = request.get_json()
+		# if body is None:
+		# 	raise BadRequest
+
+		# try:
+		# 	device = Device(
+		# 		user_id = user_id,
+		# 		model = body['model'],
+		# 		device_type = body['device_type'],
+		# 		device_state = DeviceStateEnum.Connecting.value,
+		# 		name = body.get('name'),
+		# 		api_version = body.get('api_version'),
+		# 		software_version = body.get('software_version'),
+		# 	)
+		# 	# device_id = create_device()
+		# except Exception as e:
+		# 	pass

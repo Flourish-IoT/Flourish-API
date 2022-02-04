@@ -5,14 +5,16 @@ from app.core.models import Device
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc
 
-def get_devices(user_id: int, session: ScopedSession, *, device_type: str | None = None, device_state: str | None = None):
+from app.core.models import DeviceTypeEnum, DeviceStateEnum
+
+def get_devices(user_id: int, session: ScopedSession, *, device_type: DeviceTypeEnum | None = None, device_state: DeviceTypeEnum | None = None):
 	"""Gets all devices for a user
 
 	Args:
 			user_id (int): User's ID
 			session (ScopedSession): SQLALchemy database session
-			device_type (str, optional): Device type to filter by. Defaults to None.
-			device_state (str, optional): Device state to filter by. Defaults to None.
+			device_type (DeviceTypeEnum, optional): Device type to filter by. Defaults to None.
+			device_state (DeviceStateEnum, optional): Device state to filter by. Defaults to None.
 
 	Raises:
 			Exception: Could not get devices for user

@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import IntEnum
 from .base_model import BaseModel
 from sqlalchemy import Column, Integer, String
 
@@ -14,7 +14,7 @@ class DeviceType(BaseModel):
 		nullable=False
 	)
 
-class DeviceTypeEnum(Enum):
+class DeviceTypeEnum(IntEnum):
 	Sensor = 1,
 	Gateway = 2,
 	Other = 3,

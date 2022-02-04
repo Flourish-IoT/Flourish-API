@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 
 def configure_app():
 	parser = ArgumentParser(description='Flourish Backend API')
-	parser.add_argument('-c', type=str, choices=Environment.get_environments(), default=Environment.dev.env, dest='config', help='Config file to use')
+	parser.add_argument('-c', type=str, choices=Environment.get_environments(), default=Environment.local.env, dest='config', help='Config file to use')
 	args, _ = parser.parse_known_args()
 
 	env = Environment[ args.config ]

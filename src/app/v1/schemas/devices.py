@@ -1,5 +1,6 @@
-from marshmallow import Schema, fields, validate
-from app.core.models import DeviceTypeEnum, DeviceStateEnum
+from marshmallow import Schema, fields, validate, post_load
+from marshmallow_enum import EnumField
+from app.core.models import Device, DeviceTypeEnum, DeviceStateEnum
 from .camel_case_schema import CamelCaseSchema
 
 #######################
@@ -8,12 +9,17 @@ from .camel_case_schema import CamelCaseSchema
 class DeviceSchema(CamelCaseSchema):
 	device_id = fields.Int(data_key = 'id')
 	model = fields.Str(required = True)
-	device_type = fields.Str(required = True, validate = validate.OneOf(DeviceTypeEnum.get_device_types()))
-	device_state = fields.Str(validate = validate.OneOf(DeviceStateEnum.get_device_states()))
+	device_type = EnumField(DeviceTypeEnum, required = True)
+	device_state = EnumField(DeviceStateEnum)
+	user_id = fields.Int()
 	name = fields.Str()
 	ip = fields.IP()
 	api_version = fields.Str()
 	software_version = fields.Str()
+
+	@post_load
+	def make_device(self, data, **kwargs):
+		return Device(**data)
 
 class NewDeviceSchema(DeviceSchema):
 	class Meta:
@@ -27,10 +33,10 @@ class DeviceSummary(DeviceSchema):
 # Mixins
 #######################
 class DeviceTypeQueryParamSchema(Schema):
-	device_type = fields.Str(validate = validate.OneOf(DeviceTypeEnum.get_device_types()), missing = None)
+	device_type = EnumField(DeviceTypeEnum, missing = None)
 
 class DeviceStateQueryParamSchema(Schema):
-	device_state = fields.Str(validate = validate.OneOf(DeviceStateEnum.get_device_states()), missing = None)
+	device_state = EnumField(DeviceStateEnum, missing = None)
 
 
 #######################

@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import IntEnum
 from .base_model import BaseModel
 from sqlalchemy import Column, Integer, String
 
@@ -14,7 +14,7 @@ class DeviceState(BaseModel):
 		nullable=False
 	)
 
-class DeviceStateEnum(Enum):
+class DeviceStateEnum(IntEnum):
 	Connected = 1,
 	Connecting = 2,
 	Disconnected = 3,

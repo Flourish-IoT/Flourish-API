@@ -12,11 +12,16 @@ class Device(BaseModel):
 		primary_key = True
 	)
 
+	model = Column(
+		String,
+		nullable=False
+	)
+
 	device_type_id = Column(
 		Integer,
 		ForeignKey('device_types.device_type_id'),
 	)
-	_device_type = relationship("DeviceType", )
+	_device_type = relationship("DeviceType")
 	device_type = association_proxy('_device_type', 'description')
 
 	device_state_id = Column(
@@ -40,10 +45,6 @@ class Device(BaseModel):
 		nullable=True
 	)
 	software_version = Column(
-		String,
-		nullable=True
-	)
-	model = Column(
 		String,
 		nullable=True
 	)

@@ -3,8 +3,7 @@ from typing import List
 from app.core.errors import NotFoundError, ConflictError
 from app.core.models import Device
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy import select
-from sqlalchemy import exc
+from sqlalchemy import select, exc
 
 def get_devices(user_id: int, session: ScopedSession, *, device_type: str | None = None, device_state: str | None = None):
 	"""Gets all devices for a user
@@ -37,3 +36,6 @@ def get_devices(user_id: int, session: ScopedSession, *, device_type: str | None
 		raise e
 
 	return devices
+
+def create_device(device: Device):
+	pass

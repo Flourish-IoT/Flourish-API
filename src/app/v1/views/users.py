@@ -4,7 +4,7 @@ from flask import request
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError
 
 from app.core.errors import NotFoundError, ConflictError
-from app.core.services import get_user, create_user
+from app.core.services import get_user, create_user, get_plants
 from app.v1.models import NewUserModel, UserModel
 from app import db
 
@@ -43,3 +43,16 @@ class User(Resource):
 			raise InternalServerError
 
 		return user
+
+@api.route('/<int:user_id>/plants')
+class UserPlants(Resource):
+	def get(self, user_id: int):
+		try:
+			plants = get_plants(user_id, db.session)
+		except Exception as e:
+			logging.error('failed to get plants')
+			logging.exception(e)
+			raise InternalServerError
+		
+		print(plants)
+			

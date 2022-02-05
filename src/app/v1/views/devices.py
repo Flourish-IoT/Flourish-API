@@ -2,8 +2,8 @@ from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerEr
 from app.core.services import get_device, edit_device, delete_device, record_data
 from app.common.utils import marshal_with, serialize_with
 from app.core.errors import NotFoundError
-from app.core.models import Device
-from app.v1.schemas import DeviceSchema, NewDeviceSchema, DeviceUpdateSchema
+from app.core.models import Device, SensorData
+from app.v1.schemas import DeviceSchema, DeviceUpdateSchema, SensorDataSchema
 
 from flask_restx import Resource, Namespace
 from app import db
@@ -48,9 +48,10 @@ class DeviceResource(Resource):
 
 @api.route('/<int:device_id>/data')
 class DeviceData(Resource):
-	def post(self, device_id: int, body: dict):
+	@serialize_with(SensorDataSchema)
+	def post(self, device_id: int, body: SensorData):
 		try:
-			record_data(device_id, body, db.session)
+			state = record_data(device_id, body, db.session)
 		except NotFoundError as e:
 			raise NotFound(str(e))
 		except Exception as e:

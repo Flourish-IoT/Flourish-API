@@ -6,8 +6,9 @@ from sqlalchemy.dialects.postgresql import INET
 from .int_enum_field import IntEnumField
 from .device_type import DeviceTypeEnum
 from .device_state import DeviceStateEnum
+from app.core.util import With
 
-class SensorData(BaseModel):
+class SensorData(BaseModel, With):
 	__tablename__ = 'sensor_data'
 
 	plant_id = cast(int, Column(

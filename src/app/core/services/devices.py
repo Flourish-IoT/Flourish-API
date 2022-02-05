@@ -1,11 +1,13 @@
 import logging
 from typing import List
 from app.core.errors import NotFoundError, ConflictError
-from app.core.models import Device
+from app.core.models import Device, Plant
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc, update
+from copy import deepcopy
 
 from app.core.models import DeviceTypeEnum, DeviceStateEnum
+from src.app.core.models.sensor_data import SensorData
 
 def get_devices(user_id: int, session: ScopedSession, *, device_type: DeviceTypeEnum | None = None, device_state: DeviceTypeEnum | None = None):
 	"""Gets all devices for a user
@@ -135,11 +137,36 @@ def delete_device(device_id: int, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
-def record_data(device_id: int, data, session: ScopedSession):
+def record_data(device_id: int, data: SensorData, session: ScopedSession):
+	# TODO: return state update
+
 	# get all plants associated with device
-	plant_ids = select(Plant)
+	plant_query = select(Plant.plant_id).where(Plant.device_id == device_id)
+
+	try:
+		plant_ids: List[int] = session.execute(plant_query).scalars().all()
+	except exc.DatabaseError as e:
+		logging.error('Failed to update device')
+		logging.exception(e)
+		raise e
+
+	if len(plant_ids) == 0:
+		logging.info(f'No plants associated with device {device_id}. Data will not be recorded')
+		# TODO: return state
+		return
+
+	logging.info(f'Inserting sensor data for {len(plant_ids)} plants')
 
 	# record values in table for each plant
+	sensor_data = list(map(lambda plant_id: data.with_value(SensorData.plant_id, plant_id), plant_ids))
+
+	try:
+		session.bulk_save_objects(sensor_data)
+		session.commit()
+	except exc.DatabaseError as e:
+		logging.error('Failed to insert data')
+		logging.exception(e)
+		raise e
 
 	# perform checks for each plant
 

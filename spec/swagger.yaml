@@ -52,8 +52,8 @@ paths:
   /devices/{device_id}:
     $ref: './components/paths/Devices.yaml#/devices.device_id'
 
-  # /users/{user_id}/devices/{device_id}/data:
-  #   $ref: './components/paths/Devices.yaml#/devices.device_id.data'
+  /devices/{device_id}/data:
+    $ref: './components/paths/Devices.yaml#/devices.device_id.data'
 
   /devices/{device_id}/metrics:
     $ref: './components/paths/Devices.yaml#/devices.device_id.metrics'

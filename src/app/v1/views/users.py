@@ -1,13 +1,14 @@
 import logging
 from typing import Dict
-from flask_restx import Resource, Namespace, reqparse
-from flask import request
+from flask_restx import Resource, Namespace, Api
+from flask import request, url_for
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError
 
 from app.core.errors import NotFoundError, ConflictError
-from app.core.services import get_user, create_user, get_devices
-from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device
-from app.v1.schemas import UserSchema, NewUserSchema, DeviceSchema, NewDeviceSchema, DeviceSummary, DeviceRequestQueryParamSchema
+from app.core.services import get_user, create_user, get_devices, create_device
+from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User
+from app.v1.schemas import UserSchema, NewUserSchema, DeviceSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema
+from app.v1.views.devices import Device as DeviceResource
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
@@ -16,7 +17,7 @@ api = Namespace('users', description='User related operations', path='/users')
 @api.route('')
 class UserList(Resource):
 	@serialize_with(NewUserSchema, strict=False)
-	def post(self, body):
+	def post(self, body: dict):
 		try:
 			user_id = create_user(body['email'], db.session)
 		except ConflictError as e:
@@ -42,7 +43,11 @@ class User(Resource):
 @api.route('/<int:user_id>/devices')
 class UserDevices(Resource):
 	@serialize_with(DeviceRequestQueryParamSchema, location=Location.QUERY_PARAMETER)
+<<<<<<< HEAD
+	@marshal_list_with(DeviceSummarySchema)
+=======
 	@marshal_list_with(DeviceSummary)
+>>>>>>> master
 	def get(self, user_id: int, query: dict):
 		try:
 			devices = get_devices(user_id, db.session, device_type=query['device_type'], device_state=query['device_state'])
@@ -53,6 +58,15 @@ class UserDevices(Resource):
 
 	@serialize_with(NewDeviceSchema)
 	def post(self, user_id: int, body: Device):
+<<<<<<< HEAD
+		try:
+			device_id = create_device(user_id, body, db.session)
+		except Exception as e:
+			raise InternalServerError
+
+		# TODO: return auth token for device
+		return None, 201, {'Location': url_for('v1.devices_device', device_id=device_id)}
+=======
 		print(body)
 
 		# body: dict | None = request.get_json()
@@ -72,3 +86,4 @@ class UserDevices(Resource):
 		# 	# device_id = create_device()
 		# except Exception as e:
 		# 	pass
+>>>>>>> master

@@ -7,7 +7,7 @@ from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerEr
 from app.core.errors import NotFoundError, ConflictError
 from app.core.services import get_user, create_user, get_devices, create_device
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User
-from app.v1.schemas import UserSchema, NewUserSchema, DeviceSchema, NewDeviceSchema, DeviceSummary, DeviceRequestQueryParamSchema
+from app.v1.schemas import UserSchema, NewUserSchema, DeviceSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema
 from app.v1.views.devices import Device as DeviceResource
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
@@ -43,7 +43,7 @@ class User(Resource):
 @api.route('/<int:user_id>/devices')
 class UserDevices(Resource):
 	@serialize_with(DeviceRequestQueryParamSchema, location=Location.QUERY_PARAMETER)
-	@marshal_list_with(DeviceSummary)
+	@marshal_list_with(DeviceSummarySchema)
 	def get(self, user_id: int, query: dict):
 		try:
 			devices = get_devices(user_id, db.session, device_type=query['device_type'], device_state=query['device_state'])

@@ -4,8 +4,15 @@ class DisablePostLoadMixin:
 	"""Schema mixin to disable the post_load decorator of subclassed Schemas.
 
 	## MUST BE PASSED BEFORE THE SUBCLASSED SCHEMA
+	## `post_load` FUNCTION MUST BE CALLED `make`
 
 	Example::
+
+		class BaseSchema(Schema):
+			...
+			@post_load
+			def make(self, data, **kwargs):
+				...
 
 		class SchemaExample(DisablePostLoadMixin, BaseSchema):
 			...
@@ -13,6 +20,6 @@ class DisablePostLoadMixin:
 	Returns:
 			[type]: [description]
 	"""
-	@post_load(pass_original=True)
-	def make_user(self, data, original_data, **kwargs):
-		return original_data
+	@post_load
+	def make(self, data, **kwargs):
+		return data

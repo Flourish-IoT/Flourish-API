@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields, validate, post_load
 from marshmallow_enum import EnumField
 from app.core.models import Device, DeviceTypeEnum, DeviceStateEnum
-from ..utils.camel_case_schema import CamelCaseSchema
+from app.v1.utils import CamelCaseSchema, DisablePostLoadMixin
 
 #######################
 # Schemas
@@ -18,16 +18,22 @@ class DeviceSchema(CamelCaseSchema):
 	software_version = fields.Str()
 
 	@post_load
-	def make_device(self, data, **kwargs):
+	def make(self, data, **kwargs):
 		return Device(**data)
 
 class NewDeviceSchema(DeviceSchema):
 	class Meta:
 		fields = ('model', 'device_type', 'name', 'api_version', 'software_version')
 
-class DeviceSummary(DeviceSchema):
+class DeviceSummarySchema(DeviceSchema):
 	class Meta:
 		fields = ('device_id', 'device_type', 'device_state', 'model', 'name')
+
+class DeviceUpdateSchema(DisablePostLoadMixin, DeviceSchema):
+	class Meta:
+		fields = ('model', 'device_type', 'name', 'api_version', 'software_version')
+	model = fields.Str(required = False)
+	device_type = EnumField(DeviceTypeEnum, required = False)
 
 #######################
 # Mixins

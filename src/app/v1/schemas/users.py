@@ -8,7 +8,7 @@ class UserSchema(CamelCaseSchema):
 	email = fields.Email(required=True)
 
 	@post_load
-	def make_user(self, data, **kwargs):
+	def make(self, data, **kwargs):
 		return User(**data)
 
 class NewUserSchema(DisablePostLoadMixin, UserSchema):

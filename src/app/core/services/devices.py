@@ -3,7 +3,7 @@ from typing import List
 from app.core.errors import NotFoundError, ConflictError
 from app.core.models import Device
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy import select, exc
+from sqlalchemy import select, exc, update
 
 from app.core.models import DeviceTypeEnum, DeviceStateEnum
 
@@ -85,3 +85,16 @@ def create_device(user_id: int, device: Device, session: ScopedSession):
 		raise e
 
 	return device.device_id
+
+def edit_device(device_id: int, device_update: dict, session: ScopedSession):
+	try:
+		session.execute(
+			update(Device)
+				.where(Device.device_id == device_id)
+				.values(**device_update)
+		)
+		session.commit()
+	except exc.DatabaseError as e:
+		logging.error('Failed to update device')
+		logging.exception(e)
+		raise e

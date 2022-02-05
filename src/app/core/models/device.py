@@ -1,9 +1,7 @@
 from typing import cast
 from .base_model import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import INET
-from sqlalchemy.ext.associationproxy import association_proxy
 from .int_enum_field import IntEnumField
 from .device_type import DeviceTypeEnum
 from .device_state import DeviceStateEnum

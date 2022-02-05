@@ -87,6 +87,17 @@ def create_device(user_id: int, device: Device, session: ScopedSession):
 	return device.device_id
 
 def edit_device(device_id: int, device_update: dict, session: ScopedSession):
+	"""Edits device information
+
+	Args:
+			device_id (int): ID of device being edited
+			device_update (dict): Updated fields of device. Keys must match field names of Device
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			NotFoundError: Device not found
+			Exception: Database error
+	"""
 	try:
 		session.execute(
 			update(Device)
@@ -104,16 +115,35 @@ def edit_device(device_id: int, device_update: dict, session: ScopedSession):
 		raise e
 
 def delete_device(device_id: int, session: ScopedSession):
+	"""Deletes device
+
+	Args:
+			device_id (int): ID of device being deleted
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			NotFoundError: Device not found
+			Exception: Database error
+	"""
 	device = get_device(device_id, session)
 
 	try:
 		session.delete(device)
 		session.commit()
-	except exc.NoResultFound as e:
-		logging.error('Failed to find device')
-		logging.exception(e)
-		raise NotFoundError(f'Could not find device with id: {device_id}')
 	except exc.DatabaseError as e:
 		logging.error('Failed to delete device')
 		logging.exception(e)
 		raise e
+
+def record_data(device_id: int, data, session: ScopedSession):
+	# get all plants associated with device
+	plant_ids = select(Plant)
+
+	# record values in table for each plant
+
+	# perform checks for each plant
+
+	# generate alerts
+
+	# return state
+	pass

@@ -35,6 +35,7 @@ class DeviceUpdateSchema(DisablePostLoadMixin, DeviceSchema):
 	model = fields.Str(required = False)
 	device_type = EnumField(DeviceTypeEnum, required = False)
 
+
 #######################
 # Mixins
 #######################
@@ -43,6 +44,7 @@ class DeviceTypeQueryParamSchema(Schema):
 
 class DeviceStateQueryParamSchema(Schema):
 	device_state = EnumField(DeviceStateEnum, missing = None)
+
 
 #######################
 # Query params

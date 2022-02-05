@@ -45,7 +45,6 @@ class DeviceTypeQueryParamSchema(Schema):
 class DeviceStateQueryParamSchema(Schema):
 	device_state = EnumField(DeviceStateEnum, missing = None)
 
-
 #######################
 # Query params
 #######################

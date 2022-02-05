@@ -43,7 +43,11 @@ class User(Resource):
 @api.route('/<int:user_id>/devices')
 class UserDevices(Resource):
 	@serialize_with(DeviceRequestQueryParamSchema, location=Location.QUERY_PARAMETER)
+<<<<<<< HEAD
 	@marshal_list_with(DeviceSummarySchema)
+=======
+	@marshal_list_with(DeviceSummary)
+>>>>>>> master
 	def get(self, user_id: int, query: dict):
 		try:
 			devices = get_devices(user_id, db.session, device_type=query['device_type'], device_state=query['device_state'])
@@ -54,6 +58,7 @@ class UserDevices(Resource):
 
 	@serialize_with(NewDeviceSchema)
 	def post(self, user_id: int, body: Device):
+<<<<<<< HEAD
 		try:
 			device_id = create_device(user_id, body, db.session)
 		except Exception as e:
@@ -61,3 +66,24 @@ class UserDevices(Resource):
 
 		# TODO: return auth token for device
 		return None, 201, {'Location': url_for('v1.devices_device', device_id=device_id)}
+=======
+		print(body)
+
+		# body: dict | None = request.get_json()
+		# if body is None:
+		# 	raise BadRequest
+
+		# try:
+		# 	device = Device(
+		# 		user_id = user_id,
+		# 		model = body['model'],
+		# 		device_type = body['device_type'],
+		# 		device_state = DeviceStateEnum.Connecting.value,
+		# 		name = body.get('name'),
+		# 		api_version = body.get('api_version'),
+		# 		software_version = body.get('software_version'),
+		# 	)
+		# 	# device_id = create_device()
+		# except Exception as e:
+		# 	pass
+>>>>>>> master

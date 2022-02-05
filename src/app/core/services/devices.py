@@ -54,7 +54,7 @@ def get_device(device_id: int, session: ScopedSession):
 	device = session.get(Device, device_id)
 
 	if device is None:
-		raise NotFoundError(f'Could not find user with id: {device_id}')
+		raise NotFoundError(f'Could not find device with id: {device_id}')
 
 	return device
 
@@ -94,7 +94,26 @@ def edit_device(device_id: int, device_update: dict, session: ScopedSession):
 				.values(**device_update)
 		)
 		session.commit()
+	except exc.NoResultFound as e:
+		logging.error('Failed to find device')
+		logging.exception(e)
+		raise NotFoundError(f'Could not find device with id: {device_id}')
 	except exc.DatabaseError as e:
 		logging.error('Failed to update device')
+		logging.exception(e)
+		raise e
+
+def delete_device(device_id: int, session: ScopedSession):
+	device = get_device(device_id, session)
+
+	try:
+		session.delete(device)
+		session.commit()
+	except exc.NoResultFound as e:
+		logging.error('Failed to find device')
+		logging.exception(e)
+		raise NotFoundError(f'Could not find device with id: {device_id}')
+	except exc.DatabaseError as e:
+		logging.error('Failed to delete device')
 		logging.exception(e)
 		raise e

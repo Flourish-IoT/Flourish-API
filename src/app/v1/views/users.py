@@ -1,13 +1,14 @@
 import logging
 from typing import Dict
-from flask_restx import Resource, Namespace, reqparse
-from flask import request
+from flask_restx import Resource, Namespace, Api
+from flask import request, url_for
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError
 
 from app.core.errors import NotFoundError, ConflictError
 from app.core.services import get_user, create_user, get_devices, create_device
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User
 from app.v1.schemas import UserSchema, NewUserSchema, DeviceSchema, NewDeviceSchema, DeviceSummary, DeviceRequestQueryParamSchema
+from app.v1.views.devices import Device as DeviceResource
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
@@ -53,11 +54,10 @@ class UserDevices(Resource):
 
 	@serialize_with(NewDeviceSchema)
 	def post(self, user_id: int, body: Device):
-		# TODO: return auth token for device
 		try:
 			device_id = create_device(user_id, body, db.session)
 		except Exception as e:
 			raise InternalServerError
 
-		# TODO: path wrong
-		return None, 201, {'Location': f'{request.path}/{device_id}'}
+		# TODO: return auth token for device
+		return None, 201, {'Location': url_for('v1.devices_device', device_id=device_id)}

@@ -39,6 +39,26 @@ def get_devices(user_id: int, session: ScopedSession, *, device_type: DeviceType
 
 	return devices
 
+def get_device(device_id: int, session: ScopedSession):
+	"""Gets a device by device ID
+
+	Args:
+			device_id (int): ID of the device
+
+	Raises:
+			NotFoundError: Device not found
+
+	Returns:
+			Device
+	"""
+	device = session.get(Device, device_id)
+
+	if device is None:
+		raise NotFoundError(f'Could not find user with id: {device_id}')
+
+	return device
+
+
 def create_device(user_id: int, device: Device, session: ScopedSession):
 	"""Creates a new device and sets it's initial device state to Connecting
 

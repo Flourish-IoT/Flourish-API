@@ -5,8 +5,8 @@ from flask import request
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError
 
 from app.core.errors import NotFoundError, ConflictError
-from app.core.services import get_user, create_user, get_devices
-from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device
+from app.core.services import get_user, create_user, get_devices, create_device
+from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User
 from app.v1.schemas import UserSchema, NewUserSchema, DeviceSchema, NewDeviceSchema, DeviceSummary, DeviceRequestQueryParamSchema
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
@@ -16,7 +16,7 @@ api = Namespace('users', description='User related operations', path='/users')
 @api.route('')
 class UserList(Resource):
 	@serialize_with(NewUserSchema, strict=False)
-	def post(self, body):
+	def post(self, body: dict):
 		try:
 			user_id = create_user(body['email'], db.session)
 		except ConflictError as e:
@@ -53,22 +53,11 @@ class UserDevices(Resource):
 
 	@serialize_with(NewDeviceSchema)
 	def post(self, user_id: int, body: Device):
-		print(body)
+		# TODO: return auth token for device
+		try:
+			device_id = create_device(user_id, body, db.session)
+		except Exception as e:
+			raise InternalServerError
 
-		# body: dict | None = request.get_json()
-		# if body is None:
-		# 	raise BadRequest
-
-		# try:
-		# 	device = Device(
-		# 		user_id = user_id,
-		# 		model = body['model'],
-		# 		device_type = body['device_type'],
-		# 		device_state = DeviceStateEnum.Connecting.value,
-		# 		name = body.get('name'),
-		# 		api_version = body.get('api_version'),
-		# 		software_version = body.get('software_version'),
-		# 	)
-		# 	# device_id = create_device()
-		# except Exception as e:
-		# 	pass
+		# TODO: path wrong
+		return None, 201, {'Location': f'{request.path}/{device_id}'}

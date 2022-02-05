@@ -39,5 +39,29 @@ def get_devices(user_id: int, session: ScopedSession, *, device_type: DeviceType
 
 	return devices
 
-def create_device(device: Device):
-	pass
+def create_device(user_id: int, device: Device, session: ScopedSession):
+	"""Creates a new device and sets it's initial device state to Connecting
+
+	Args:
+			user_id (int): ID of owner
+			device (Device): Device to be created
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			Exception: Database error
+
+	Returns:
+			int: ID of newly created device
+	"""
+	device.user_id = user_id
+	device.device_state = DeviceStateEnum.Connecting
+
+	try:
+		session.add(device)
+		session.commit()
+	except exc.DatabaseError as e:
+		logging.error('Failed to create device')
+		logging.exception(e)
+		raise e
+
+	return device.device_id

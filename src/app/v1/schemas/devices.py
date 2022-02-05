@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields, validate, post_load
 from marshmallow_enum import EnumField
 from app.core.models import Device, DeviceTypeEnum, DeviceStateEnum
-from .camel_case_schema import CamelCaseSchema
+from ..utils.camel_case_schema import CamelCaseSchema
 
 #######################
 # Schemas

@@ -150,12 +150,12 @@ devices.device_id:
         $ref: '../responses/index.yaml#/NotFound'
 
 # # TODO: query param time range
-# devices.device_id.data:
-#   parameters:
-#     - $ref: '../parameters/index.yaml#/DeviceID'
-#   get:
-#     tags:
-#       - Devices
+devices.device_id.data:
+  parameters:
+    - $ref: '../parameters/index.yaml#/DeviceID'
+  # get:
+  #   tags:
+  #     - Devices
 #     description: Gets  readings for specified period of time
 #     responses:
 #       '200':

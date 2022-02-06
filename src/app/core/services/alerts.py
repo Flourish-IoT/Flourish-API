@@ -45,3 +45,48 @@ def get_alerts(user_id: int, session: ScopedSession, *, viewed: bool | None = No
 		raise e
 
 	return alerts
+
+def get_alert(alert_id: int, session: ScopedSession):
+	"""Gets a alert by alert ID
+
+	Args:
+			alert_id (int): ID of the alert
+
+	Raises:
+			NotFoundError: Alert not found
+
+	Returns:
+			Alert
+	"""
+	alert = session.get(Alert, alert_id)
+
+	if alert is None:
+		raise NotFoundError(f'Could not find alert with id: {alert_id}')
+
+	return alert
+
+
+def create_alert(user_id: int, alert: Alert, session: ScopedSession):
+	# TODO:
+	raise NotImplementedError()
+
+def delete_alert(alert_id: int, session: ScopedSession):
+	"""Deletes alert
+
+	Args:
+			alert_id (int): ID of alert being deleted
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			NotFoundError: Device not found
+			Exception: Database error
+	"""
+	alert = get_alert(alert_id, session)
+
+	try:
+		session.delete(alert)
+		session.commit()
+	except exc.DatabaseError as e:
+		logging.error('Failed to delete alert')
+		logging.exception(e)
+		raise e

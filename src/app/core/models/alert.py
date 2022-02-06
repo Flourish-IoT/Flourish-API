@@ -17,17 +17,17 @@ class Alert(BaseModel):
 
 	plant_id = cast(int, Column(
 		Integer,
-		ForeignKey('plant_id.plant_id'),
+		ForeignKey('plants.plant_id'),
 	))
 
 	device_id = cast(int, Column(
 		Integer,
-		ForeignKey('device_id.device_id'),
+		ForeignKey('devices.device_id'),
 	))
 
 	user_id = cast(int, Column(
 		Integer,
-		ForeignKey('user_id.user_id'),
+		ForeignKey('users.user_id'),
 	))
 
 	severity = cast(SeverityLevelEnum, Column(

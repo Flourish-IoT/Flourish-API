@@ -19,6 +19,9 @@ class AlertSchema(CamelCaseSchema):
 	# def make(self, data, **kwargs):
 	# 	return Device(**data)
 
+class AlertViewRequestSchema(CamelCaseSchema):
+	viewed = fields.Bool(required=True)
+	alert_ids = fields.List(fields.Int())
 
 #######################
 # Mixins

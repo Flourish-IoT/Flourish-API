@@ -90,3 +90,26 @@ def delete_alert(alert_id: int, session: ScopedSession):
 		logging.error('Failed to delete alert')
 		logging.exception(e)
 		raise e
+
+def set_viewed_state(alert_ids: List[int], viewed: bool, session: ScopedSession):
+	"""Sets the viewed state for multiple alerts
+
+	Args:
+			alert_ids (List[int]): List of alert IDs
+			viewed (bool): Value to set the viewed state
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			Exception: Database error
+	"""
+	try:
+		session.execute(
+			update(Alert)
+				.filter(Alert.alert_id.in_(alert_ids)) # type: ignore
+				.values(viewed=viewed)
+		)
+		session.commit()
+	except Exception as e:
+		logging.error(f'Failed to get alerts to set viewed state. Alert IDs: {alert_ids}')
+		logging.exception(e)
+		raise e

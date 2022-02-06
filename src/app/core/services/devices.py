@@ -6,8 +6,7 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc, update
 from copy import deepcopy
 
-from app.core.models import DeviceTypeEnum, DeviceStateEnum
-from src.app.core.models.sensor_data import SensorData
+from app.core.models import DeviceTypeEnum, DeviceStateEnum, SensorData
 
 def get_devices(user_id: int, session: ScopedSession, *, device_type: DeviceTypeEnum | None = None, device_state: DeviceTypeEnum | None = None):
 	"""Gets all devices for a user

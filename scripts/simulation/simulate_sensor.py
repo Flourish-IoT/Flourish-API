@@ -13,8 +13,6 @@ class SimulationConfig(NamedTuple):
 	token: str
 	version: str
 
-valid_columns = ['device_id', 'temperature']
-
 def simulate(config: SimulationConfig):
 	print('================================================================================================')
 	print(f'Simulating device ID {config.device_id} using data from {config.file}')

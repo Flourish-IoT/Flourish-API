@@ -6,5 +6,6 @@ from .plant import Plant
 from .alert import Alert
 from .severity_level import *
 from .sensor_data import SensorData
+from .plant_type import PlantType
 
 from .int_enum_field import IntEnumField

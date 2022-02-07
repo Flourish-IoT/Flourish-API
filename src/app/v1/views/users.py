@@ -5,9 +5,9 @@ from flask import request, url_for
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError
 
 from app.core.errors import NotFoundError, ConflictError
-from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, get_plants
-from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User
-from app.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema
+from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, get_plants, create_plant
+from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User, Plant
+from app.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, PlantSchema, NewPlantSchema
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
@@ -38,7 +38,7 @@ class User(Resource):
 			raise InternalServerError
 
 		return user
-
+	
 @api.route('/<int:user_id>/plants')
 class UserPlants(Resource):
 	def get(self, user_id: int):
@@ -50,6 +50,16 @@ class UserPlants(Resource):
 			raise InternalServerError
 		
 		print(plants)
+
+	@serialize_with(NewPlantSchema)
+	def post(self, user_id: int, body: Plant):
+		try:
+			plant_id = create_plant(user_id, body, db.session)
+		except Exception as e: 
+			raise InternalServerError
+
+		return None, 201, {'Location': url_for('v1.plants_plant', plant_id=plant_id)}
+
 			
 @api.route('/<int:user_id>/devices')
 class UserDevices(Resource):

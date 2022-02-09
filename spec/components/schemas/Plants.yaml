@@ -3,18 +3,17 @@ Plant:
   properties:
     plantId:
       type: integer
-    deviceId:
-      type: integer
-      description: ID of the device associated with the plant
-    plantTypeId:
-      type: integer
-      description: ID of the plant type associated with the plant
     name:
       type: string
       description: User defined name for the plant
-    picture:
+    image:
       type: string
       description: URL of the picture associated with the plant
+    targetValueRatings:
+      $ref: './index.yaml#/TargetValues'
+    activeAlerts:
+      type: boolean
+      description: Whether or not plant has an active alert associated with it
 
 Plants:
   type: array
@@ -23,18 +22,28 @@ Plants:
     $ref: '#/Plant'
 
 PlantDetail:
+  allOf:
+    - $ref: "#/Plant"
+    - type: object
+      properties:
+        deviceId:
+          type: integer
+          description: ID of the device associated with the plant
+        plantTypeId:
+          type: integer
+          description: ID of the plant type associated with the plant
+        plantType:
+          $ref: './index.yaml#/PlantTypeDetail'
+
+PlantForm:
   type: object
   properties:
-    plantId:
+    name:
+      type: string
+      example: Bob
+    plantTypeId:
       type: integer
+      description: ID of the plant type associated with the plant
     deviceId:
       type: integer
       description: ID of the device associated with the plant
-    plantType:
-      $ref: './index.yaml#/PlantType'
-    name:
-      type: string
-      description: User defined name for the plant
-    picture:
-      type: string
-      description: URL of the picture associated with the plant

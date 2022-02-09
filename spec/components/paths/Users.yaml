@@ -2,19 +2,29 @@ users:
   post:
     tags:
       - Users
-    description: Registers a new user
-    # requestBody:
-    #   required: true
-      # content:
-      #   application/json:
-      #     schema:
-      #       $ref: '#/components/schemas/User'
+    description: Registers a new user. Email is sent a 4 digit verification code
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "foo@bar.com"
+              username:
+                type: string
+                example: John Doe
+              password:
+                type: string
+                example: "12345"
     responses:
       '201':
         description: Request succeeded and a new user has been created
-        # headers:
-        #   'Location':
-            # $ref: '#../ResourceCreated'
+        headers:
+          'Location':
+            $ref: '../headers/index.yaml#/ResourceCreated'
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
       '409':
@@ -25,15 +35,32 @@ users.login:
     tags:
       - Users
     description: Authenticates user
-    # requestBody:
-    #   required: true
-      # content:
-      #   application/json:
-      #     schema:
-      #       $ref: '#/components/schemas/User'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "foo@bar.com"
+              password:
+                type: string
+                example: "12345"
     responses:
       '200':
         description: User has succesfully authenticated
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: "../schemas/index.yaml#/JWT"
+              - type: object
+                properties:
+                  userId:
+                    type: number
+                    description: ID of the user
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
       '401':
@@ -43,18 +70,92 @@ users.reset_password:
   post:
     tags:
       - Users
-    description: Starts a password reset
-    # requestBody:
-    #   required: true
-      # content:
-      #   application/json:
-      #     schema:
-      #       $ref: '#/components/schemas/User'
+    description: Starts a password reset. User is sent a password reset email. The password reset code will expire in 24 hours
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "foo@bar.com"
     responses:
       '204':
         description: A password reset email has been sent to the specified email
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
+      '404':
+        $ref: '../responses/index.yaml#/NotFound'
+
+users.verify:
+  post:
+    tags:
+      - Users
+    parameters:
+      - in: query
+        name: code_type
+        schema:
+          type: string
+          enum:
+            - verification
+            - password_reset
+          required: true
+        description: Which type of code is being verified
+    description: Verifies password reset and verification codes
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: 'foo@bar.com'
+              code:
+                type: integer
+                example: 1234
+    responses:
+      '200':
+        description: |
+          Returns result of verification.
+
+          If verifying a verification code, this acts as a login and a JWT is returned
+
+          If verifying a password_reset code, the user_id is returned
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  properties:
+                    userId:
+                      type: integer
+                      nullable: true
+                      description: User's ID. If verification fails, this is null
+
+                - allOf:
+                  - $ref: "../schemas/index.yaml#/JWT"
+                  - type: object
+                    properties:
+                      userId:
+                        type: integer
+                        nullable: true
+                        description: User's ID. If verification fails, this is null
+
+      '400':
+        $ref: '../responses/index.yaml#/BadRequest'
+      '403':
+        description: Forbidden
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/index.yaml#/Error'
+            example:
+              status: 403
+              message: 'Forbidden'
       '404':
         $ref: '../responses/index.yaml#/NotFound'
 
@@ -84,6 +185,19 @@ users.id:
     tags:
       - Users
     description: Update user profile
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "foo@bar.com"
+              username:
+                type: string
+                example: John Doe
     responses:
       '204':
         description: OK. User updated
@@ -98,29 +212,10 @@ users.id:
   delete:
     tags:
       - Users
-    description: Delete user
+    description: Deletes user and sends email informing them account was deleted
     responses:
       '204':
         description: OK. User deleted
-      '400':
-        $ref: '../responses/index.yaml#/BadRequest'
-      '401':
-        $ref: '../responses/index.yaml#/Unauthorized'
-      '403':
-        $ref: '../responses/index.yaml#/NoPermission'
-      '404':
-        $ref: '../responses/index.yaml#/NotFound'
-
-users.id.verify:
-  parameters:
-    - $ref: '../parameters/index.yaml#/UserID'
-  post:
-    tags:
-      - Users
-    description: Verifies a user who recieved a verification code
-    responses:
-      '204':
-        description: OK. User has been verified
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
       '401':
@@ -136,7 +231,29 @@ users.id.password:
   put:
     tags:
       - Users
-    description: Update user password
+    description: Update user password based on current password or reset code
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            oneOf:
+            - type: object
+              properties:
+                password:
+                  type: string
+                  example: "12345"
+                newPassword:
+                  type: string
+                  example: "6789"
+            - type: object
+              properties:
+                resetCode:
+                  type: integer
+                  example: 1234
+                newPassword:
+                  type: string
+                  example: "6789"
     responses:
       '204':
         description: OK. User password updated
@@ -156,6 +273,18 @@ users.id.preferences:
     tags:
       - Users
     description: Update user preferences
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              preferences:
+                type: object
+                properties:
+                  unitPreference:
+                    $ref: "../schemas/index.yaml#/UnitPreference"
     responses:
       '204':
         description: OK. User preferences updated
@@ -171,5 +300,16 @@ users.id.preferences:
 # users.id.logout:
 #   post:
 #     tags:
-#       - User
+#       - Users
 #     description: Logs user out
+#     responses:
+#       '204':
+#         description: OK. User preferences updated
+#       '400':
+#         $ref: '../responses/index.yaml#/BadRequest'
+#       '401':
+#         $ref: '../responses/index.yaml#/Unauthorized'
+#       '403':
+#         $ref: '../responses/index.yaml#/NoPermission'
+#       '404':
+#         $ref: '../responses/index.yaml#/NotFound'

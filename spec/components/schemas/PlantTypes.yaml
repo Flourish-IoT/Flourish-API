@@ -10,6 +10,9 @@ PlantType:
     scientificName:
       type: string
       description: Scientific name of plant
+    image:
+      type: string
+      description: Image of plant
 
 PlantTypes:
   type: array
@@ -18,38 +21,31 @@ PlantTypes:
     $ref: '#/PlantType'
 
 PlantTypeDetail:
-  type: object
-  properties:
-    plantTypeId:
-      type: integer
-      description: ID of the plant type associated with the plant
-    commonName:
-      type: string
-      description: Common name of plant
-    scientificName:
-      type: string
-      description: Scientific name of plant
-    minimum_light:
-      type: integer
-      description: Minimum light requirement of plant, in Lux
-    maximum_light:
-      type: integer
-      description: Maximum light requirement of plant, in Lux
-    minimum_temperature:
-      type: number
-      description: Minimum temperature requirement of plant, in Celcius/Fahrenheit
-    maximum_temperature:
-      type: number
-      description: Maximum temperature requirement of plant, in Celcius/Fahrenheit
-    minimum_humidity:
-      type: number
-      description: Minimum humidity requirement of plant, in relative humidity
-    maximum_humidity:
-      type: number
-      description: Maximum humidity requirement of plant, in relative humidity
-    minimum_soil_moisture:
-      type: number
-      description: Minimum soil moisture requirement of plant, in TODO
-    maximum_soil_moisture:
-      type: number
-      description: Maximum soil moisture requirement of plant, in TODO
+  allOf:
+    - $ref: '#/PlantType'
+    - type: object
+      properties:
+        minimumLight:
+          type: integer
+          description: Minimum light requirement of plant, in Lux
+        maximumLight:
+          type: integer
+          description: Maximum light requirement of plant, in Lux
+        minimumTemperature:
+          type: number
+          description: Minimum temperature requirement of plant, in Celcius/Fahrenheit
+        maximumTemperature:
+          type: number
+          description: Maximum temperature requirement of plant, in Celcius/Fahrenheit
+        minimumHumidity:
+          type: number
+          description: Minimum humidity requirement of plant, in relative humidity
+        maximumHumidity:
+          type: number
+          description: Maximum humidity requirement of plant, in relative humidity
+        minimumSoilMoisture:
+          type: number
+          description: Minimum soil moisture requirement of plant, in TODO
+        maximumSoilMoisture:
+          type: number
+          description: Maximum soil moisture requirement of plant, in TODO

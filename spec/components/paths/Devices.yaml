@@ -4,28 +4,20 @@ devices:
   get:
     tags:
       - Devices
+      - Users
     description: Lists all devices for a user
     parameters:
       - in: query
         name: device_type
         schema:
-          type: string
+          $ref: "../schemas/index.yaml#/DeviceType"
           nullable: true
-          enum:
-            - 'Sensor'
-            - 'Gateway'
-            - 'Other'
         description: Returns all devices that match the device type. If null, returns devices with any type
       - in: query
         name: device_state
         schema:
-          type: string
+          $ref: "../schemas/index.yaml#/DeviceState"
           nullable: true
-          enum:
-            - 'Connected'
-            - 'Connecting'
-            - 'Disconnected'
-            - 'Error'
         description: Returns all devices that match the device state. If null, returns devices with any state
     responses:
       '200':
@@ -43,13 +35,41 @@ devices:
   post:
     tags:
       - Devices
+      - Users
     description: Creates a new device
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              deviceType:
+                $ref: "../schemas/index.yaml#/DeviceType"
+              model:
+                type: string
+                example: "Flourish Sensor"
+              name:
+                type: string
+                example: "My sensor"
+              apiVersion:
+                type: string
+                nullable: true
+                example: "1.2.3"
+              softwareVersion:
+                type: string
+                nullable: true
+                example: "1.2.3"
     responses:
       '201':
-        description: Ok. New device created
+        description: Ok. New device created. Returns an access token for the device to use
         headers:
           'Location':
             $ref: '../headers/index.yaml#/ResourceCreated'
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/index.yaml#/JWT'
       '400':
         $ref: '../responses/index.yaml#/BadRequest'
       '401':
@@ -61,25 +81,47 @@ devices:
 
 devices.device_id:
   parameters:
-    - $ref: '../parameters/index.yaml#/UserID'
     - $ref: '../parameters/index.yaml#/DeviceID'
   get:
     tags:
       - Devices
-    description: Gets device information
+    description: Gets detailed device information
     responses:
       '200':
         description: OK
         content:
           application/json:
             schema:
-              $ref: '../schemas/index.yaml#/Device'
+              $ref: '../schemas/index.yaml#/DeviceDetail'
       '404':
         $ref: '../responses/index.yaml#/NotFound'
   put:
     tags:
       - Devices
     description: Updates device information
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              deviceType:
+                $ref: "../schemas/index.yaml#/DeviceType"
+              model:
+                type: string
+                example: "Flourish Sensor"
+              name:
+                type: string
+                example: "My sensor"
+              apiVersion:
+                type: string
+                nullable: true
+                example: "1.2.3"
+              softwareVersion:
+                type: string
+                nullable: true
+                example: "1.2.3"
     responses:
       '204':
         description: OK. Device updated
@@ -94,7 +136,7 @@ devices.device_id:
   delete:
     tags:
       - Devices
-    description: Deletes device
+    description: Deletes device and associated metrics. Unsets device_id for plants that are associated with the device
     responses:
       '204':
         description: OK. Device deleted
@@ -107,41 +149,92 @@ devices.device_id:
       '404':
         $ref: '../responses/index.yaml#/NotFound'
 
-# TODO: query param time range
+# # TODO: query param time range
 devices.device_id.data:
   parameters:
-    - $ref: '../parameters/index.yaml#/UserID'
     - $ref: '../parameters/index.yaml#/DeviceID'
-  get:
-    tags:
-      - Devices
-    description: Gets  readings for specified period of time
-    responses:
-      '200':
-        description: OK
-        content:
-          application/json:
-            schema:
-              $ref: '../schemas/index.yaml#/SensorDataArray'
-      '400':
-        $ref: '../responses/index.yaml#/BadRequest'
-      '401':
-        $ref: '../responses/index.yaml#/Unauthorized'
-      '403':
-        $ref: '../responses/index.yaml#/NoPermission'
-      '404':
-        $ref: '../responses/index.yaml#/NotFound'
+  # get:
+  #   tags:
+  #     - Devices
+#     description: Gets  readings for specified period of time
+#     responses:
+#       '200':
+#         description: OK
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '../schemas/index.yaml#/SensorDataArray'
+#       '400':
+#         $ref: '../responses/index.yaml#/BadRequest'
+#       '401':
+#         $ref: '../responses/index.yaml#/Unauthorized'
+#       '403':
+#         $ref: '../responses/index.yaml#/NoPermission'
+#       '404':
+#         $ref: '../responses/index.yaml#/NotFound'
   post:
     tags:
       - Devices
-    description: Records new sensor reading
+    description: Records a new sensor reading
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: "date-time"
+                required: true
+              temperature:
+                type: number
+                format: float
+                example: 75.3
+                required: false
+              humidity:
+                type: number
+                format: float
+                example: 24.8
+                required: false
+              soilMoisture:
+                type: number
+                format: float
+                example: 54.3
+                required: false
+              light:
+                type: number
+                format: integer
+                example: 100000
+                required: false
+              additional:
+                type: object
+                required: false
     responses:
       '200':
-        description: OK
-        # content:
-        #   application/json:
-        #     schema:
-        #       $ref: '../schemas/index.yaml#/User'
+        description: OK. Returns current device state and active alerts
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                state:
+                  $ref: '../schemas/index.yaml#/DeviceState'
+                alerts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: humidity
+                      value:
+                        type: number
+                        example: 12.4
+                      nominalValue:
+                        type: number
+                        example: 40
+
       '401':
         $ref: '../responses/index.yaml#/Unauthorized'
       '403':
@@ -153,9 +246,23 @@ devices.device_id.data:
 
 devices.device_id.metrics:
   parameters:
-    - $ref: '../parameters/index.yaml#/UserID'
     - $ref: '../parameters/index.yaml#/DeviceID'
   get:
+    parameters:
+      - name: start
+        in: query
+        description: Starting timestamp for metrics
+        required: false
+        schema:
+          type: string
+          format: "date-time"
+      - name: end
+        in: query
+        description: Ending timestamp for metrics
+        required: false
+        schema:
+          type: string
+          format: "date-time"
     tags:
       - Devices
     description: Gets device metrics for specified period of time
@@ -178,13 +285,53 @@ devices.device_id.metrics:
     tags:
       - Devices
     description: Records new device metric
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              time:
+                type: string
+                format: "date-time"
+                required: true
+              batteryLevel:
+                type: number
+                format: float
+                example: 75.3
+                required: false
+              cpu:
+                type: number
+                format: float
+                example: 24.8
+                required: false
+              cpuTemperature:
+                type: number
+                format: float
+                example: 54.3
+                required: false
+              memory:
+                type: number
+                format: integer
+                example: 14.7
+                required: false
+              storage:
+                type: number
+                format: integer
+                example: 1234
+                required: false
+              storageFree:
+                type: number
+                format: integer
+                example: 902
+                required: false
+              additional:
+                type: object
+                required: false
     responses:
-      '200':
+      '204':
         description: OK
-        # content:
-        #   application/json:
-        #     schema:
-        #       $ref: '../schemas/index.yaml#/User'
       '401':
         $ref: '../responses/index.yaml#/Unauthorized'
       '403':

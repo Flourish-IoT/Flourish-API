@@ -16,6 +16,9 @@ servers:
           - v1
 
 paths:
+  ##################
+  # Users
+  ##################
   /users:
     $ref: './components/paths/Users.yaml#/users'
 
@@ -25,11 +28,11 @@ paths:
   /users/reset_password:
     $ref: './components/paths/Users.yaml#/users.reset_password'
 
+  /users/verify:
+    $ref: './components/paths/Users.yaml#/users.verify'
+
   /users/{user_id}:
     $ref: './components/paths/Users.yaml#/users.id'
-
-  /users/{user_id}/verify:
-    $ref: './components/paths/Users.yaml#/users.id.verify'
 
   /users/{user_id}/password:
     $ref: './components/paths/Users.yaml#/users.id.password'
@@ -38,110 +41,76 @@ paths:
     $ref: './components/paths/Users.yaml#/users.id.preferences'
 
   # /users/{user_id}/logout:
-    # $ref: './components/paths/Users.yaml#/users.id.logout'
+  #   $ref: './components/paths/Users.yaml#/users.id.logout'
 
+  ##################
+  # Devices
+  ##################
   /users/{user_id}/devices:
     $ref: './components/paths/Devices.yaml#/devices'
 
-  /users/{user_id}/devices/{device_id}:
+  /devices/{device_id}:
     $ref: './components/paths/Devices.yaml#/devices.device_id'
 
-  /users/{user_id}/devices/{device_id}/data:
+  /devices/{device_id}/data:
     $ref: './components/paths/Devices.yaml#/devices.device_id.data'
 
-  /users/{user_id}/devices/{device_id}/metrics:
+  /devices/{device_id}/metrics:
     $ref: './components/paths/Devices.yaml#/devices.device_id.metrics'
 
+  ##################
+  # Plants
+  ##################
   /users/{user_id}/plants:
     $ref: './components/paths/Plants.yaml#/plants'
 
-  /users/{user_id}/plants/{plant_id}:
+  /plants/{plant_id}:
     $ref: './components/paths/Plants.yaml#/plants.plant_id'
 
-  /users/{user_id}/plants/{plant_id}/data:
+  /plants/{plant_id}/data:
     $ref: './components/paths/Plants.yaml#/plants.plant_id.data'
 
-  /users/{user_id}/plants/{plant_id}/overrides:
+  /plants/{plant_id}/overrides:
     $ref: './components/paths/Plants.yaml#/plants.plant_id.overrides'
 
-  /users/{user_id}/plants/{plant_id}/overrides/{override_id}:
+  /plants/{plant_id}/overrides/{override_id}:
     $ref: './components/paths/Plants.yaml#/plants.plant_id.overrides.override_id'
 
+  ##################
+  # Alerts
+  ##################
   /users/{user_id}/alerts:
     $ref: './components/paths/Alerts.yaml#/alerts'
 
-  /users/{user_id}/alerts/{alert_id}:
+  /alerts/view:
+    $ref: './components/paths/Alerts.yaml#/alerts.view'
+
+  /alerts/{alert_id}:
     $ref: './components/paths/Alerts.yaml#/alerts.alert_id'
 
-  /users/{user_id}/alerts/{alert_id}/view:
-    $ref: './components/paths/Alerts.yaml#/alerts.alert_id.view'
-
+  ##################
+  # Collections
+  ##################
   /users/{user_id}/collections:
     $ref: './components/paths/Collections.yaml#/collections'
 
-  /users/{user_id}/collections/{collection_id}:
+  /collections/{collection_id}:
     $ref: './components/paths/Collections.yaml#/collections.collection_id'
 
-  /users/{user_id}/collections/{collection_id}/add:
+  /collections/{collection_id}/add:
     $ref: './components/paths/Collections.yaml#/collections.collection_id.add'
 
-  /users/{user_id}/collections/{collection_id}/remove:
+  /collections/{collection_id}/remove:
     $ref: './components/paths/Collections.yaml#/collections.collection_id.remove'
 
-  /plants:
-    # TODO: paginate
-    get:
-      tags:
-        - Plant Types
-      description: Returns all plant types
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                allOf:
-                  - $ref: './components/schemas/index.yaml#/Paginated'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: './components/schemas/index.yaml#/PlantTypes'
+  ##################
+  # Plant Types
+  ##################
+  /plant_types:
+    $ref: './components/paths/PlantTypes.yaml#/plants'
 
-              # schema:
-              #   type: object
-              #   properties:
-              #     data:
-              #       items:
-              #         $ref: './components/schemas/index.yaml#/PlantType'
-              # example:
-              #   data: [1, 2, 3]
-
-              # example:
-              #   data: [1]
-              #   links:
-              #     self: 'foo'
-              #     next: 'bar'
-              #     prev: 'baz'
-                  # $ref: './components/schemas/index.yaml#/PlantTypes'
-          # $ref: './components/responses/index.yaml#/Paginated'
-              #   $ref: './components/schemas/index.yaml#/PlantTypes'
-          # headers:
-
-  /plants/{plant_type_id}:
-    get:
-      parameters:
-        - $ref: './components/parameters/index.yaml#/PlantTypeID'
-      tags:
-        - Plant Types
-      description: Get details about plant type
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: './components/schemas/index.yaml#/PlantTypeDetail'
+  /plants_types/{plant_type_id}:
+    $ref: './components/paths/PlantTypes.yaml#/plants.plant_type_id'
 
 components:
   responses:

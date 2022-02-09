@@ -1,7 +1,14 @@
-Page:
-  name: page
+Offset:
+  name: offset
   in: query
-  description: Pagination page
+  description: Pagination offset
+  required: true
+  schema:
+    type: integer
+Limit:
+  name: limit
+  in: query
+  description: Pagination limit
   required: true
   schema:
     type: integer

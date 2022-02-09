@@ -10,6 +10,7 @@ plants:
   get:
     tags:
       - Plants
+      - Users
     description: Lists all plants for a user
     # TODO: query for plant types?
     parameters:
@@ -25,6 +26,12 @@ plants:
           type: integer
           nullable: true
         description: Returns all plants with specified plant type
+      - in: query
+        name: active_alerts
+        schema:
+          type: boolean
+          nullable: true
+        description: Returns all plants with active alerts or plants without active alerts
     responses:
       '200':
         description: OK
@@ -41,7 +48,23 @@ plants:
   post:
     tags:
       - Plants
+      - Users
     description: Creates a new plant
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              plant:
+                $ref: '../schemas/index.yaml#/PlantForm'
+              image:
+                type: string
+                format: binary
+          encoding:
+            plant:
+              contentType: application/json
     responses:
       '201':
         description: Ok. New plant created
@@ -59,7 +82,6 @@ plants:
 
 plants.plant_id:
   parameters:
-    - $ref: '../parameters/index.yaml#/UserID'
     - $ref: '../parameters/index.yaml#/PlantID'
   get:
     tags:
@@ -78,6 +100,12 @@ plants.plant_id:
     tags:
       - Plants
     description: Updates plant information
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/index.yaml#/PlantForm'
     responses:
       '204':
         description: OK. plant updated
@@ -105,14 +133,27 @@ plants.plant_id:
       '404':
         $ref: '../responses/index.yaml#/NotFound'
 
-# TODO: query param time range
 plants.plant_id.data:
   parameters:
-    - $ref: '../parameters/index.yaml#/UserID'
     - $ref: '../parameters/index.yaml#/PlantID'
   get:
     tags:
       - Plants
+    parameters:
+      - name: start
+        in: query
+        description: Starting timestamp for metrics
+        required: false
+        schema:
+          type: string
+          format: "date-time"
+      - name: end
+        in: query
+        description: Ending timestamp for metrics
+        required: false
+        schema:
+          type: string
+          format: "date-time"
     description: Gets plant sensor readings for specified period of time
     responses:
       '200':
@@ -132,7 +173,6 @@ plants.plant_id.data:
 
 plants.plant_id.overrides:
   parameters:
-    - $ref: '../parameters/index.yaml#/UserID'
     - $ref: '../parameters/index.yaml#/PlantID'
   get:
     tags:
@@ -168,7 +208,6 @@ plants.plant_id.overrides:
 
 plants.plant_id.overrides.override_id:
   parameters:
-    - $ref: '../parameters/index.yaml#/UserID'
     - $ref: '../parameters/index.yaml#/PlantID'
     - $ref: '../parameters/index.yaml#/OverrideID'
   put:

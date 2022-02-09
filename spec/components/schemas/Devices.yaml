@@ -5,31 +5,41 @@ Device:
       type: integer
       description: Device ID
     deviceType:
-      type: string
-      enum:
-        - Sensor
-        - Gateway
-        - Other
-      description: Device type
+      $ref: "#/DeviceType"
     deviceState:
-      type: string
-      enum:
-        - Connected
-        - Connecting
-        - Disconnected
-        - Error
-      description: Last known state of the device
-    api_version:
-      type: string
-      description: Flourish API version used by the device
+      $ref: "#/DeviceState"
     model:
       type: string
       description: Device model
       nullable: true
-    software_version:
+    name:
       type: string
-      description: Software version of device
+      description: User defined name for sensor
       nullable: true
+
+DeviceDetail:
+  allOf:
+    - $ref: "#/Device"
+    - type: object
+      properties:
+        id:
+          type: integer
+          description: Device ID
+        deviceType:
+          $ref: "#/DeviceType"
+        deviceState:
+          $ref: "#/DeviceState"
+        apiVersion:
+          type: string
+          description: Flourish API version used by the device
+        model:
+          type: string
+          description: Device model
+          nullable: true
+        softwareVersion:
+          type: string
+          description: Software version of device
+          nullable: true
 
 Devices:
   type: array
@@ -60,6 +70,9 @@ SensorData:
       type: integer
       description: Light level in Lux
       nullable: true
+    soilMoisture:
+      type: number
+      nullable: true
     additional:
       type: object
       description: Additional sensor readings
@@ -80,19 +93,19 @@ DeviceMetric:
       type: string
       description: Timestamp of metric reading
       format: date-time
-    battery_level:
+    batteryLevel:
       type: number
       description: Battery of device
       nullable: true
-    cpu_usage:
+    cpuUsage:
       type: number
       description: CPU usage of device (in %)
       nullable: true
-    memory_used:
+    memoryUsed:
       type: number
       description: Memory usage of device
       nullable: true
-    memory_free:
+    memoryFree:
       type: number
       description: Amount of free memory of device
       nullable: true
@@ -106,17 +119,19 @@ DeviceMetrics:
   items:
     $ref: '#/DeviceMetric'
 
-DeviceCreation:
-  type: object
-  properties:
-    deviceType:
-      type: string
-      enum:
-        - Sensor
-        - Gateway
-        - Other
-      description: Device type
-    model:
-      type: string
-      description: Device model
-      nullable: true
+DeviceType:
+  type: string
+  enum:
+    - Sensor
+    - Gateway
+    - Other
+  description: Device type
+
+DeviceState:
+  type: string
+  enum:
+    - Connected
+    - Connecting
+    - Disconnected
+    - Error
+  description: Last known state of the device

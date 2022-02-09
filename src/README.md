@@ -1,5 +1,7 @@
 # First Time Setup
 
+Requires Python 3.10.2
+
 Create a venv
 
 ```

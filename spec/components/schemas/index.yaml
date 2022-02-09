@@ -1,11 +1,17 @@
 User:
   $ref: './User.yaml#/User'
 
+UnitPreference:
+  $ref: './User.yaml#/UnitPreference'
+
 Error:
   $ref: './Error.yaml'
 
 Device:
   $ref: './Devices.yaml#/Device'
+
+DeviceDetail:
+  $ref: './Devices.yaml#/DeviceDetail'
 
 Devices:
   $ref: './Devices.yaml#/Devices'
@@ -22,6 +28,12 @@ DeviceMetric:
 DeviceMetrics:
   $ref: './Devices.yaml#/DeviceMetrics'
 
+DeviceType:
+  $ref: './Devices.yaml#/DeviceType'
+
+DeviceState:
+  $ref: './Devices.yaml#/DeviceState'
+
 Plant:
   $ref: './Plants.yaml#/Plant'
 
@@ -30,6 +42,9 @@ Plants:
 
 PlantDetail:
   $ref: './Plants.yaml#/PlantDetail'
+
+PlantForm:
+  $ref: './Plants.yaml#/PlantForm'
 
 PlantType:
   $ref: './PlantTypes.yaml#/PlantType'
@@ -57,3 +72,9 @@ CollectionDetail:
 
 Paginated:
   $ref: './Pagination.yaml#/Paginated'
+
+JWT:
+  $ref: './Common.yaml#/JWT'
+
+TargetValues:
+  $ref: './Common.yaml#/TargetValues'

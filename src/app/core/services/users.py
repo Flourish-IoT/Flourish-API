@@ -2,7 +2,7 @@ import logging
 from app.core.errors import NotFoundError, ConflictError
 from app.core.models import User
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy import exc
+from sqlalchemy import exc, update
 
 def get_user(user_id: int, session: ScopedSession):
 	"""Gets a user by user ID
@@ -49,3 +49,39 @@ def create_user(email: str, session: ScopedSession):
 		raise ConflictError('User with email already exists')
 
 	return user.user_id
+
+def edit_user(user_id: int, user_update: dict, session: ScopedSession):
+	"""Edits user information
+
+	Args:
+			user_id (int): ID of user being edited
+			user_update (dict): Updated fields of user. Keys must match field names of User
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			NotFoundError: User not found
+			Exception: Database error
+	"""
+	logging.info(f'Updating user {user_id}')
+
+	try:
+		session.execute(
+			update(User)
+				.where(User.user_id == user_id)
+				.values(**user_update)
+		)
+		session.commit()
+	except exc.NoResultFound as e:
+		logging.error('Failed to find user')
+		logging.exception(e)
+		raise NotFoundError(f'Could not find user with id: {user_id}')
+	except exc.IntegrityError as e:
+		logging.error('Failed to update user')
+		logging.exception(e)
+		raise ConflictError('User with email already exists')
+	except exc.DatabaseError as e:
+		logging.error('Failed to update user')
+		logging.exception(e)
+		raise e
+
+	logging.info(f'User {user_id} succesfully updated')

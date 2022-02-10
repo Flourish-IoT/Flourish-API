@@ -17,3 +17,8 @@ class UserSchema(CamelCaseSchema):
 class NewUserSchema(DisablePostLoadMixin, UserSchema):
 	class Meta:
 		fields = ('email', )
+
+class UserUpdateSchema(DisablePostLoadMixin, UserSchema):
+	class Meta:
+		fields = ('email', 'username')
+	email = fields.Email(required=False)

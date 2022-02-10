@@ -5,7 +5,7 @@ from flask import request, url_for
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError
 
 from app.core.errors import NotFoundError, ConflictError
-from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, edit_user
+from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, edit_user, delete_user
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User
 from app.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
@@ -52,6 +52,15 @@ class User(Resource):
 
 		return None, 204
 
+	def delete(self, user_id: int):
+		try:
+			delete_user(user_id, db.session)
+		except NotFoundError as e:
+			raise NotFound(str(e))
+		except Exception as e:
+			raise InternalServerError
+
+		return None, 204
 
 @api.route('/<int:user_id>/devices')
 class UserDevices(Resource):

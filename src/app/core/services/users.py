@@ -19,7 +19,7 @@ def get_user(user_id: int, session: ScopedSession):
 	user = session.get(User, user_id)
 
 	if user is None:
-		raise NotFoundError(f'Could not find user with id: {user_id}')
+		raise NotFoundError(f'Could not find user with ID: {user_id}')
 
 	return user
 
@@ -74,7 +74,7 @@ def edit_user(user_id: int, user_update: dict, session: ScopedSession):
 	except exc.NoResultFound as e:
 		logging.error('Failed to find user')
 		logging.exception(e)
-		raise NotFoundError(f'Could not find user with id: {user_id}')
+		raise NotFoundError(f'Could not find user with ID: {user_id}')
 	except exc.IntegrityError as e:
 		logging.error('Failed to update user')
 		logging.exception(e)
@@ -85,3 +85,30 @@ def edit_user(user_id: int, user_update: dict, session: ScopedSession):
 		raise e
 
 	logging.info(f'User {user_id} succesfully updated')
+
+def delete_user(user_id: int, session: ScopedSession):
+	"""Deletes user and sends them an email
+
+	Args:
+			user_id (int): ID of user being deleted
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			NotFoundError: User not found
+			Exception: Database error
+	"""
+	logging.info(f'Deleting user {user_id}')
+	device = get_user(user_id, session)
+
+	try:
+		session.delete(device)
+		session.commit()
+	except exc.DatabaseError as e:
+		logging.error('Failed to delete user')
+		logging.exception(e)
+		raise e
+
+	# TODO: send email
+	# TODO: what to do about devices?
+
+	logging.info(f'User {user_id} succesfully deleted')

@@ -1,8 +1,9 @@
+from datetime import datetime, tzinfo
 import logging
-from app.core.errors import NotFoundError, ConflictError
+from app.core.errors import NotFoundError, ConflictError, ForbiddenError
 from app.core.models import User
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy import exc, update
+from sqlalchemy import exc, update, select, exists
 
 def get_user(user_id: int, session: ScopedSession):
 	"""Gets a user by user ID
@@ -64,6 +65,10 @@ def edit_user(user_id: int, user_update: dict, session: ScopedSession):
 	"""
 	logging.info(f'Updating user {user_id}')
 
+	if not user_exists(user_id, session):
+		logging.error('Failed to find user')
+		raise NotFoundError(f'Could not find user with ID: {user_id}')
+
 	try:
 		session.execute(
 			update(User)
@@ -71,10 +76,6 @@ def edit_user(user_id: int, user_update: dict, session: ScopedSession):
 				.values(**user_update)
 		)
 		session.commit()
-	except exc.NoResultFound as e:
-		logging.error('Failed to find user')
-		logging.exception(e)
-		raise NotFoundError(f'Could not find user with ID: {user_id}')
 	except exc.IntegrityError as e:
 		logging.error('Failed to update user')
 		logging.exception(e)
@@ -98,10 +99,10 @@ def delete_user(user_id: int, session: ScopedSession):
 			Exception: Database error
 	"""
 	logging.info(f'Deleting user {user_id}')
-	device = get_user(user_id, session)
+	user = get_user(user_id, session)
 
 	try:
-		session.delete(device)
+		session.delete(user)
 		session.commit()
 	except exc.DatabaseError as e:
 		logging.error('Failed to delete user')
@@ -112,3 +113,156 @@ def delete_user(user_id: int, session: ScopedSession):
 	# TODO: what to do about devices?
 
 	logging.info(f'User {user_id} succesfully deleted')
+
+def verify_password_reset_code(user_id: int, password_reset_code: int, session: ScopedSession):
+	if not user_exists(user_id, session):
+		logging.error('Failed to find user')
+		raise NotFoundError(f'Could not find user with ID: {user_id}')
+
+	query = select(User.password_reset_code, User.password_reset_code_expiration).where(User.user_id == user_id)
+	try:
+		result = session.execute(query).one_or_none()
+	except exc.DatabaseError as e:
+		logging.error('Failed to get user password reset code')
+		logging.exception(e)
+		raise e
+
+	if result is None:
+		logging.warning(f'User {user_id} does not have reset code')
+		return False
+
+	valid_password_reset_code: int | None
+	password_reset_code_expiration: datetime | None
+	(valid_password_reset_code, password_reset_code_expiration) = result
+
+	# this should never happen
+	if valid_password_reset_code is None or password_reset_code_expiration is None:
+		logging.error(f'User {user_id} password_reset_code or password_reset_code_expiration is None, ignoring')
+		return False
+
+	if password_reset_code_expiration > datetime.now():
+		logging.warning(f'Password reset code expired')
+		_cleanup_password_reset_code(user_id, session)
+		return False
+
+	if password_reset_code != valid_password_reset_code:
+		logging.warning(f'Password reset codes do not match')
+		return False
+
+	return True
+
+def update_user_password(user_id: int, password: str, new_password: str, session: ScopedSession):
+	"""Updates a user's password
+
+	Args:
+			user_id (int): ID of user being deleted
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			NotFoundError: User not found
+			Exception: Database error
+	"""
+	# TODO: should this log user out?
+	logging.info(f'Updating password for user {user_id}')
+	# TODO: password validation needs mokshat's auth
+
+	_update_password(user_id, new_password, session)
+
+	logging.info(f'Password updated for user {user_id}')
+
+def reset_user_password(user_id: int, reset_code: int, new_password: str, session: ScopedSession):
+	"""Resets a user's password
+
+	Args:
+			user_id (int): ID of user being deleted
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			NotFoundError: User not found
+			Exception: Database error
+	"""
+	logging.info(f'Resetting password for user {user_id}')
+
+	valid = verify_password_reset_code(user_id, reset_code, session)
+	if not valid:
+		raise ForbiddenError('Invalid password reset code')
+
+	_update_password(user_id, new_password, session)
+
+	try:
+		_cleanup_password_reset_code(user_id, session)
+	except:
+		# ignore failing to cleanup password reset code
+		pass
+
+	logging.info(f'Password updated for user {user_id}')
+
+def user_exists(user_id: int, session: ScopedSession) -> bool:
+	"""Checks if a user with given user_id exists
+
+	Args:
+			user_id (int): User ID to check for
+			session (ScopedSession): SQLAlchemy database session
+
+	Returns:
+		bool: Represents whether user exists
+	"""
+	return session.query(exists(User).where(User.user_id == user_id)).scalar()
+
+########################################
+# INTERNAL USE ONLY
+########################################
+
+def _update_password(user_id: int, new_password: str, session: ScopedSession):
+	"""
+	## [DANGER] INTERNAL USE ONLY
+	Updates a user's password.
+
+	Args:
+			user_id (int): [description]
+			new_password (str): [description]
+			session (ScopedSession): [description]
+
+	Raises:
+			NotFoundError: [description]
+			ConflictError: [description]
+			e: [description]
+	"""
+	# TODO: generate new password hash?
+	new_password_hash = new_password
+	try:
+		session.execute(
+			update(User)
+				.where(User.user_id == user_id)
+				.values(password_hash=new_password_hash)
+		)
+		session.commit()
+	except exc.NoResultFound as e:
+		logging.error('Failed to find user')
+		logging.exception(e)
+		raise NotFoundError(f'Could not find user with ID: {user_id}')
+	except exc.IntegrityError as e:
+		logging.error('Failed to update user password')
+		logging.exception(e)
+		raise ConflictError(e)
+	except exc.DatabaseError as e:
+		logging.error('Failed to update user')
+		logging.exception(e)
+		raise e
+
+def _cleanup_password_reset_code(user_id: int, session: ScopedSession):
+	try:
+		session.execute(
+			update(User)
+				.where(User.user_id == user_id)
+				.values(password_reset_code=None, password_reset_code_expiration=None)
+		)
+		session.commit()
+	except exc.NoResultFound as e:
+		logging.error('Failed to find user')
+		logging.exception(e)
+		raise NotFoundError(f'Could not find user with ID: {user_id}')
+	except exc.DatabaseError as e:
+		logging.error('Failed to cleanup user password reset code')
+		logging.exception(e)
+		raise e

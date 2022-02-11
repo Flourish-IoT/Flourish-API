@@ -5,7 +5,7 @@ from flask import request, url_for
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError, Forbidden
 
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
-from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password
+from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User
 from app.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
@@ -68,7 +68,8 @@ class UserPassword(Resource):
 	def put(self, user_id: int, body: dict):
 		try:
 			if body['authentication_type'] == AuthenticationType.password:
-				raise NotImplemented
+				# password update
+				update_user_password(user_id, body['authentication'], body['new_password'], db.session)
 			else:
 				# password reset
 				reset_user_password(user_id, body['authentication'], body['new_password'], db.session)
@@ -79,11 +80,7 @@ class UserPassword(Resource):
 		except Exception as e:
 			raise InternalServerError
 
-		# if not valid:
-		# 	raise Forbidden
-
 		return None, 204
-
 
 @api.route('/<int:user_id>/devices')
 class UserDevices(Resource):

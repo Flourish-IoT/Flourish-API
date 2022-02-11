@@ -127,7 +127,7 @@ def verify_password_reset_code(user_id: int, password_reset_code: int, session: 
 		logging.exception(e)
 		raise e
 
-	if result is None:
+	if result is None or result == (None, None):
 		logging.warning(f'User {user_id} does not have reset code')
 		return False
 
@@ -140,7 +140,7 @@ def verify_password_reset_code(user_id: int, password_reset_code: int, session: 
 		logging.error(f'User {user_id} password_reset_code or password_reset_code_expiration is None, ignoring')
 		return False
 
-	if password_reset_code_expiration > datetime.now():
+	if password_reset_code_expiration < datetime.now():
 		logging.warning(f'Password reset code expired')
 		_cleanup_password_reset_code(user_id, session)
 		return False
@@ -166,6 +166,7 @@ def update_user_password(user_id: int, password: str, new_password: str, session
 	logging.info(f'Updating password for user {user_id}')
 	# TODO: password validation needs mokshat's auth
 
+	raise NotImplementedError()
 	_update_password(user_id, new_password, session)
 
 	logging.info(f'Password updated for user {user_id}')
@@ -175,10 +176,12 @@ def reset_user_password(user_id: int, reset_code: int, new_password: str, sessio
 
 	Args:
 			user_id (int): ID of user being deleted
+			reset_code (int): User reset code
 			session (ScopedSession): SQLAlchemy database session
 
 	Raises:
 			NotFoundError: User not found
+			ForbiddenError: User does not have permission to reset password
 			Exception: Database error
 	"""
 	logging.info(f'Resetting password for user {user_id}')

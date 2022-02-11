@@ -279,11 +279,8 @@ users.id.preferences:
           schema:
             type: object
             properties:
-              preferences:
-                type: object
-                properties:
-                  unitPreference:
-                    $ref: "../schemas/index.yaml#/UnitPreference"
+              temperatureUnit:
+                $ref: "../schemas/index.yaml#/UnitPreference"
     responses:
       '204':
         description: OK. User preferences updated

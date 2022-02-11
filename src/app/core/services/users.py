@@ -1,7 +1,7 @@
 from datetime import datetime, tzinfo
 import logging
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
-from app.core.models import User
+from app.core.models import User, UserPreferences
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc, update, select, exists
 
@@ -86,6 +86,38 @@ def edit_user(user_id: int, user_update: dict, session: ScopedSession):
 		raise e
 
 	logging.info(f'User {user_id} succesfully updated')
+
+def edit_user_preferences(user_id: int, preferences_update: dict, session: ScopedSession):
+	"""Edits user preferences
+
+	Args:
+			user_id (int): ID of user being edited
+			preferences_update (dict): Updated fields of user preferences. Keys must match field names of UserPreferences
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			NotFoundError: User not found
+			Exception: Database error
+	"""
+	logging.info(f'Updating user {user_id} preferences')
+
+	if not user_exists(user_id, session):
+		logging.error('Failed to find user')
+		raise NotFoundError(f'Could not find user with ID: {user_id}')
+
+	try:
+		session.execute(
+			update(UserPreferences)
+				.where(UserPreferences.user_id == user_id)
+				.values(**preferences_update)
+		)
+		session.commit()
+	except exc.DatabaseError as e:
+		logging.error('Failed to update user preferences')
+		logging.exception(e)
+		raise e
+
+	logging.info(f'User {user_id} preferences succesfully updated')
 
 def delete_user(user_id: int, session: ScopedSession):
 	"""Deletes user and sends them an email
@@ -212,6 +244,8 @@ def user_exists(user_id: int, session: ScopedSession) -> bool:
 	"""
 	return session.query(exists(User).where(User.user_id == user_id)).scalar()
 
+
+
 ########################################
 # INTERNAL USE ONLY
 ########################################
@@ -254,6 +288,18 @@ def _update_password(user_id: int, new_password: str, session: ScopedSession):
 		raise e
 
 def _cleanup_password_reset_code(user_id: int, session: ScopedSession):
+	"""
+	## [DANGER] INTERNAL USE ONLY
+	Cleans up the password_reset_code and password_reset_code_expiration columns
+
+	Args:
+			user_id (int): User ID to cleanup
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			NotFoundError: User not found
+			Exception: Database error
+	"""
 	try:
 		session.execute(
 			update(User)

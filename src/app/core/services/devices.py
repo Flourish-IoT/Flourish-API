@@ -4,7 +4,6 @@ from app.core.errors import NotFoundError, ConflictError
 from app.core.models import Device, Plant
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc, update
-from copy import deepcopy
 
 from app.core.models import DeviceTypeEnum, DeviceStateEnum, SensorData
 

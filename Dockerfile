@@ -17,6 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+# give run permission to start scripts
+RUN chmod 777 ./scripts/start.dev.sh
+RUN chmod 777 ./scripts/start.prod.sh
+
 EXPOSE 5000
 
 # override this in prod

@@ -3,8 +3,7 @@ from typing import List
 from app.core.errors import NotFoundError, ConflictError
 from app.core.models import Device, Plant
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy import select, exc, update
-from copy import deepcopy
+from sqlalchemy import select, exc, update, exists
 
 from app.core.models import DeviceTypeEnum, DeviceStateEnum, SensorData
 
@@ -23,6 +22,7 @@ def get_devices(user_id: int, session: ScopedSession, *, device_type: DeviceType
 	Returns:
 			List[Device]: User devices
 	"""
+	logging.info(f'Getting devices for user {user_id}')
 	query = select(Device).where(Device.user_id == user_id)
 
 	if device_type is not None:
@@ -52,13 +52,13 @@ def get_device(device_id: int, session: ScopedSession):
 	Returns:
 			Device
 	"""
+	logging.info(f'Getting device information for device {device_id}')
 	device = session.get(Device, device_id)
 
 	if device is None:
 		raise NotFoundError(f'Could not find device with id: {device_id}')
 
 	return device
-
 
 def create_device(user_id: int, device: Device, session: ScopedSession):
 	"""Creates a new device and sets it's initial device state to Connecting
@@ -74,6 +74,7 @@ def create_device(user_id: int, device: Device, session: ScopedSession):
 	Returns:
 			int: ID of newly created device
 	"""
+	logging.info(f'Creating device for user {user_id}')
 	device.user_id = user_id
 	device.device_state = DeviceStateEnum.Connecting
 
@@ -85,6 +86,7 @@ def create_device(user_id: int, device: Device, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
+	logging.info(f'Succesfully created device {device.device_id} for user {user_id}')
 	return device.device_id
 
 def edit_device(device_id: int, device_update: dict, session: ScopedSession):
@@ -99,6 +101,11 @@ def edit_device(device_id: int, device_update: dict, session: ScopedSession):
 			NotFoundError: Device not found
 			Exception: Database error
 	"""
+	logging.info(f'Editing device {device_id}')
+	if not device_exists(device_id, session):
+		logging.error('Could not find device')
+		raise NotFoundError(f'Could not find device with id: {device_id}')
+
 	try:
 		session.execute(
 			update(Device)
@@ -106,14 +113,12 @@ def edit_device(device_id: int, device_update: dict, session: ScopedSession):
 				.values(**device_update)
 		)
 		session.commit()
-	except exc.NoResultFound as e:
-		logging.error('Failed to find device')
-		logging.exception(e)
-		raise NotFoundError(f'Could not find device with id: {device_id}')
 	except exc.DatabaseError as e:
 		logging.error('Failed to update device')
 		logging.exception(e)
 		raise e
+
+	logging.info(f'Succesfully edited device {device_id}')
 
 def delete_device(device_id: int, session: ScopedSession):
 	"""Deletes device
@@ -126,6 +131,7 @@ def delete_device(device_id: int, session: ScopedSession):
 			NotFoundError: Device not found
 			Exception: Database error
 	"""
+	logging.info(f'Deleting device {device_id}')
 	device = get_device(device_id, session)
 
 	try:
@@ -136,7 +142,10 @@ def delete_device(device_id: int, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
+	logging.info(f'Succesfully deleted device {device_id}')
+
 def record_data(device_id: int, data: SensorData, session: ScopedSession):
+	logging.info(f'Recording sensor data for device {device_id}')
 	# TODO: return state update
 
 	# get all plants associated with device
@@ -154,7 +163,7 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 		# TODO: return state
 		return
 
-	logging.info(f'Inserting sensor data for {len(plant_ids)} plants')
+	logging.info(f'Recording sensor data for {len(plant_ids)} plants: {plant_ids}')
 
 	# record values in table for each plant
 	sensor_data = list(map(lambda plant_id: data.with_value(SensorData.plant_id, plant_id), plant_ids))
@@ -173,3 +182,13 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 
 	# return state
 	pass
+
+def device_exists(device_id: int, session: ScopedSession) -> bool:
+	"""Checks if a device with given device_id exists
+	Args:
+			device_id (int): Device ID to check for
+			session (ScopedSession): SQLAlchemy database session
+	Returns:
+		bool: Represents whether device exists
+	"""
+	return session.query(exists(Device).where(Device.device_id == device_id)).scalar()

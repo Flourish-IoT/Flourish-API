@@ -14,5 +14,7 @@ services:
       - timescaledb_volume:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 volumes:
   timescaledb_volume:

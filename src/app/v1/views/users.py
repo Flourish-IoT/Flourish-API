@@ -7,7 +7,7 @@ from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerEr
 from app.core.errors import NotFoundError, ConflictError
 from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, get_plants, create_plant
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User, Plant
-from app.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, PlantSchema, NewPlantSchema
+from app.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, PlantSchema, NewPlantSchema, ListPlantSchema
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
@@ -41,6 +41,7 @@ class User(Resource):
 	
 @api.route('/<int:user_id>/plants')
 class UserPlants(Resource):
+	@marshal_list_with(ListPlantSchema)
 	def get(self, user_id: int):
 		try:
 			plants = get_plants(user_id, db.session)
@@ -49,7 +50,7 @@ class UserPlants(Resource):
 			logging.exception(e)
 			raise InternalServerError
 		
-		print(plants)
+		return plants
 
 	@serialize_with(NewPlantSchema)
 	def post(self, user_id: int, body: Plant):

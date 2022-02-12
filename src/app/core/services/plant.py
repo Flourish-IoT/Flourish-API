@@ -1,3 +1,4 @@
+from email.policy import default
 from select import select
 import string
 
@@ -21,6 +22,9 @@ def get_plants(user_id: int, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
+	for plant in plants:
+		get_plant_target_value_ratings(plant)
+
 	return plants
 
 def create_plant(user_id: int, plant: Plant, session: ScopedSession):
@@ -37,8 +41,18 @@ def create_plant(user_id: int, plant: Plant, session: ScopedSession):
 	return plant.plant_id 
 
 def get_plant_info(plant_id: int, session: ScopedSession):
+	query = select(Plant).where(Plant.plant_id == plant_id)
 
-	pass
+	try:
+		plant = session.get(Plant, plant_id)
+	except Exception as e:
+		logging.error(f'Failed to get plant info')
+		logging.exception(e)
+		raise e
+	
+	get_plant_target_value_ratings(plant)
+
+	return plant
 
 def edit_plant_info(plant_id: int, session: ScopedSession):
 	pass
@@ -50,7 +64,7 @@ def delete_plant(plant_id: int, session: ScopedSession):
 		raise NotFoundError(f'Could not find plant with id: {plant_id}')
 
 	try:
-		session.delete(selected_plant)
+		session.delete(plant)
 		session.commit()
 	except exc.DatabaseError as e:
 		logging.error('Failed to delete plant')
@@ -59,4 +73,30 @@ def delete_plant(plant_id: int, session: ScopedSession):
 
 def get_plant_sensor_data(plant_id: int, start_date: string, end_date: string, session: ScopedSession):
 	pass
+
+def get_plant_target_value_ratings(plant: Plant):
+	# TODO: make this right
+	if (plant.plant_type.maximum_temperature != None or plant.plant_type.minimum_temperature != None):
+		#insert moks logic
+		temp = 20 #replace hard coded value with actual 
+		soil = 20
+		light = 20
+		humidity = 20
+
+		plant.target_value_ratings['temparture'] = check_rating(temp, plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
+		plant.target_value_ratings['soil_humidity'] = check_rating(soil, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
+		plant.target_value_ratings['light'] = check_rating(light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
+		plant.target_value_ratings['humidity'] = check_rating(humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
+
+def check_rating(val, min_value, max_value):
+	match val:
+		case n if n > min_value and n < max_value:
+			return 3
+		case n if n > max_value:
+			return 5
+		case n if n > min_value:
+			return 0
+			
+		
+		
 

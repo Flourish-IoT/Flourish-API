@@ -25,3 +25,7 @@ class UserPreferences(BaseModel):
 		ForeignKey('temperature_units.temperature_unit_id'),
 		default=TemperatureUnitEnum.Fahrenheit
 	))
+
+	confidence_rating = cast(int, Column(
+		Integer
+	))

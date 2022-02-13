@@ -4,6 +4,7 @@ from app.core.errors import NotFoundError, ConflictError, ForbiddenError
 from app.core.models import User, UserPreferences
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc, update, select, exists
+from app.core.util import emailer
 
 def get_user(user_id: int, session: ScopedSession):
 	"""Gets a user by user ID
@@ -244,6 +245,25 @@ def user_exists(user_id: int, session: ScopedSession) -> bool:
 	"""
 	return session.query(exists(User).where(User.user_id == user_id)).scalar()
 
+def start_user_reset_password(user_id: int, session: ScopedSession):
+	"""Sends user email with authentication code for password reset
+
+	Args:
+			user_id (int): User ID to check for
+			session (ScopedSession): SQLAlchemy database session
+
+	"""
+	if user_exists(user_id, session):
+		user = _get_user_email(user_id, session)
+
+		#TODO: replace the messege with the authenticator code
+		emailer.send_email("This is a place holder", "Flourish Authentication Code", user.email)
+	else:
+		logging.error(f'User does not exist')
+		raise NotFoundError(f'Could not find user with ID: {user_id}')
+
+
+
 
 
 ########################################
@@ -315,3 +335,25 @@ def _cleanup_password_reset_code(user_id: int, session: ScopedSession):
 		logging.error('Failed to cleanup user password reset code')
 		logging.exception(e)
 		raise e
+	
+def _get_user_email(user_id:int, session: ScopedSession):
+	"""
+	## [DANGER] INTERNAL USE ONLY
+	Gets users email address
+
+	Args:
+			user_id (int): User ID to cleanup
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			NotFoundError: User not found
+			Exception: Database error
+	"""
+	try:
+		user = session.get(User, user_id)
+	except Exception as e:
+		logging.error(f'Failed to retrieve user')
+		logging.exception(e)
+		raise e
+	
+	return user

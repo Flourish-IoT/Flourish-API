@@ -6,7 +6,7 @@ from flask import session
 from app.core.errors import NotFoundError, ConflictError
 from app.core.models import User
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy import exc, select
+from sqlalchemy import exc, select, update
 from typing import List
 import logging
 
@@ -54,8 +54,22 @@ def get_plant_info(plant_id: int, session: ScopedSession):
 
 	return plant
 
-def edit_plant_info(plant_id: int, session: ScopedSession):
-	pass
+def edit_plant_info(plant_id: int, plant_update: dict, session: ScopedSession):
+	try:
+		session.execute(
+			update(Plant)
+				.where(Plant.plant_id == plant_id)
+				.values(**plant_update)
+		)
+		session.commit()
+	except exc.NoResultFound as e:
+		logging.error('Failed to find plant')
+		logging.exception(e)
+		raise NotFoundError(f'Could not find plant with id: {plant_id}')
+	except exc.DatabaseError as e:
+		logging.error('Failed to update plant')
+		logging.exception(e)
+		raise e
 
 def delete_plant(plant_id: int, session: ScopedSession):
 	plant = session.get(Plant, plant_id)

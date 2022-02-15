@@ -253,6 +253,7 @@ def start_user_reset_password(user_id: int, session: ScopedSession):
 			session (ScopedSession): SQLAlchemy database session
 
 	"""
+	#TODO: we dont have the user id, user has to enter their email to get the code
 	if user_exists(user_id, session):
 		user = _get_user_email(user_id, session)
 

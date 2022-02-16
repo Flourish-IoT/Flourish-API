@@ -25,6 +25,10 @@ class UserUpdateSchema(DisablePostLoadMixin, UserSchema):
 		fields = ('email', 'username')
 	email = fields.Email(required=False)
 
+class ResetUserPasswordSchema(DisablePostLoadMixin, UserSchema):
+	class Meta:
+		fields = ('email', )
+
 class AuthenticationType(Enum):
 	password = 1,
 	reset_code = 2

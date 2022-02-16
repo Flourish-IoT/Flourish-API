@@ -7,7 +7,7 @@ from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerEr
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
 from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User
-from app.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema
+from app.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
@@ -72,8 +72,23 @@ class UserPassword(Resource):
 				update_user_password(user_id, body['authentication'], body['new_password'], db.session)
 			else:
 				# password reset
-				start_user_reset_password(user_id, db.session)
+				start_user_reset_password(body['email'], db.session)
 				reset_user_password(user_id, body['authentication'], body['new_password'], db.session)
+		except ForbiddenError as e:
+			raise Forbidden(str(e))
+		except NotFoundError as e:
+			raise NotFound(str(e))
+		except Exception as e:
+			raise InternalServerError
+
+		return None, 204
+
+@api.route('/reset_password')
+class UserPassword(Resource):
+	@serialize_with(ResetUserPasswordSchema)
+	def post(self, body: dict):
+		try:
+			start_user_reset_password(body['email'], db.session)
 		except ForbiddenError as e:
 			raise Forbidden(str(e))
 		except NotFoundError as e:

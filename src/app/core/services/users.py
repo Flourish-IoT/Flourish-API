@@ -245,7 +245,7 @@ def user_exists(user_id: int, session: ScopedSession) -> bool:
 	"""
 	return session.query(exists(User).where(User.user_id == user_id)).scalar()
 
-def start_user_reset_password(user_id: int, session: ScopedSession):
+def start_user_reset_password(email: str, session: ScopedSession):
 	"""Sends user email with authentication code for password reset
 
 	Args:
@@ -254,14 +254,16 @@ def start_user_reset_password(user_id: int, session: ScopedSession):
 
 	"""
 	#TODO: we dont have the user id, user has to enter their email to get the code
-	if user_exists(user_id, session):
-		user = _get_user_email(user_id, session)
+	# if user_exists(user_id, session):
+		# user = _get_user_email(user_id, session)
 
 		#TODO: replace the messege with the authenticator code
-		emailer.send_email("This is a place holder", "Flourish Authentication Code", user.email)
-	else:
-		logging.error(f'User does not exist')
-		raise NotFoundError(f'Could not find user with ID: {user_id}')
+		# emailer.send_email("This is a place holder", "Flourish Authentication Code", email)
+	# else:
+	# 	logging.error(f'User does not exist')
+	# 	raise NotFoundError(f'Could not find user with ID: {user_id}')
+
+	emailer.send_email("This is a place holder", "Flourish Authentication Code", email)
 
 
 

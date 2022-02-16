@@ -109,7 +109,7 @@ paths:
   /plant_types:
     $ref: './components/paths/PlantTypes.yaml#/plants'
 
-  /plants_types/{plant_type_id}:
+  /plant_types/{plant_type_id}:
     $ref: './components/paths/PlantTypes.yaml#/plants.plant_type_id'
 
 components:

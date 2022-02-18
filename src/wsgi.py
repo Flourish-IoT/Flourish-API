@@ -6,13 +6,14 @@ from argparse import ArgumentParser
 
 def configure_app():
 	parser = ArgumentParser(description='Flourish Backend API')
-	parser.add_argument('-c', type=str, choices=Environment.get_environments(), default=Environment.local.env, dest='config', help='Config file to use')
+	parser.add_argument('-c', '--config', type=str, choices=Environment.get_environments(), default=Environment.local.env, dest='config', help='Config file to use')
+	parser.add_argument('-p', '--port', type=int, default=5000, dest='port', help='Port to run on. This can only be used when running Flask directly.')
 	args, _ = parser.parse_known_args()
 
 	env = Environment[ args.config ]
 	app = create_app(env)
 
-	return app
+	return app, args
 
 # gunicorn entrypoint
 def create_gunicorn(*args, **kwargs):
@@ -23,7 +24,7 @@ def create_gunicorn(*args, **kwargs):
 		sys.argv.append(f'{"-" if len(k) == 1 else "--"}{k}')
 		sys.argv.append(v)
 
-	app = configure_app()
+	app, _ = configure_app()
 
 	gunicorn_logger = logging.getLogger('gunicorn.error')
 	app.logger.handlers = gunicorn_logger.handlers
@@ -32,5 +33,5 @@ def create_gunicorn(*args, **kwargs):
 	return app
 
 if __name__ == '__main__':
-	app = configure_app()
-	app.run(host='0.0.0.0',port=8000)
+	app, args = configure_app()
+	app.run(host='0.0.0.0', port=args.port)

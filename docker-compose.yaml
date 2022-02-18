@@ -1,0 +1,20 @@
+version: '3'
+services:
+  flourish:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URI: "postgresql+psycopg2://postgres:${POSTGRES_PASSWORD}@flourish-db:5432/postgres"
+    depends_on:
+      - flourish-db
+  flourish-db:
+    image: timescale/timescaledb:latest-pg14
+    volumes:
+      - timescaledb_volume:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+volumes:
+  timescaledb_volume:

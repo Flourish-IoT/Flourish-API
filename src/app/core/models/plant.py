@@ -1,9 +1,12 @@
-from typing import Dict, cast
+from datetime import datetime
+import logging
+from typing import Dict, List, cast
+
+from .value_rating import ValueRating
 from .base_model import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.dialects.postgresql import INET
 from sqlalchemy.orm import relationship
-from .plant_type import *
+from .plant_type import PlantType
 
 class Plant(BaseModel):
 	__tablename__ = 'plants'
@@ -40,6 +43,32 @@ class Plant(BaseModel):
 		nullable=True
 	))
 
-	target_value_ratings: Dict[str, int] = {'temperature': None , 'light': None, 'humidity': None, 'soil_moisture': None}
+	target_value_scores: Dict[str, ValueRating] = {
+		'temperature': ValueRating.NoRating,
+		'light': ValueRating.NoRating,
+		'humidity': ValueRating.NoRating,
+		'soil_moisture': ValueRating.NoRating
+	}
 
-	
+	def get_score_function(self, field: str):
+		# TODO: get score function from db
+
+		# default scoring functions for plants
+		match field:
+			case 'temperature':
+				return
+			case _:
+				raise ValueError(f'No default score function for field {field}')
+		pass
+
+	# def get_rules(self) -> List[BaseRule]:
+	# 	# cant generate rules if we don't know why kind of plant it is
+	# 	if self.plant_type is None:
+	# 		return []
+
+	# 	return [
+	# 		InRangeRule(self.plant_type.minimum_light, self.plant_type.maximum_light, "Light"),
+	# 		InRangeRule(self.plant_type.minimum_temperature, self.plant_type.maximum_temperature, "Temperature"),
+	# 		InRangeRule(self.plant_type.minimum_humidity, self.plant_type.maximum_humidity, "Humidity"),
+	# 		InRangeRule(self.plant_type.minimum_soil_moisture, self.plant_type.maximum_soil_moisture, "Soil Moisture"),
+	# 	]

@@ -1,9 +1,10 @@
 import logging
 from typing import List
 from app.core.errors import NotFoundError, ConflictError
-from app.core.models import Device, Alert, SensorData
+from app.core.models import Alert, Plant, ValueRating, SeverityLevelEnum
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc, update
+from datetime import datetime
 
 
 def get_alerts(user_id: int, session: ScopedSession, *, viewed: bool | None = None, plant_id: int | None = None, device_id: int | None = None):
@@ -113,3 +114,33 @@ def set_viewed_state(alert_ids: List[int], viewed: bool, session: ScopedSession)
 		logging.error(f'Failed to get alerts to set viewed state. Alert IDs: {alert_ids}')
 		logging.exception(e)
 		raise e
+
+def generate_alert(plant_id, field):
+	# TODO: expand
+	return Alert(plant_id=plant_id, severity=SeverityLevelEnum.Critical, message=field, time=datetime.now())
+
+def generate_alerts(plant: Plant):
+		alerts = []
+		logging.info(f'Generating alerts for plant {plant}')
+		for field, rating in plant.target_value_scores.items():
+			# generate alerts if value is outside of nominal range
+			match rating:
+				case ValueRating.TooLow:
+					logging.info(f'Value too low for {field}')
+					alerts.append(generate_alert(plant, f'{field} is too low'))
+				case ValueRating.Low:
+					logging.info(f'Value low for {field}')
+					alerts.append(generate_alert(plant, f'{field} is low'))
+				case ValueRating.Nominal:
+					logging.info(f'Nominal value for {field}')
+				case ValueRating.High:
+					logging.info(f'Value high for {field}')
+					alerts.append(generate_alert(plant, f'{field} is high'))
+				case ValueRating.TooHigh:
+					logging.info(f'Value too high for {field}')
+					alerts.append(generate_alert(plant, f'{field} is too high'))
+				case ValueRating.NoRating:
+					logging.info(f'No value rating for {field}, ignoring')
+				case _:
+					raise ValueError(f"Invalid rating value for {field}: {rating}")
+		return alerts

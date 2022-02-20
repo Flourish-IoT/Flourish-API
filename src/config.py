@@ -42,4 +42,4 @@ class TestConfig(Config):
 	DEBUG = True
 	TESTING = True
 
-	SQLALCHEMY_DATABASE_URI = 'sqllite://postgres:password@localhost/postgres'
+	SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'

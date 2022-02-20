@@ -6,6 +6,7 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc, update, exists
 
 from app.core.models import DeviceTypeEnum, DeviceStateEnum, SensorData
+from app.core.services import generate_alert, update_plant_target_value_ratings, generate_alerts
 
 def get_devices(user_id: int, session: ScopedSession, *, device_type: DeviceTypeEnum | None = None, device_state: DeviceTypeEnum | None = None):
 	"""Gets all devices for a user
@@ -149,24 +150,24 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 	# TODO: return state update
 
 	# get all plants associated with device
-	plant_query = select(Plant.plant_id).where(Plant.device_id == device_id)
+	plant_query = select(Plant).where(Plant.device_id == device_id)
 
 	try:
-		plant_ids: List[int] = session.execute(plant_query).scalars().all()
+		plants: List[Plant] = session.execute(plant_query).scalars().all()
 	except exc.DatabaseError as e:
 		logging.error('Failed to update device')
 		logging.exception(e)
 		raise e
 
-	if len(plant_ids) == 0:
+	if len(plants) == 0:
 		logging.info(f'No plants associated with device {device_id}. Data will not be recorded')
 		# TODO: return state
 		return
 
-	logging.info(f'Recording sensor data for {len(plant_ids)} plants: {plant_ids}')
+	logging.info(f'Recording sensor data for {len(plants)} plants: {plants}')
 
 	# record values in table for each plant
-	sensor_data = list(map(lambda plant_id: data.with_value(SensorData.plant_id, plant_id), plant_ids))
+	sensor_data = list(map(lambda plant: data.with_value(SensorData.plant_id, plant.plant_id), plants))
 
 	try:
 		session.bulk_save_objects(sensor_data)
@@ -176,9 +177,11 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
-	# perform checks for each plant
-
-	# generate alerts
+	# perform checks for each plant and generate alerts
+	alerts = []
+	for plant in plants:
+		update_plant_target_value_ratings(plant)
+		alerts.append(generate_alerts(plant))
 
 	# return state
 	pass

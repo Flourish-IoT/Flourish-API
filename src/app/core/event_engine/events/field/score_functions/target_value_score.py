@@ -1,10 +1,6 @@
 from enum import IntEnum
 from .score_function import ScoreFunction
-from typing import Generic, TypeVar
-
 from app.core.util import Comparable
-
-T = TypeVar('T', bound=Comparable)
 
 class ValueRating(IntEnum):
 	NoRating = -1
@@ -14,15 +10,15 @@ class ValueRating(IntEnum):
 	High = 4,
 	TooHigh = 5,
 
-class TargetValueScoreFunction(ScoreFunction, Generic[T]):
-	def __init__(self, min: T, max: T):
+class TargetValueScoreFunction(ScoreFunction):
+	def __init__(self, min: Comparable, max: Comparable):
 		if min > max:
 			raise ValueError('min must be less than max')
 
 		self.min = min
 		self.max = max
 
-	def score(self, value: T) -> ValueRating:
+	def score(self, value: Comparable) -> ValueRating:
 		# TODO: This needs to be expanded
 		match value:
 			case n if n < self.min:

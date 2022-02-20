@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import cast
+from typing import cast, Protocol
 from .base_model import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Float
 from sqlalchemy.dialects.postgresql import INET

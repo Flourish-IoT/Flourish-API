@@ -1,14 +1,15 @@
 
 import logging
-from typing import TypeVar, Generic
+from typing import List, TypeVar, Generic
 
 from app.core.util import Comparable
 from .trigger import Trigger
+from .actions import Action
 
 T = TypeVar('T', bound=Comparable)
 
 class EqualsTrigger(Trigger, Generic[T]):
-	def __init__(self, actions: list, value: T) -> None:
+	def __init__(self, actions: List[Action], value: T) -> None:
 		super().__init__(actions)
 		self.value = value
 

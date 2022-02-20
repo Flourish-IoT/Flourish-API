@@ -1,4 +1,4 @@
-from app.core.event_engine.field.score_functions import ValueRating, TargetValueScoreFunction
+from app.core.event_engine.events.field.score_functions import ValueRating, TargetValueScoreFunction
 from unittest.mock import MagicMock
 import pytest
 

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import logging
 from typing import Any, List, TypeVar, Generic
-from app.core.event_engine.actions import Action
+from .actions import Action
 
 T = TypeVar('T')
 

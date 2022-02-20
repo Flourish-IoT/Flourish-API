@@ -1,5 +1,5 @@
-from app.core.event_engine.triggers import BetweenTrigger
-from app.core.event_engine.field.score_functions import ValueRating
+from app.core.event_engine.events.triggers import BetweenTrigger
+from app.core.event_engine.events.field.score_functions import ValueRating
 from unittest.mock import MagicMock
 import pytest
 

@@ -38,7 +38,7 @@ class User(Resource):
 			raise InternalServerError
 
 		return user
-	
+
 @api.route('/<int:user_id>/plants')
 class UserPlants(Resource):
 	@marshal_list_with(ListPlantSchema)
@@ -49,19 +49,19 @@ class UserPlants(Resource):
 			logging.error('failed to get plants')
 			logging.exception(e)
 			raise InternalServerError
-		
+
 		return plants
 
 	@serialize_with(NewPlantSchema)
 	def post(self, user_id: int, body: Plant):
 		try:
 			plant_id = create_plant(user_id, body, db.session)
-		except Exception as e: 
+		except Exception as e:
 			raise InternalServerError
 
 		return None, 201, {'Location': url_for('v1.plants_plant', plant_id=plant_id)}
 
-			
+
 @api.route('/<int:user_id>/devices')
 class UserDevices(Resource):
 	@serialize_with(DeviceRequestQueryParamSchema, location=Location.QUERY_PARAMETER)

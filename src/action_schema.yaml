@@ -1,8 +1,8 @@
 # plant config
 events:
   # alert example
-  - event_type: ValueChange
-    event_id: 1
+  - event_type: SensorData
+    id: 1
     field:
       name: soil_moisture
       score_method: TargetValueScore
@@ -40,8 +40,8 @@ events:
             message_template: '{plant.plant_name} has too much water, try using less water next time.'
             severity: Warning
   # actuator example
-  - event_type: ValueChange
-    event_id: 2
+  - event_type: SensorData
+    id: 2
     field:
       name: light
       score_function: TargetValueScore
@@ -70,7 +70,7 @@ events:
 # device config
 events:
   - event_type: ValueChange
-    event_id: 1
+    id: 1
     field:
       name: battery_level
       query:
@@ -97,7 +97,7 @@ events:
           - action_type: ClearAlert
 
   - event_type: StateChange
-    event_id: 2
+    id: 2
     triggers:
       - on:
           value: Connected

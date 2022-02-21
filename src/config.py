@@ -34,7 +34,8 @@ class LocalConfig(Config):
 	SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:password@localhost/postgres'
 	SQLALCHEMY_ENGINE_OPTIONS = {
 		'pool_size': 2,
-		'future': True
+		'future': True,
+		'echo': False
 	}
 
 class TestConfig(Config):

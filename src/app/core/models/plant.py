@@ -1,10 +1,9 @@
-from typing import cast
+from typing import Dict, cast
 from .base_model import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.dialects.postgresql import INET
-from .int_enum_field import IntEnumField
-from .device_type import DeviceTypeEnum
-from .device_state import DeviceStateEnum
+from sqlalchemy.orm import relationship
+from .plant_type import *
 
 class Plant(BaseModel):
 	__tablename__ = 'plants'
@@ -29,6 +28,8 @@ class Plant(BaseModel):
 		ForeignKey('plant_types.plant_type_id'),
 	))
 
+	plant_type = cast(PlantType | None, relationship("PlantType", uselist=False))
+
 	name = cast(str, Column(
 		String,
 		nullable=True
@@ -38,3 +39,7 @@ class Plant(BaseModel):
 		String,
 		nullable=True
 	))
+
+	target_value_ratings: Dict[str, int] = {'temperature': None , 'light': None, 'humidity': None, 'soil_moisture': None}
+
+	

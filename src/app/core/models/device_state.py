@@ -1,4 +1,6 @@
 from enum import IntEnum
+
+from app.core.util import EnumValuesMixin
 from .base_model import BaseModel
 from sqlalchemy import Column, Integer, String
 
@@ -14,16 +16,9 @@ class DeviceState(BaseModel):
 		nullable=False
 	)
 
-class DeviceStateEnum(IntEnum):
+class DeviceStateEnum(EnumValuesMixin, IntEnum):
 	Connected = 1,
 	Connecting = 2,
 	Disconnected = 3,
 	Error = 4,
 	Unknown = 5
-
-	@classmethod
-	def get_device_states(cls):
-		"""
-		Returns all valid device states
-		"""
-		return [e.name for e in cls]

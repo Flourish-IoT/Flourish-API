@@ -1,13 +1,13 @@
 from curses.ascii import US
 from datetime import datetime, tzinfo
 import logging
-from src.app.common.utils.authentication import check_password
+from app.common.utils.authentication import check_password
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
 from app.core.models import User, UserPreferences
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc, update, select, exists
 from app.core.util import emailer
-from src.app.core.util.verification import verify_code
+from app.core.util.verification import verify_code
 
 def get_user(user_id: int, session: ScopedSession):
 	"""Gets a user by user ID

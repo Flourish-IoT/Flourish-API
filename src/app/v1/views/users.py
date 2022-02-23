@@ -5,9 +5,9 @@ from flask import request, url_for
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError, Forbidden
 
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
-from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password
+from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password, login
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User
-from app.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema
+from app.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema, LoginSchema
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
@@ -25,6 +25,22 @@ class UserList(Resource):
 			raise InternalServerError
 
 		return None, 201, {'Location': f'{request.path}/{user_id}'}
+
+
+@api.route('/login')
+class UserLogin(Resource):
+	@serialize_with(LoginSchema)
+	def post(self, body: dict):
+		try:
+			login(body['email'], body['password'], db.session)
+		except ForbiddenError as e:
+			raise Forbidden(str(e))
+		except NotFoundError as e:
+			raise NotFound(str(e))
+		except Exception as e:
+			raise InternalServerError
+		return None, 204
+
 
 @api.route('/<int:user_id>')
 class UserResource(Resource):

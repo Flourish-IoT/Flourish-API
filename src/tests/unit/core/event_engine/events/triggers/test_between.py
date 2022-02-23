@@ -11,7 +11,7 @@ class TestBetween:
 		mock_action_2 = MagicMock()
 
 		with pytest.raises(ValueError):
-			trigger = BetweenTrigger([mock_action, mock_action_2], min, max)
+			trigger = BetweenTrigger(min, max, [mock_action, mock_action_2])
 
 
 	@pytest.mark.parametrize('min, max, value', [( 1, 3, 2 ), (1.2, 1.4, 1.3), (ValueRating.TooLow, ValueRating.Nominal, ValueRating.Low)])
@@ -19,7 +19,7 @@ class TestBetween:
 		"""Assert trigger only executes on the right value"""
 		mock_action = MagicMock()
 		mock_action_2 = MagicMock()
-		trigger = BetweenTrigger([mock_action, mock_action_2], min, max)
+		trigger = BetweenTrigger(min, max, [mock_action, mock_action_2])
 
 		executed = trigger.execute(value)
 		mock_action.execute.assert_called_once()
@@ -31,7 +31,7 @@ class TestBetween:
 		"""Assert trigger does not execute on the wrong value"""
 		mock_action = MagicMock()
 		mock_action_2 = MagicMock()
-		trigger = BetweenTrigger([mock_action, mock_action_2], min, max)
+		trigger = BetweenTrigger(min, max, [mock_action, mock_action_2])
 
 		executed = trigger.execute(value)
 		mock_action.execute.assert_not_called()

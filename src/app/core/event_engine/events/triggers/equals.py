@@ -9,7 +9,7 @@ from .actions import Action
 T = TypeVar('T', bound=Comparable)
 
 class EqualsTrigger(Trigger, Generic[T]):
-	def __init__(self, actions: List[Action], value: T) -> None:
+	def __init__(self, value: T, actions: List[Action]) -> None:
 		super().__init__(actions)
 		self.value = value
 

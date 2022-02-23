@@ -5,12 +5,17 @@ from app.core.event_engine.events.field.queries import Query
 from sqlalchemy import Column
 from sqlalchemy.orm import Session
 
-from app.core.event_engine.events.field.score_functions.target_value_score import TargetValueScoreFunction, ValueRating
+from app.core.event_engine.events.field.score_functions import MinMaxSource, TargetValueScoreFunction, ValueRating
+
+def _get_mock_min_max_source(min, max):
+	mock =  MagicMock(MinMaxSource)
+	mock.get_min_max.return_value = (min, max)
+	return mock
 
 class TestField:
 	@pytest.mark.parametrize('value, expected, score_function', [
 		(5, 5, None),
-		(5, ValueRating.Nominal, TargetValueScoreFunction(0, 6)),
+		(5, ValueRating.Nominal, TargetValueScoreFunction(_get_mock_min_max_source(0, 6))),
 	])
 	def test_field(self, value, expected, score_function):
 		mock_col = MagicMock(Column)

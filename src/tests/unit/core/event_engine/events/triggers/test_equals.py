@@ -9,7 +9,7 @@ class TestEquals:
 		"""Assert trigger only executes on the right value"""
 		mock_action = MagicMock()
 		mock_action_2 = MagicMock()
-		trigger = EqualsTrigger([mock_action, mock_action_2], value)
+		trigger = EqualsTrigger(value, [mock_action, mock_action_2])
 
 		executed = trigger.execute(value)
 		mock_action.execute.assert_called_once()
@@ -21,7 +21,7 @@ class TestEquals:
 		"""Assert trigger does not execute on the wrong value"""
 		mock_action = MagicMock()
 		mock_action_2 = MagicMock()
-		trigger = EqualsTrigger([mock_action, mock_action_2], value_1)
+		trigger = EqualsTrigger(value_1, [mock_action, mock_action_2])
 
 		executed = trigger.execute(value_2)
 		mock_action.execute.assert_not_called()

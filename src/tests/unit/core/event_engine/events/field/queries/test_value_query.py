@@ -6,7 +6,7 @@ import pytest
 
 from app.core.models.device_state import DeviceStateEnum
 
-# TODO: dont hardcode this test
+# TODO: integration test with score functions
 class TestValueQuery:
 	@pytest.mark.parametrize('table', [(User, Alert)])
 	def test_ctor(self, table):
@@ -15,6 +15,7 @@ class TestValueQuery:
 		with pytest.raises(ValueError):
 			score_function = ValueQuery(table, mock_value, mock_value)
 
+# TODO: dont hardcode this test
 	@pytest.mark.parametrize('table, id_col, order_col, col, expected', [
 		(SensorData, SensorData.plant_id, SensorData.time, SensorData.temperature, 10.85),
 		(Device, Device.device_id, None, Device.device_state, DeviceStateEnum.Connected)

@@ -40,7 +40,7 @@ def hash_password(unhashed_password: str) -> str:
     """
     Transforms a plain-text password string into a hashed one
     """
-    return hashpw(unhashed, gensalt())
+    return hashpw(unhashed_password, gensalt())
 
 def check_password(password: str, hashed_password: str) -> bool:
     """

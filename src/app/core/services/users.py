@@ -1,10 +1,13 @@
+from curses.ascii import US
 from datetime import datetime, tzinfo
 import logging
+from src.app.common.utils.authentication import check_password
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
 from app.core.models import User, UserPreferences
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc, update, select, exists
 from app.core.util import emailer
+from src.app.core.util.verification import verify_code
 
 def get_user(user_id: int, session: ScopedSession):
 	"""Gets a user by user ID
@@ -25,7 +28,7 @@ def get_user(user_id: int, session: ScopedSession):
 
 	return user
 
-def create_user(email: str, session: ScopedSession):
+def create_user(email: str, name:str, password: str, session: ScopedSession):
 	"""Creates a new user
 
 	Args:
@@ -39,8 +42,12 @@ def create_user(email: str, session: ScopedSession):
 	Returns:
 			int: Newly created user ID
 	"""
-	# TODO: this needs to be expanded
-	user = User(email=email)
+
+	code = verify_code()
+
+	user = User(email=email, password_hash=hash_password(password), username=name, verification_code=code)
+
+	emailer.send_email(code, "Verification Code for Flourish", email)
 
 	try:
 		session.add(user)
@@ -51,6 +58,25 @@ def create_user(email: str, session: ScopedSession):
 		raise ConflictError('User with email already exists')
 
 	return user.user_id
+
+def login(email: str, password: str, session: ScopedSession) -> bool :
+	"""
+	Args:
+			email (str): registered user's email ID
+			password (str): registered user's password
+	"""
+	query = select(User).where(User.email == email)
+	# user = session.query(exists(User).where(User.email == email)
+
+	try:
+		user: User = session.execute(query).scalars()
+		return check_password(password, user.password_hash)
+	except Exception as e:
+		logging.error(f'Login failed for user {email}')
+		logging.exception(e)
+		raise e
+
+
 
 def edit_user(user_id: int, user_update: dict, session: ScopedSession):
 	"""Edits user information

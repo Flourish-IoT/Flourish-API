@@ -11,6 +11,8 @@ from app.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSum
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
+from app.common.utils.authentication import authenticator
+
 api = Namespace('users', description='User related operations', path='/users')
 
 @api.route('')
@@ -86,8 +88,10 @@ class UserPassword(Resource):
 @api.route('/reset_password')
 class UserPassword(Resource):
 	@serialize_with(ResetUserPasswordSchema)
+	@authenticator.login_required
 	def post(self, body: dict):
 		try:
+			current_user = authenticator.current_user()
 			start_user_reset_password(body['email'], db.session)
 		except ForbiddenError as e:
 			raise Forbidden(str(e))

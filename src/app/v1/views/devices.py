@@ -15,7 +15,7 @@ api = Namespace('devices', description='Device related operations', path='/devic
 class DeviceResource(Resource):
 	@marshal_with(DeviceSchema)
 	def get(self, device_id: int):
-		# TODO: authentication
+		# TODO: device authentication
 		try:
 			device = get_device(device_id, db.session)
 		except NotFoundError as e:

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from app import db
 from bcrypt import checkpw, gensalt, hashpw
 from jwt import decode, encode
 from flask_httpauth import HTTPTokenAuth
+from services import login
 
 KEY: str = "SECRET-KEY"  # TODO: Move to configuration
 
@@ -12,7 +14,7 @@ def verify_user_credentials(username: str, password: str) -> bool:
     """
     Returns whether or not a user is logged in
     """
-    return login(username, password)
+    return login(username, password, db.session)
 
 @authenticator.verify_token
 def verify_token(token: bytes):

@@ -7,12 +7,11 @@ from sqlalchemy import Column
 from app.core.event_engine.events import Event, EventHandler, PlantEventType, DeviceEventType
 from app.core.event_engine.events.field.field import Field
 from app.core.event_engine.events.field.queries import ValueQuery
-from app.core.event_engine.events.field.score_functions import TargetValueScoreFunction, ValueRating
-from app.core.event_engine.events.field.score_functions.target_value_score import PlantTypeMinMaxSource
+from app.core.event_engine.events.field.score_functions import TargetValueScoreFunction, ValueRating, target_value_score, PlantTypeMinMaxSource
 
 from app.core.event_engine.events.handlers import SensorDataEventHandler
 from app.core.event_engine.events.triggers.actions import GenerateAlertAction
-from app.core.event_engine.events.triggers import EqualsTrigger
+from app.core.event_engine.events.triggers import EqualsTrigger, AndTrigger, LessThanTrigger, GreaterThanTrigger
 from app.core.models import SensorData, Plant, Device, SeverityLevelEnum
 from app.core.models.plant_type import PlantType
 
@@ -39,28 +38,63 @@ def load_event_handlers(event: Event) -> List[EventHandler]:
 def generate_default_plant_event_handlers(plant: Plant):
 	return [
 		SensorDataEventHandler(
-			Field(SensorData.temperature,
-				ValueQuery(SensorData, SensorData.plant_id, SensorData.time),
-				TargetValueScoreFunction(PlantTypeMinMaxSource(plant, PlantType.minimum_temperature, PlantType.maximum_temperature))
-			),
+			Field(SensorData.temperature, {
+				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, target_value_score(PlantTypeMinMaxSource(plant, PlantType.minimum_temperature, PlantType.maximum_temperature))),
+				# 'slope':
+			}),
 			[
-				EqualsTrigger(ValueRating.TooLow,
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.TooLow),
+						LessThanTrigger(field='slope', value=0),
+					],
 					[GenerateAlertAction('{event.plant.name} is too cold! Turn up the heat', SeverityLevelEnum.Critical, False, timedelta(days=1))]
 				),
-				EqualsTrigger(ValueRating.Low,
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.Low),
+						LessThanTrigger(field='slope', value=0),
+					],
 					[GenerateAlertAction('{event.plant.name} is feeling cold. You should consider increasing the temperature', SeverityLevelEnum.Warning, False, timedelta(days=1))]
 				),
-				EqualsTrigger(ValueRating.Nominal,
-					[]
-				),
-				EqualsTrigger(ValueRating.High,
+				# EqualsTrigger(ValueRating.Nominal,
+				# 	[]
+				# ),
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.High),
+						GreaterThanTrigger(field='slope', value=0),
+					],
 					[GenerateAlertAction('{event.plant.name} is feeling hot. You should consider decreasing the temperature', SeverityLevelEnum.Warning, False, timedelta(days=1))]
 				),
-				EqualsTrigger(ValueRating.TooHigh,
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.TooHigh),
+						GreaterThanTrigger(field='slope', value=0),
+					],
 					[GenerateAlertAction('{event.plant.name} is too hot! Lower the heat', SeverityLevelEnum.Critical, False, timedelta(days=1))]
 				),
 			]
 		),
+		# SensorDataEventHandler(
+		# 	Field(SensorData.temperature,
+		# 		ValueQuery(SensorData, SensorData.plant_id, SensorData.time),
+		# 		TargetValueScoreFunction(PlantTypeMinMaxSource(plant, PlantType.minimum_temperature, PlantType.maximum_temperature))
+		# 	),
+		# 	[
+		# 		EqualsTrigger(ValueRating.TooLow,
+		# 			[GenerateAlertAction('{event.plant.name} is too cold! Turn up the heat', SeverityLevelEnum.Critical, False, timedelta(days=1))]
+		# 		),
+		# 		EqualsTrigger(ValueRating.Low,
+		# 			[GenerateAlertAction('{event.plant.name} is feeling cold. You should consider increasing the temperature', SeverityLevelEnum.Warning, False, timedelta(days=1))]
+		# 		),
+		# 		EqualsTrigger(ValueRating.Nominal,
+		# 			[]
+		# 		),
+		# 		EqualsTrigger(ValueRating.High,
+		# 			[GenerateAlertAction('{event.plant.name} is feeling hot. You should consider decreasing the temperature', SeverityLevelEnum.Warning, False, timedelta(days=1))]
+		# 		),
+		# 		EqualsTrigger(ValueRating.TooHigh,
+		# 			[GenerateAlertAction('{event.plant.name} is too hot! Lower the heat', SeverityLevelEnum.Critical, False, timedelta(days=1))]
+		# 		),
+		# 	]
+		# ),
 		# SensorDataEventHandler(
 		# 	Field(SensorData.humidity, ValueQuery(SensorData, SensorData.plant_id, SensorData.time), TargetValueScoreFunction), [ ]
 		# ),

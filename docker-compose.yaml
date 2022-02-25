@@ -9,7 +9,7 @@ services:
     depends_on:
       - flourish-db
   flourish-db:
-    image: timescale/timescaledb:latest-pg14
+    image: timescale/timescaledb-ha:pg14-latest
     volumes:
       - timescaledb_volume:/var/lib/postgresql/data
     ports:

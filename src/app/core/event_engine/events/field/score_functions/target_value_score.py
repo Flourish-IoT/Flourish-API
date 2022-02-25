@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import IntEnum
 import logging
-from typing import Any, Tuple, cast
+from typing import Any, Callable, Tuple, cast
 
 from app.core.models.plant import Plant
 from .score_function import ScoreFunction
@@ -42,6 +42,29 @@ class PlantTypeMinMaxSource(MinMaxSource):
 class OverrideMinMaxSource(MinMaxSource):
 	def get_min_max(self):
 		raise NotImplementedError
+
+def target_value_score(min_max_source: MinMaxSource) -> Callable[[Any], Any]:
+	def score(value: Comparable) -> ValueRating:
+		# TODO: This needs to be expanded
+		logging.info(f'Scoring value: {value}')
+		min, max = min_max_source.get_min_max()
+
+		if min is None or max is None:
+			logging.info('Min or max is none, cannot score value')
+			return ValueRating.NoRating
+
+		logging.info(f'min={min}, max={max}')
+		match value:
+			case n if n < min:
+				return ValueRating.TooLow
+			case n if n > min and n < max:
+				return ValueRating.Nominal
+			case n if n > max:
+				return ValueRating.TooHigh
+			case _:
+				return ValueRating.NoRating
+
+	return score
 
 class TargetValueScoreFunction(ScoreFunction):
 	min_max_source: MinMaxSource

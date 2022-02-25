@@ -9,13 +9,27 @@ events:
       rating_threshold_overrides:
         maximum_value: 90
         minimum_value: 20
+      # query:
+      #   query_type: Average
+      #   query_min: 2m
+      #   query_max: 10m
       query:
-        query_type: Average
-        query_min: 2m
-        query_max: 10m
+        value:
+          query_type: Average
+          query_min: 2m
+          query_max: 10m
+        slope:
+          query_type: Slope
+          query_min: 2m
+          query_max: 10m
     triggers:
       - on:
-          value: TooLow
+          and:
+            value:
+              equals: TooLow
+            slope:
+              less_than:
+                0
         execute:
           - action_type: GenerateAlert
             message_template: '{plant.plant_name} needs water!'

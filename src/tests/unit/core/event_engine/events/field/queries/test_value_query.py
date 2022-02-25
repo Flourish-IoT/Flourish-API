@@ -1,4 +1,5 @@
 import math
+from typing import Any
 from app.core.event_engine.events.field.queries import ValueQuery
 from app.core.models import User, Alert, Device, SensorData
 from unittest.mock import MagicMock

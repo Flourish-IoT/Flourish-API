@@ -1,3 +1,4 @@
+from .and_trigger import *
 from .equals import *
 from .trigger import *
 from .less_than import *

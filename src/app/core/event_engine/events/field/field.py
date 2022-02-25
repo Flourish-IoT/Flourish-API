@@ -1,5 +1,8 @@
-from typing import Any
-from .queries import Query
+import logging
+from typing import Any, Dict
+
+from app.core.models.sensor_data import SensorData
+from .queries import Query, ValueQuery
 from .score_functions import ScoreFunction
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import Column
@@ -7,19 +10,17 @@ from sqlalchemy import Column
 
 class Field:
 	field: Column
-	query: Query
-	score_function: ScoreFunction | None
+	queries: Dict[str, Query]
 
-	def __init__(self, field: Column | Any, query: Query, score_function: ScoreFunction = None) -> None:
+	def __init__(self, field: Column | Any, queries: Dict[str, Query]) -> None:
 		self.field = field
-		self.query = query
-		self.score_function = score_function
+		self.queries = queries
 
 	def get_value(self, id: int, session: ScopedSession):
-		value = self.query.execute(id, self.field, session)
+		logging.info(f'Getting value for field {self.field} and id {id}')
+		value = {}
+		for field, query in self.queries.items():
+			value[field] = query.execute(id, self.field, session)
 
-		# if score_function is defined, use it to process value
-		if self.score_function:
-			value = self.score_function.score(value)
-
+		logging.info(f'Value={value}')
 		return value

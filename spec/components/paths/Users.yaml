@@ -231,29 +231,28 @@ users.id.password:
   put:
     tags:
       - Users
-    description: Update user password based on current password or reset code
+    description: Update user password using current password or reset code
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            oneOf:
-            - type: object
-              properties:
-                password:
-                  type: string
-                  example: "12345"
-                newPassword:
-                  type: string
-                  example: "6789"
-            - type: object
-              properties:
-                resetCode:
-                  type: integer
-                  example: 1234
-                newPassword:
-                  type: string
-                  example: "6789"
+            type: object
+            properties:
+              authenticationType:
+                type: string
+                enum:
+                  - 'password'
+                  - 'resetCode'
+              authentication:
+                oneOf:
+                  - type: string
+                    example: "examplePassword1"
+                  - type: integer
+                    example: 123456
+              newPassword:
+                type: string
+                example: "NewPassword2"
     responses:
       '204':
         description: OK. User password updated
@@ -278,13 +277,7 @@ users.id.preferences:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              preferences:
-                type: object
-                properties:
-                  unitPreference:
-                    $ref: "../schemas/index.yaml#/UnitPreference"
+            $ref: '../schemas/index.yaml#/UserPreferences'
     responses:
       '204':
         description: OK. User preferences updated

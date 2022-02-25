@@ -1,12 +1,9 @@
-from datetime import datetime
-import logging
-from typing import Dict, List, cast
-
-from .value_rating import ValueRating
+from typing import Dict, cast
 from .base_model import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.dialects.postgresql import INET
 from sqlalchemy.orm import relationship
-from .plant_type import PlantType
+from .plant_type import *
 
 class Plant(BaseModel):
 	__tablename__ = 'plants'
@@ -43,12 +40,12 @@ class Plant(BaseModel):
 		nullable=True
 	))
 
-	target_value_scores: Dict[str, ValueRating] = {
-		'temperature': ValueRating.NoRating,
-		'light': ValueRating.NoRating,
-		'humidity': ValueRating.NoRating,
-		'soil_moisture': ValueRating.NoRating
-	}
+	# target_value_scores: Dict[str, ValueRating] = {
+	# 	'temperature': ValueRating.NoRating,
+	# 	'light': ValueRating.NoRating,
+	# 	'humidity': ValueRating.NoRating,
+	# 	'soil_moisture': ValueRating.NoRating
+	# }
 
 	def get_score_function(self, field: str):
 		# TODO: get score function from db
@@ -72,3 +69,6 @@ class Plant(BaseModel):
 	# 		InRangeRule(self.plant_type.minimum_humidity, self.plant_type.maximum_humidity, "Humidity"),
 	# 		InRangeRule(self.plant_type.minimum_soil_moisture, self.plant_type.maximum_soil_moisture, "Soil Moisture"),
 	# 	]
+	# target_value_ratings: Dict[str, int] = {'temperature': None , 'light': None, 'humidity': None, 'soil_moisture': None}
+
+

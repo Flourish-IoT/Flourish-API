@@ -9,5 +9,7 @@ from .sensor_data import SensorData
 from .plant_type import PlantType
 from .value_rating import ValueRating
 from .base_model import BaseModel
+from .temperature_units import TemperatureUnits, TemperatureUnitEnum
+from .user_preferences import UserPreferences
 
 from .int_enum_field import IntEnumField

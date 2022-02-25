@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 class With:
-	"""Record Type inspired mixin that changes a property value without mutating the original object"""
+	"""C# Record Type inspired mixin that changes a property value without mutating the original object"""
 	def with_value(self, prop: Any, value: Any):
 		"""Returns a new object with updated property value
 

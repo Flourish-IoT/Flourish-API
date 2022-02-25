@@ -4,20 +4,18 @@ from app.core.util import EnumValuesMixin
 from .base_model import BaseModel
 from sqlalchemy import Column, Integer, String
 
-class SeverityLevel(BaseModel):
-	__tablename__ = 'severity_levels'
+class TemperatureUnits(BaseModel):
+	__tablename__ = 'temperature_units'
 
-	severity_id = Column(
+	temperature_unit_id = Column(
 		Integer,
 		primary_key = True
 	)
-	description = Column(
+	unit = Column(
 		String(),
 		nullable=False
 	)
 
-class SeverityLevelEnum(EnumValuesMixin, IntEnum):
-	Info = 1,
-	Warning = 2,
-	Critical = 3,
-	Error = 4,
+class TemperatureUnitEnum(EnumValuesMixin, IntEnum):
+	Fahrenheit = 1,
+	Celcius = 2,

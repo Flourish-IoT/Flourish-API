@@ -4,6 +4,9 @@ User:
 UnitPreference:
   $ref: './User.yaml#/UnitPreference'
 
+UserPreferences:
+  $ref: './User.yaml#/UserPreferences'
+
 Error:
   $ref: './Error.yaml'
 

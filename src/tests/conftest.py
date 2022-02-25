@@ -14,3 +14,19 @@ def app():
 @pytest.fixture
 def session(app):
 	return db.session
+
+def pytest_addoption(parser):
+	parser.addoption('--db', action="store_true", default=False, help='Run tests against database')
+
+def pytest_configure(config):
+	config.addinivalue_line("markers", "db: Mark tests as db to run")
+
+def pytest_collection_modifyitems(config, items):
+	if config.getoption('--db'):
+		# --db passed, do not skip tests that require the database
+		return
+
+	skip_db = pytest.mark.skip(reason='Need --db option to run')
+	for item in items:
+		if 'db' in item.keywords:
+			item.add_marker(skip_db)

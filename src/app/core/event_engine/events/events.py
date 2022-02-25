@@ -1,10 +1,12 @@
 from dataclasses import dataclass
 
 from app.core.models import Plant, Device, SensorData
+from sqlalchemy.orm.scoping import ScopedSession
 
 @dataclass
 class Event:
-	pass
+	user_id: int
+	session: ScopedSession
 
 ###################################
 # plant events

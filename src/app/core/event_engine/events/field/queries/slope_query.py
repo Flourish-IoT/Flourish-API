@@ -6,7 +6,9 @@ from sqlalchemy import select, Column, TIMESTAMP, exc, Integer
 from datetime import datetime, timedelta
 
 class SlopeQuery(Query):
-	def __init__(self, table: WhitelistedTable, id_column: Column[Integer] | int, time_start: timedelta, time_end: timedelta, post_process_function: Callable[[Any], Any] | None = None):
+	time_start: timedelta
+	time_end: timedelta | None
+	def __init__(self, table: WhitelistedTable, id_column: Column[Integer] | int, time_start: timedelta, time_end: timedelta | None = None, post_process_function: Callable[[Any], Any] | None = None):
 		super().__init__(table, id_column, None, post_process_function)
 		self.time_start = time_start
 		self.time_end = time_end

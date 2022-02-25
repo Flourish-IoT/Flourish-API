@@ -1,8 +1,9 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 import logging
-from app.core.event_engine.events import Event
+from app.core.event_engine.events import Event, DeviceEventType, PlantEventType
 from app.core.event_engine.events.triggers.actions import Action
-from app.core.models import SeverityLevelEnum
+from app.core.models import SeverityLevelEnum, Alert
+from app.core.services import create_alert
 
 
 class GenerateAlertAction(Action):
@@ -26,5 +27,18 @@ class GenerateAlertAction(Action):
 		message = self.generate_message(event)
 		logging.info(f'Persisting alert: message={message}, severity={self.severity}')
 
-		# TODO: persist alert
+		alert = Alert(message=message, severity=self.severity, time=datetime.now())
+		match event:
+			case PlantEventType(plant):
+				alert.plant_id = plant.plant_id
+			case DeviceEventType(device):
+				alert.device_id = device.device_id
+			case _:
+				logging.error(f'Unsupported event type: {event}')
+				raise ValueError(f'Unsupported event type: {event}')
+
+		# persist alert
+		create_alert(event.user_id, alert, event.session)
+
+		# TODO: push notification
 		return True

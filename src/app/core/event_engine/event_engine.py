@@ -6,7 +6,7 @@ from typing import List
 from sqlalchemy import Column
 from app.core.event_engine.events import Event, EventHandler, PlantEventType, DeviceEventType
 from app.core.event_engine.events.field.field import Field
-from app.core.event_engine.events.field.queries import ValueQuery
+from app.core.event_engine.events.field.queries import ValueQuery, SlopeQuery
 from app.core.event_engine.events.field.score_functions import TargetValueScoreFunction, ValueRating, target_value_score, PlantTypeMinMaxSource
 
 from app.core.event_engine.events.handlers import SensorDataEventHandler
@@ -40,7 +40,7 @@ def generate_default_plant_event_handlers(plant: Plant):
 		SensorDataEventHandler(
 			Field(SensorData.temperature, {
 				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, target_value_score(PlantTypeMinMaxSource(plant, PlantType.minimum_temperature, PlantType.maximum_temperature))),
-				# 'slope':
+				'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
 			}),
 			[
 				AndTrigger([

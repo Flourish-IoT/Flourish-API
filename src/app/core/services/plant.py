@@ -11,8 +11,21 @@ from typing import List
 import logging
 
 from app.core.models.plant import Plant
+from app.core.models.sensor_data import SensorData
 
 def get_plants(user_id: int, session: ScopedSession):
+	"""_summary_
+
+	Args:
+		user_id (int): _description_
+		session (ScopedSession): _description_
+
+	Raises:
+		NotFoundError: Couldnt find plants
+
+	Returns:
+		List: list of plants
+	"""	
 	query = select(Plant).where(Plant.user_id == user_id)
 
 	try:
@@ -28,6 +41,19 @@ def get_plants(user_id: int, session: ScopedSession):
 	return plants
 
 def create_plant(user_id: int, plant: Plant, session: ScopedSession):
+	"""_summary_
+
+	Args:
+		user_id (int): _description_
+		plant (Plant): _description_
+		session (ScopedSession): _description_
+
+	Raises:
+		DatabaseError: Couldnt create plant
+
+	Returns:
+		int: plant_id
+	"""	
 	plant.user_id = user_id
 	
 	try:
@@ -41,6 +67,18 @@ def create_plant(user_id: int, plant: Plant, session: ScopedSession):
 	return plant.plant_id 
 
 def get_plant_info(plant_id: int, session: ScopedSession):
+	"""_summary_
+
+	Args:
+		plant_id (int): _description_
+		session (ScopedSession): _description_
+
+	Raises:
+		NotFoundError: plant not found
+
+	Returns:
+		List: plant info for a particularplant
+	"""	
 	query = select(Plant).where(Plant.plant_id == plant_id)
 
 	try:
@@ -55,6 +93,17 @@ def get_plant_info(plant_id: int, session: ScopedSession):
 	return plant
 
 def edit_plant_info(plant_id: int, plant_update: dict, session: ScopedSession):
+	"""_summary_
+
+	Args:
+		plant_id (int): _description_
+		plant_update (dict): _description_
+		session (ScopedSession): _description_
+
+	Raises:
+		NotFoundError: couldnt find plant to edit
+		DatabaseError: couldnt edit plant
+	"""	
 	try:
 		session.execute(
 			update(Plant)
@@ -72,6 +121,16 @@ def edit_plant_info(plant_id: int, plant_update: dict, session: ScopedSession):
 		raise e
 
 def delete_plant(plant_id: int, session: ScopedSession):
+	"""_summary_
+
+	Args:
+		plant_id (int): _description_
+		session (ScopedSession): _description_
+
+	Raises:
+		NotFoundError: _description_
+		DatabaseError: couldnt delete plant
+	"""	
 	plant = session.get(Plant, plant_id)
 	
 	if plant is None:
@@ -86,7 +145,16 @@ def delete_plant(plant_id: int, session: ScopedSession):
 		raise e
 
 def get_plant_sensor_data(plant_id: int, start_date: string, end_date: string, session: ScopedSession):
-	pass
+	query = select(SensorData).where(SensorData.plant_id == plant_id, SensorData.time >= start_date, SensorData.time <=end_date)
+	try:
+		# data = session.get(SensorData, plant_id)
+		data: List[SensorData] = session.execute(query).scalars().all()
+	except NotFoundError as e:
+		logging.error('Failed to find plant')
+		logging.exception(e)
+		raise e
+	
+	return data
 
 def get_plant_target_value_ratings(plant: Plant):
 	# TODO: make this right

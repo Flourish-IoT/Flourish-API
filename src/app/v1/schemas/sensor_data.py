@@ -15,3 +15,7 @@ class SensorDataSchema(CamelCaseSchema):
 	@post_load
 	def make(self, data, **kwargs):
 		return SensorData(**data)
+
+class PlantSensorDataSchema(SensorDataSchema):
+	class Meta:
+		fields = ('plant_id', 'time', 'temperature', 'humidity', 'soil_moisture', 'light')

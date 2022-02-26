@@ -12,6 +12,18 @@ import logging
 from app.core.models.plant_type import PlantType
 
 def get_plant_type(plant_type_id: int, session: ScopedSession):
+    """_summary_
+
+    Args:
+        plant_type_id (int): _description_
+        session (ScopedSession): _description_
+
+    Raises:
+        NotFoundError: _description_
+
+    Returns:
+        plant_type: returns info on plant type
+    """    
     plant_type= session.get(PlantType, plant_type_id)
 	
     if plant_type is None:
@@ -20,6 +32,17 @@ def get_plant_type(plant_type_id: int, session: ScopedSession):
     return plant_type
 
 def get_all_plant_types(session: ScopedSession):
+    """_summary_
+
+    Args:
+        session (ScopedSession): _description_
+
+    Raises:
+        NotFoundError: Cant find plants
+
+    Returns:
+        List: list of plant types
+    """    
     query = select(PlantType)
 
     try:

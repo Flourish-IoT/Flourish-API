@@ -5,10 +5,10 @@ from sqlalchemy import delete
 from app import db
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError
 from app.core.errors import NotFoundError
-from app.v1.schemas import PlantDetailsSchema, PlantUpdateSchema
+from app.v1.schemas import PlantDetailsSchema, PlantUpdateSchema, PlantSensorDataSchema
 from app.common.utils import marshal_with, serialize_with
 
-from app.core.services import delete_plant, get_plant_info, edit_plant_info
+from app.core.services import delete_plant, get_plant_info, edit_plant_info, get_plant_sensor_data
 
 api = Namespace('plants', description='Plant related operations', path='/plants')
 
@@ -48,3 +48,16 @@ class Plant(Resource):
 			raise InternalServerError
 		
 		return None, 204
+
+@api.route('/<int:plant_id>/data')
+class Plant(Resource):
+	@marshal_with(PlantSensorDataSchema)
+	def get(self, plant_id, start_date, end_date):
+		try:
+			data = get_plant_sensor_data(plant_id, start_date, end_date, db.session)
+		except Exception as e:
+			logging.error('failed to get plant sensor data')
+			logging.exception(e)
+			raise e
+
+		return data

@@ -2,10 +2,13 @@ from typing import Any
 from sqlalchemy import Column
 from sqlalchemy.orm import registry
 from sqlalchemy.orm.decl_api import DeclarativeMeta
+from copy import deepcopy
+
+from app.core.util import PrettyPrint
 
 mapper_registry = registry()
 
-class BaseModel(metaclass=DeclarativeMeta):
+class BaseModel(PrettyPrint, metaclass=DeclarativeMeta):
     __abstract__ = True
 
     # these are supplied by the sqlalchemy2-stubs, so may be omitted
@@ -33,3 +36,16 @@ class BaseModel(metaclass=DeclarativeMeta):
                 Any: Value of column
         """
         return getattr(self, column.property.key)
+
+    def __eq__(self, other):
+        # from https://stackoverflow.com/q/39043003
+        classes_match = isinstance(other, self.__class__)
+        a, b = deepcopy(self.__dict__), deepcopy(other.__dict__)
+        #compare based on equality our attributes, ignoring SQLAlchemy internal stuff
+        a.pop('_sa_instance_state', None)
+        b.pop('_sa_instance_state', None)
+        attrs_match = (a == b)
+        return classes_match and attrs_match
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

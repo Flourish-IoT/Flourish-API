@@ -118,7 +118,11 @@ def generate_default_device_event_handlers(device: Device):
 
 def handle(event: Event):
 	# TODO: get handlers from config
-	handlers = load_event_handlers(event)
+	# handlers = load_event_handlers(event)
+	if isinstance(event, PlantEventType):
+		handlers = generate_default_plant_event_handlers(event.plant)
+	else:
+		raise ValueError("Only plant event types are implemented")
 
 	for handler in handlers:
 		handler.handle(event)

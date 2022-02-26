@@ -41,8 +41,10 @@ class GeneratePlantAlertAction(GenerateAlertAction):
 	def generate(self, event: PlantEventType):
 		alert = super().generate(event)
 		alert.plant_id = event.plant.plant_id
+		return alert
 
 class GenerateDeviceAlertAction(GenerateAlertAction):
 	def generate(self, event: DeviceEventType):
 		alert = super().generate(event)
 		alert.device_id = event.device.device_id
+		return alert

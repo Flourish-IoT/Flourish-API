@@ -1,4 +1,6 @@
 # hack to make pytest import correctly
+from datetime import datetime
+from unittest.mock import MagicMock
 import pytest
 from app import Environment, db, create_app
 

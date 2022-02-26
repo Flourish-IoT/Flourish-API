@@ -1,12 +1,13 @@
 import logging
 from typing import List
 from app.core.errors import NotFoundError, ConflictError
+from app.core.event_engine import event_engine
+from app.core.event_engine.events import SensorDataEvent
 from app.core.models import Device, Plant
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc, update, exists
 
 from app.core.models import DeviceTypeEnum, DeviceStateEnum, SensorData
-from app.core.services import generate_alert, update_plant_target_value_ratings, generate_alerts
 
 def get_devices(user_id: int, session: ScopedSession, *, device_type: DeviceTypeEnum | None = None, device_state: DeviceTypeEnum | None = None):
 	"""Gets all devices for a user
@@ -167,7 +168,7 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 	logging.info(f'Recording sensor data for {len(plants)} plants: {plants}')
 
 	# record values in table for each plant
-	sensor_data = list(map(lambda plant: data.with_value(SensorData.plant_id, plant.plant_id), plants))
+	sensor_data = [data.with_value(SensorData.plant_id, plant.plant_id) for plant in plants]
 
 	try:
 		session.bulk_save_objects(sensor_data)
@@ -177,6 +178,9 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
+	for plant, sensor_data in zip(plants, sensor_data):
+		event_engine.handle(SensorDataEvent(user_id=plant.user_id, plant=plant, data=sensor_data, session=session))
+
 	# perform checks for each plant and generate alerts
 	# alerts = []
 	# for plant in plants:
@@ -184,7 +188,6 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 	# 	alerts.append(generate_alerts(plant))
 
 	# return state
-	pass
 
 def device_exists(device_id: int, session: ScopedSession) -> bool:
 	"""Checks if a device with given device_id exists

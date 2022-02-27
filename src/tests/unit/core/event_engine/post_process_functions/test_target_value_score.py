@@ -1,11 +1,10 @@
-from app.core.event_engine.post_process_functions import ValueRating, target_value_score, MinMaxSource,  PlantTypeMinMaxSource, OverrideMinMaxSource
+from app.core.event_engine.post_process_functions import ValueRating, target_value_score, score
+from app.core.event_engine.post_process_functions.target_value_score import _get_plant_min_max
 from unittest.mock import MagicMock
 import pytest
 
 from app.core.models import Plant, PlantType
 
-
-# TODO: integration test with MinMaxSource
 class TestTargetValueScore:
 	@pytest.mark.parametrize('min, max, value, expected', [
 		( 1, 3, 2, ValueRating.Nominal ),
@@ -17,13 +16,10 @@ class TestTargetValueScore:
 	def test_score(self, min, max, value, expected):
 		# TODO: expand this
 		"""Assert score function properly scores values"""
-		mock_min_max_source = MagicMock(MinMaxSource)
-		mock_min_max_source.get_min_max.return_value = (min, max)
-		score_function = target_value_score(mock_min_max_source)
-		rating = score_function(value)
+		rating = score(value, min, max)
 		assert rating == expected
 
-class TestPlantTypeMinMaxSource:
+class TestPlantValueScore:
 	@pytest.mark.parametrize('plant_type, min_col, max_col, expected', [
 			(PlantType(minimum_light = 20, maximum_light = 40), PlantType.minimum_light, PlantType.maximum_light, (20, 40)),
 			(PlantType(minimum_temperature = 60, maximum_temperature = 80), PlantType.minimum_temperature, PlantType.maximum_temperature, (60, 80)),
@@ -34,9 +30,9 @@ class TestPlantTypeMinMaxSource:
 	def test_get_min_max(self, plant_type, min_col, max_col, expected):
 		"""Test that get_min_max returns the correct values"""
 		plant = Plant(plant_type=plant_type)
-		source = PlantTypeMinMaxSource(plant, min_col, max_col)
+		min_max = _get_plant_min_max(plant, min_col, max_col)
 
-		assert source.get_min_max() == expected
+		assert min_max == expected
 
 	@pytest.mark.parametrize('min_col, max_col', [
 			(PlantType.minimum_light, PlantType.maximum_light),
@@ -48,6 +44,6 @@ class TestPlantTypeMinMaxSource:
 	def test_get_min_max_no_plant_type(self, min_col, max_col):
 		"""Test that get_min_max returns ( None, None ) if no plant_type is associated with plant"""
 		plant = Plant(plant_type=None)
-		source = PlantTypeMinMaxSource(plant, min_col, max_col)
+		min_max = _get_plant_min_max(plant, min_col, max_col)
 
-		assert source.get_min_max() == (None, None)
+		assert min_max == (None, None)

@@ -1,16 +1,9 @@
 from app.core.event_engine import Field
-from app.core.event_engine.post_process_functions import MinMaxSource
 from app.core.event_engine.queries import Query
 from unittest.mock import MagicMock
 import pytest
 from sqlalchemy import Column
 from sqlalchemy.orm import Session
-
-
-def _get_mock_min_max_source(min, max):
-	mock =  MagicMock(MinMaxSource)
-	mock.get_min_max.return_value = (min, max)
-	return mock
 
 def _get_mock_query(v):
 	mock =  MagicMock(Query)

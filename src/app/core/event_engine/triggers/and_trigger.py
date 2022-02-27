@@ -8,7 +8,13 @@ from app.core.event_engine.actions import Action
 T = TypeVar('T', bound=Comparable)
 
 class AndTrigger(Trigger, Generic[T]):
+	"""Executes if all nested triggers return True"""
 	def __init__(self, triggers: List[Trigger[T]], actions: List[Action] = []) -> None:
+		"""
+		Args:
+				triggers (List[Trigger[T]]): Triggers to test
+				actions (List[Action], optional): Actions to execute on success. Defaults to [].
+		"""
 		super().__init__(actions)
 		self.triggers = triggers
 

@@ -9,7 +9,14 @@ T = TypeVar('T', bound=Comparable)
 
 # TODO: might need to investigate better equality for floats
 class EqualsTrigger(Trigger, Generic[T]):
+	"""Executes if value is equal to trigger value"""
 	def __init__(self, value: T, actions: List[Action] = [], *, field: str | None = None) -> None:
+		"""
+		Args:
+				value (T): Value to test against
+				actions (List[Action], optional): Actions to execute on success. Defaults to [].
+				field (str | None, optional): Field to use when testing trigger value. Defaults to None.
+		"""
 		super().__init__(actions, field)
 		self.value = value
 

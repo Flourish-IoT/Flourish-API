@@ -8,7 +8,7 @@ from app.core.event_engine import Field
 from app.core.event_engine.handlers import EventHandler
 from app.core.event_engine.events import Event, PlantEventType, DeviceEventType
 from app.core.event_engine.queries import ValueQuery, SlopeQuery
-from app.core.event_engine.post_process_functions import ValueRating, target_value_score, PlantTypeMinMaxSource
+from app.core.event_engine.post_process_functions import ValueRating, target_value_score, plant_value_score
 from app.core.event_engine.handlers import SensorDataEventHandler
 from app.core.event_engine.actions import GeneratePlantAlertAction
 from app.core.event_engine.triggers import EqualsTrigger, AndTrigger, LessThanTrigger, GreaterThanTrigger
@@ -40,7 +40,7 @@ def generate_default_plant_event_handlers(plant: Plant):
 	return [
 		SensorDataEventHandler(
 			Field(SensorData.temperature, {
-				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, target_value_score(PlantTypeMinMaxSource(plant, PlantType.minimum_temperature, PlantType.maximum_temperature))),
+				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, plant_value_score(plant, PlantType.minimum_temperature, PlantType.maximum_temperature)),
 				# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
 			}),
 			[
@@ -75,7 +75,7 @@ def generate_default_plant_event_handlers(plant: Plant):
 		),
 		SensorDataEventHandler(
 			Field(SensorData.humidity, {
-				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, target_value_score(PlantTypeMinMaxSource(plant, PlantType.minimum_humidity, PlantType.maximum_humidity))),
+				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, plant_value_score(plant, PlantType.minimum_temperature, PlantType.maximum_temperature)),
 				# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
 			}),
 			[
@@ -110,7 +110,7 @@ def generate_default_plant_event_handlers(plant: Plant):
 		),
 		SensorDataEventHandler(
 			Field(SensorData.soil_moisture, {
-				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, target_value_score(PlantTypeMinMaxSource(plant, PlantType.minimum_soil_moisture, PlantType.maximum_soil_moisture))),
+				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, plant_value_score(plant, PlantType.minimum_temperature, PlantType.maximum_temperature)),
 				# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
 			}),
 			[
@@ -145,7 +145,7 @@ def generate_default_plant_event_handlers(plant: Plant):
 		),
 		SensorDataEventHandler(
 			Field(SensorData.light, {
-				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, target_value_score(PlantTypeMinMaxSource(plant, PlantType.minimum_light, PlantType.maximum_light))),
+				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, plant_value_score(plant, PlantType.minimum_temperature, PlantType.maximum_temperature)),
 				# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
 			}),
 			[
@@ -190,6 +190,11 @@ def generate_default_device_event_handlers(device: Device):
 
 
 def handle(event: Event):
+	"""Handles an event
+
+	Args:
+			event (Event): Event to handle
+	"""
 	# TODO: get handlers from config
 	# handlers = load_event_handlers(event)
 	if isinstance(event, PlantEventType):

@@ -9,10 +9,20 @@ class Action(ABC):
 	cooldown: timedelta | None
 
 	def __init__(self, disabled: bool, cooldown: timedelta | None = None):
+		"""
+		Args:
+				disabled (bool): Enables/disables action
+				cooldown (timedelta | None, optional): Action cooldown. Defaults to None.
+		"""
 		self.disabled = disabled
 		self.cooldown = cooldown
 
 	def can_execute(self) -> bool:
+		"""Determines if action can execute based on whether or not is has been disabled or is on cooldown
+
+		Returns:
+				bool: Action can execute
+		"""
 		logging.info('Checking if action can execute')
 		if self.disabled:
 			logging.info('Action disabled, not executing')
@@ -27,4 +37,12 @@ class Action(ABC):
 
 	@abstractmethod
 	def execute(self, event: Event) -> bool:
+		"""Executes action
+
+		Args:
+				event (Event): Event information
+
+		Returns:
+				bool: Action executed
+		"""
 		pass

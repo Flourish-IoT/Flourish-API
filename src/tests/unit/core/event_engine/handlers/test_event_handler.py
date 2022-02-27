@@ -1,5 +1,4 @@
 from app.core.event_engine import Field
-from app.core.event_engine.post_process_functions import MinMaxSource
 from app.core.event_engine.handlers import EventHandler
 from app.core.event_engine.events import *
 from app.core.models import Plant, Device

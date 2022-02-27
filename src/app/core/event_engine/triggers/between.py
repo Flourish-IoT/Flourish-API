@@ -8,8 +8,19 @@ from app.core.util import Comparable
 T = TypeVar('T', bound=Comparable)
 
 class BetweenTrigger(Trigger, Generic[T]):
+	"""Executes actions if value is between defined values"""
 	min: T
 	def __init__(self, min: T, max: T, actions: List[Action], *, field: str | None = None) -> None:
+		"""
+		Args:
+				min (T): Minimum value
+				max (T): Maximum value
+				actions (List[Action]): Actions to execute on success
+				field (str | None, optional): Field to use when testing trigger value. Defaults to None.
+
+		Raises:
+				ValueError: Minimum value is less than maximum
+		"""
 		super().__init__(actions, field)
 		if min > max:
 			raise ValueError('min must be less than max')

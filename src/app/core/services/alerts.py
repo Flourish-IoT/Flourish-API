@@ -1,9 +1,10 @@
 import logging
 from typing import List
 from app.core.errors import NotFoundError, ConflictError
-from app.core.models import Device, Alert, SensorData
+from app.core.models import Alert, Plant, ValueRating, SeverityLevelEnum
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc, update
+from datetime import datetime
 
 
 def get_alerts(user_id: int, session: ScopedSession, *, viewed: bool | None = None, plant_id: int | None = None, device_id: int | None = None):
@@ -67,8 +68,27 @@ def get_alert(alert_id: int, session: ScopedSession):
 
 
 def create_alert(user_id: int, alert: Alert, session: ScopedSession):
-	# TODO:
-	raise NotImplementedError()
+	"""Creates alert
+
+	Args:
+			user_id (int): ID of user
+			alert (Alert): Alert to be created
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			ConflictError: _description_
+	"""
+	alert.user_id = user_id
+
+	try:
+		session.add(alert)
+		session.commit()
+	except exc.IntegrityError as e:
+		logging.error('Failed to create user')
+		logging.exception(e)
+		raise ConflictError('User with email already exists')
+
+	# TODO: push notifications
 
 def delete_alert(alert_id: int, session: ScopedSession):
 	"""Deletes alert

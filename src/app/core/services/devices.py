@@ -1,6 +1,8 @@
 import logging
 from typing import List
 from app.core.errors import NotFoundError, ConflictError
+from app.core.event_engine import event_engine
+from app.core.event_engine.events import SensorDataEvent
 from app.core.models import Device, Plant
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc, update, exists
@@ -149,24 +151,24 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 	# TODO: return state update
 
 	# get all plants associated with device
-	plant_query = select(Plant.plant_id).where(Plant.device_id == device_id)
+	plant_query = select(Plant).where(Plant.device_id == device_id)
 
 	try:
-		plant_ids: List[int] = session.execute(plant_query).scalars().all()
+		plants: List[Plant] = session.execute(plant_query).scalars().all()
 	except exc.DatabaseError as e:
 		logging.error('Failed to update device')
 		logging.exception(e)
 		raise e
 
-	if len(plant_ids) == 0:
+	if len(plants) == 0:
 		logging.info(f'No plants associated with device {device_id}. Data will not be recorded')
 		# TODO: return state
 		return
 
-	logging.info(f'Recording sensor data for {len(plant_ids)} plants: {plant_ids}')
+	logging.info(f'Recording sensor data for {len(plants)} plants: {plants}')
 
 	# record values in table for each plant
-	sensor_data = list(map(lambda plant_id: data.with_value(SensorData.plant_id, plant_id), plant_ids))
+	sensor_data = [data.with_value(SensorData.plant_id, plant.plant_id) for plant in plants]
 
 	try:
 		session.bulk_save_objects(sensor_data)
@@ -176,12 +178,16 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
-	# perform checks for each plant
+	for plant, sensor_data in zip(plants, sensor_data):
+		event_engine.handle(SensorDataEvent(user_id=plant.user_id, plant=plant, data=sensor_data, session=session))
 
-	# generate alerts
+	# perform checks for each plant and generate alerts
+	# alerts = []
+	# for plant in plants:
+	# 	update_plant_target_value_ratings(plant)
+	# 	alerts.append(generate_alerts(plant))
 
 	# return state
-	pass
 
 def device_exists(device_id: int, session: ScopedSession) -> bool:
 	"""Checks if a device with given device_id exists

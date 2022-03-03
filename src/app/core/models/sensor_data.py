@@ -1,11 +1,8 @@
 from datetime import datetime
-from typing import cast
+from typing import cast, Protocol
 from .base_model import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Float
 from sqlalchemy.dialects.postgresql import INET
-from .int_enum_field import IntEnumField
-from .device_type import DeviceTypeEnum
-from .device_state import DeviceStateEnum
 from app.core.util import With
 
 class SensorData(BaseModel, With):

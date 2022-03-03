@@ -17,6 +17,8 @@ from app.core.models import SensorData, Plant, Device, SeverityLevelEnum
 from app.core.models.plant_type import PlantType
 
 def load_event_handlers(event: Event) -> List[EventHandler]:
+	# TODO: finish this
+	raise NotImplementedError()
 	logging.info(f'Loading event handlers for event: {event}')
 
 	handlers = []
@@ -181,6 +183,8 @@ def generate_default_plant_event_handlers(plant: Plant):
 	]
 
 def generate_default_device_event_handlers(device: Device):
+	# TODO: finish this
+	raise NotImplementedError()
 	# return [
 	# 	SensorDataEventHandler(
 	# 		Field(SensorData.temperature, ValueQuery(SensorData, SensorData.plant_id, SensorData.time), TargetValueScoreFunction(None, None)), [ ]

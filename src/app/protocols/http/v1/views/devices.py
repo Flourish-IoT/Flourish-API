@@ -3,7 +3,7 @@ from app.core.services import get_device, edit_device, delete_device, record_dat
 from app.common.utils import marshal_with, serialize_with
 from app.core.errors import NotFoundError
 from app.core.models import Device, SensorData
-from app.v1.schemas import DeviceSchema, DeviceUpdateSchema, SensorDataSchema
+from app.protocols.http.v1.schemas import DeviceSchema, DeviceUpdateSchema, SensorDataSchema
 
 from flask_restx import Resource, Namespace
 from app import db

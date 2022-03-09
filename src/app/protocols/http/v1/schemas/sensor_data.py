@@ -1,6 +1,6 @@
 from marshmallow import fields, post_load
 from app.core.models import SensorData
-from app.v1.utils import CamelCaseSchema, DisablePostLoadMixin
+from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
 
 #######################
 # Schemas

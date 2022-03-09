@@ -1,6 +1,6 @@
 import logging
 from flask.app import Flask
-from app import create_app, Environment
+from app import create_rest_app, Environment
 from argparse import ArgumentParser
 
 
@@ -11,7 +11,7 @@ def configure_app():
 	args, _ = parser.parse_known_args()
 
 	env = Environment[ args.config ]
-	app = create_app(env)
+	app = create_rest_app(env)
 
 	return app, args
 

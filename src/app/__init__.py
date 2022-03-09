@@ -21,7 +21,7 @@ class Environment(Enum):
 		return list(map(lambda x: x.env, list(cls)))
 
 db = SQLAlchemy()
-def create_app(env: Environment = Environment.local) -> Flask:
+def create_rest_app(env: Environment = Environment.local) -> Flask:
 	"""
 	Create Flask application for a specific environment
 	"""
@@ -33,7 +33,7 @@ def create_app(env: Environment = Environment.local) -> Flask:
 
 	with app.app_context():
 		# Mount versioned endpoints
-		from .v1 import blueprint as v1
+		from .protocols.http.v1 import blueprint as v1
 		app.register_blueprint(v1)
 
 		return app

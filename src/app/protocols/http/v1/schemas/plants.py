@@ -2,9 +2,9 @@ from typing_extensions import Required
 from marshmallow import Schema, fields, validate, post_load
 from marshmallow_enum import EnumField
 from app.core.models import Plant
-from app.v1.utils import CamelCaseSchema, DisablePostLoadMixin
-from app.v1.schemas.plant_types import PlantTypeSchema
-from app.v1.schemas.target_value import TargetValueSchema
+from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
+from app.protocols.http.v1.schemas.plant_types import PlantTypeSchema
+from app.protocols.http.v1.schemas.target_value import TargetValueSchema
 
 #######################
 # Schemas

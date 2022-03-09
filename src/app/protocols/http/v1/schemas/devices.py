@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields, validate, post_load
 from marshmallow_enum import EnumField
 from app.core.models import Device, DeviceTypeEnum, DeviceStateEnum
-from app.v1.utils import CamelCaseSchema, DisablePostLoadMixin
+from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
 
 #######################
 # Schemas

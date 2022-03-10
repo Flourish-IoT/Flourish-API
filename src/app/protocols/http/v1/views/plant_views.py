@@ -5,7 +5,7 @@ from sqlalchemy import delete
 from app import db
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError
 from app.core.errors import NotFoundError
-from app.v1.schemas import PlantDetailsSchema, PlantUpdateSchema
+from app.protocols.http.v1.schemas import PlantDetailsSchema, PlantUpdateSchema
 from app.common.utils import marshal_with, serialize_with
 
 from app.core.services import delete_plant, get_plant_info, edit_plant_info
@@ -22,12 +22,12 @@ class Plant(Resource):
 			logging.error('failed to get plant info')
 			logging.exception(e)
 			raise InternalServerError
-		
+
 		return plant
 
 	def post(self):
 		return 'plant post'
-	
+
 	@serialize_with(PlantUpdateSchema)
 	def put(self, plant_id: int, body: dict):
 		try:
@@ -36,9 +36,9 @@ class Plant(Resource):
 			raise NotFound(str(e))
 		except Exception as e:
 			raise InternalServerError
-		
+
 		return None, 204
-	
+
 	def delete(self, plant_id: int):
 		try:
 			delete_plant(plant_id, db.session)
@@ -46,5 +46,5 @@ class Plant(Resource):
 			raise NotFound(str(e))
 		except Exception as e:
 			raise InternalServerError
-		
+
 		return None, 204

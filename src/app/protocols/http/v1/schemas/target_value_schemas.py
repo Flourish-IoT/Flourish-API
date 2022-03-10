@@ -1,5 +1,5 @@
 from marshmallow import Schema, fields, validate, post_load
-from app.v1.utils import CamelCaseSchema
+from app.protocols.http.utils import CamelCaseSchema
 
 #######################
 # Schemas

@@ -2,12 +2,12 @@
 from datetime import datetime
 from unittest.mock import MagicMock
 import pytest
-from app import Environment, db, create_app
+from app import Environment, db, create_rest_app
 
 @pytest.fixture(scope='session')
 def app():
 	# TODO: this should be Environment.test when we figure out how it will work
-	a = create_app(Environment.local)
+	a = create_rest_app(Environment.local)
 	with a.app_context():
 		yield
 

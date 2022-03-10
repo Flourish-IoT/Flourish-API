@@ -3,7 +3,7 @@ from marshmallow import fields, post_load, validates_schema, ValidationError
 from marshmallow_enum import EnumField
 
 from app.core.models import User
-from app.v1.utils import CamelCaseSchema, DisablePostLoadMixin
+from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
 from .user_preferences_schema import UserPreferencesSchema
 
 class UserSchema(CamelCaseSchema):

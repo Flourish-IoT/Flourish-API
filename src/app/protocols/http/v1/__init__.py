@@ -1,10 +1,10 @@
 from flask import Blueprint, blueprints
-from .views.users import api as user_api
-from .views.plants import api as plant_api
-from .views.plant_types import api as plant_type_api
-from .views.devices import api as device_api
-from .views.collections import api as collection_api
-from .views.alerts import api as alert_api
+from .views.user_views import api as user_api
+from .views.plant_views import api as plant_api
+from .views.plant_type_views import api as plant_type_api
+from .views.device_views import api as device_api
+from .views.collection_views import api as collection_api
+from .views.alert_views import api as alert_api
 
 from flask_restx import Api
 

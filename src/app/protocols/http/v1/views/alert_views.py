@@ -3,7 +3,7 @@ from flask_restx import Resource, Namespace
 from app.core.errors import NotFoundError, ConflictError
 from app.core.services import delete_alert, set_viewed_state
 from app.common.utils import marshal_with, serialize_with
-from app.v1.schemas import AlertViewRequestSchema
+from app.protocols.http.v1.schemas import AlertViewRequestSchema
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError
 from app import db
 

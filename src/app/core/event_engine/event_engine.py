@@ -141,7 +141,7 @@ def generate_default_plant_event_handlers(plant: Plant):
 						EqualsTrigger(field='value', value=ValueRating.TooHigh),
 						# GreaterThanTrigger(field='slope', value=0),
 					],
-					[GeneratePlantAlertAction('{event.plant.name} has been overwatered! Move them to a dryer pot', SeverityLevelEnum.Critical, False, timedelta(days=1))]
+					[GeneratePlantAlertAction('{event.plant.name} has been overwatered! Move them to a drier pot', SeverityLevelEnum.Critical, False, timedelta(days=1))]
 				),
 			]
 		),

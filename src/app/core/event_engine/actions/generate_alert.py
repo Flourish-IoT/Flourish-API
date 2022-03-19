@@ -1,15 +1,20 @@
 from datetime import datetime, timedelta
 import logging
+from app.core.event_engine.actions.schemas import GenerateAlertActionSchema, GeneratePlantAlertActionSchema, GenerateDeviceAlertActionSchema
 from app.core.event_engine.events import Event, DeviceEventType, PlantEventType
 from app.core.event_engine.actions import Action
 from app.core.models import SeverityLevelEnum, Alert
 from app.core.services import create_alert
 
 class GenerateAlertAction(Action):
+	__schema__ = GenerateAlertActionSchema
+
 	message_template: str
 	severity: SeverityLevelEnum
+	# TODO:
+	# push_notification: bool
 
-	def __init__(self, message_template: str, severity: SeverityLevelEnum, disabled: bool, cooldown: timedelta | None = None):
+	def __init__(self, message_template: str, severity: SeverityLevelEnum, disabled: bool, action_id: int | None, cooldown: timedelta | None = None, last_executed: datetime | None = None):
 		"""Generates an alert
 
 		Args:
@@ -21,7 +26,7 @@ class GenerateAlertAction(Action):
 		# TODO: message template should come from db eventually
 		self.message_template = message_template
 		self.severity = severity
-		super().__init__(disabled, cooldown)
+		super().__init__(disabled, action_id=action_id, cooldown=cooldown, last_executed=last_executed)
 
 	def generate_message(self, event: Event) -> str:
 		"""Generates alert message
@@ -71,12 +76,16 @@ class GenerateAlertAction(Action):
 		return True
 
 class GeneratePlantAlertAction(GenerateAlertAction):
+	__schema__ = GeneratePlantAlertActionSchema
+
 	def generate(self, event: PlantEventType):
 		alert = super().generate(event)
 		alert.plant_id = event.plant.plant_id
 		return alert
 
 class GenerateDeviceAlertAction(GenerateAlertAction):
+	__schema__ = GenerateDeviceAlertActionSchema
+
 	def generate(self, event: DeviceEventType):
 		alert = super().generate(event)
 		alert.device_id = event.device.device_id

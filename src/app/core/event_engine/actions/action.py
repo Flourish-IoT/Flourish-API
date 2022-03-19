@@ -1,21 +1,29 @@
 from abc import ABC, abstractmethod
-from datetime import timedelta
+from datetime import datetime, timedelta
 import logging
+from app.core.event_engine.actions.schemas import ActionSchema
 
 from app.core.event_engine.events import Event
+from app.core.util import Serializable
 
-class Action(ABC):
+class Action(Serializable, ABC):
+	__schema__ = ActionSchema
+
+	action_id: int | None
 	disabled: bool
 	cooldown: timedelta | None
+	last_executed: datetime | None
 
-	def __init__(self, disabled: bool, cooldown: timedelta | None = None):
+	def __init__(self, disabled: bool, action_id: int | None = None, cooldown: timedelta | None = None, last_executed: datetime | None = None):
 		"""
 		Args:
 				disabled (bool): Enables/disables action
 				cooldown (timedelta | None, optional): Action cooldown. Defaults to None.
 		"""
+		self.action_id = action_id
 		self.disabled = disabled
 		self.cooldown = cooldown
+		self.last_executed = last_executed
 
 	def can_execute(self) -> bool:
 		"""Determines if action can execute based on whether or not is has been disabled or is on cooldown
@@ -34,6 +42,10 @@ class Action(ABC):
 
 		logging.info('Action can execute')
 		return True
+
+	def update_last_executed(self):
+		# TODO
+		pass
 
 	@abstractmethod
 	def execute(self, event: Event) -> bool:

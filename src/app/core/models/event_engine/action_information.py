@@ -4,7 +4,7 @@ import logging
 from typing import cast
 
 from app.core.event_engine.actions import Action
-from app.common.utils import PolymorphicSchemaLoader
+from app.common.utils import PolymorphicSchema
 from ..base_model import BaseModel
 from sqlalchemy import Column, Integer, TIMESTAMP, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
@@ -30,7 +30,7 @@ class ActionInformation(BaseModel):
 
 	def to_action(self) -> Action:
 		try:
-			action = PolymorphicSchemaLoader().load(self.action)
+			action = PolymorphicSchema().load(self.action)
 		except Exception as e:
 			logging.error(f"Failed to load action")
 			logging.exception(e)
@@ -44,6 +44,6 @@ class ActionInformation(BaseModel):
 	@staticmethod
 	def from_action(action: Action):
 		a = ActionInformation(action_id=action.action_id)
-		action_json = action.marshal()
+		action_json = PolymorphicSchema().dump(action)
 		a.action = action_json
 		return a

@@ -1,10 +1,21 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 import logging
-from app.core.event_engine.actions.schemas import ActionSchema
 
 from app.core.event_engine.events import Event
-from app.core.util import Serializable
+from app.common.utils import Serializable
+
+from marshmallow import Schema, fields
+
+#######################
+# Schemas
+#######################
+class ActionSchema(Schema):
+	action_id = fields.Int()
+	disabled = fields.Bool(required=True)
+	cooldown = fields.TimeDelta(required=True, allow_none=True)
+	last_executed = fields.DateTime(required=True, allow_none=True)
+#######################
 
 class Action(Serializable, ABC):
 	__schema__ = ActionSchema

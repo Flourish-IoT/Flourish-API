@@ -3,7 +3,7 @@ from app.core.event_engine.actions.action import Action
 from app.core.event_engine.actions import GenerateAlertAction
 from unittest.mock import MagicMock
 import pytest
-from app.core.event_engine.actions.schemas.action_schemas import ActionSchema
+from app.core.event_engine.actions.action import ActionSchema
 
 from app.core.models.event_engine import ActionInformation
 from app.core.models import SeverityLevelEnum
@@ -24,20 +24,14 @@ class ConcreteAction(Action):
 class TestActionInformation:
 	@pytest.mark.parametrize('action, expected', [
 		(ConcreteAction(False, action_id=-1, cooldown=timedelta(days=3)), ActionInformation(action_id=-1, action={
-			'__schema__': {
-				'__class__': 'ConcreteActionSchema',
-				'__module__': 'tests.unit.core.models.test_action_information'
-			},
+			'type': 'ConcreteAction',
 			'action_id': -1,
 			'disabled': False,
 			'cooldown': 259200,
 			'last_executed': None
 		})),
 		(GenerateAlertAction('{foo} bar', SeverityLevelEnum.Critical, False, action_id=-1, cooldown=timedelta(days=3)), ActionInformation(action_id=-1, action={
-			'__schema__': {
-				'__class__': 'GenerateAlertActionSchema',
-				'__module__': 'app.core.event_engine.actions.schemas.action_schemas'
-			},
+			'type': 'GenerateAlertAction',
 			'message_template': '{foo} bar',
 			'severity': 'Critical',
 			'action_id': -1,
@@ -56,20 +50,14 @@ class TestActionInformation:
 
 	@pytest.mark.parametrize('action_info, expected, expected_type', [
 		(ActionInformation(action_id=-1, action={
-			'__schema__': {
-				'__class__': 'ConcreteActionSchema',
-				'__module__': 'tests.unit.core.models.test_action_information'
-			},
+			'type': 'ConcreteAction',
 			'action_id': -1,
 			'disabled': False,
 			'cooldown': 259200,
 			'last_executed': None
 		}), ConcreteAction(False, action_id=-1, cooldown=timedelta(days=3)), ConcreteAction),
 		(ActionInformation(action_id=-1, action={
-			'__schema__': {
-				'__class__': 'GenerateAlertActionSchema',
-				'__module__': 'app.core.event_engine.actions.schemas.action_schemas'
-			},
+			'type': 'GenerateAlertAction',
 			'message_template': '{foo} bar',
 			'severity': 'Critical',
 			'action_id': -1,

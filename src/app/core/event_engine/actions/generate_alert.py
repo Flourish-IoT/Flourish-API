@@ -1,10 +1,33 @@
 from datetime import datetime, timedelta
 import logging
-from app.core.event_engine.actions.schemas import GenerateAlertActionSchema, GeneratePlantAlertActionSchema, GenerateDeviceAlertActionSchema
+from app.core.event_engine.actions.action import ActionSchema
 from app.core.event_engine.events import Event, DeviceEventType, PlantEventType
 from app.core.event_engine.actions import Action
 from app.core.models import SeverityLevelEnum, Alert
 from app.core.services import create_alert
+
+from marshmallow import fields, validate, post_load, validates_schema, ValidationError
+from marshmallow_enum import EnumField
+from app.core.models import SeverityLevelEnum
+from app.common.utils import PolymorphicSchema
+
+#######################
+# Schemas
+#######################
+class GenerateAlertActionSchema(ActionSchema):
+	message_template = fields.Str()
+	severity = EnumField(SeverityLevelEnum)
+
+	@post_load
+	def make(self, data, **kwargs):
+		return GenerateAlertAction(**data)
+
+class GenerateDeviceAlertActionSchema(GenerateAlertActionSchema):
+	pass
+
+class GeneratePlantAlertActionSchema(GenerateAlertActionSchema):
+	pass
+#######################
 
 class GenerateAlertAction(Action):
 	__schema__ = GenerateAlertActionSchema

@@ -28,6 +28,6 @@ class PolymorphicSchema(OneOfSchema):
 				type (Type): Class type
 				schema (Type[Schema]): Schema to use when serializing/deserializing class
 		"""
-		if t.__name__ in cls.type_schemas:
-			raise ValueError(f'Class has already been registered: {{{t.__name__}: {cls.type_schemas[t.__name__]}}}')
+		# if t.__name__ in cls.type_schemas:
+		# 	raise ValueError(f'Class has already been registered: {{{t.__name__}: {cls.type_schemas[t.__name__]}}}')
 		cls.type_schemas[t.__name__] = schema

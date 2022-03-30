@@ -1,9 +1,7 @@
 from datetime import timedelta
-from app.core.event_engine.actions.action import Action
-from app.core.event_engine.actions import GenerateAlertAction
+from app.core.event_engine.actions import Action, ActionSchema, GenerateAlertAction
 from unittest.mock import MagicMock
 import pytest
-from app.core.event_engine.actions.action import ActionSchema
 
 from app.core.models.event_engine import ActionInformation
 from app.core.models import SeverityLevelEnum
@@ -67,9 +65,9 @@ class TestActionInformation:
 
 		}), GenerateAlertAction('{foo} bar', SeverityLevelEnum.Critical, False, action_id=-1, cooldown=timedelta(days=3)), GenerateAlertAction)
 	])
-	def test_to_action(self, action_info, expected, expected_type):
+	def test_to_action(self, action_info: ActionInformation, expected, expected_type):
 		"""Ensure action is properly created from an Action instance"""
-		action = ActionInformation.to_action(action_info)
+		action = action_info.to_action()
 
 		assert action.__dict__ == expected.__dict__
 		assert type(action) == expected_type
@@ -80,9 +78,9 @@ class TestActionInformation:
 
 	# def test_from_to_action(self):
 	# 	"""Ensure from_action generates json that can be loaded by to_action"""
-	# 	action = GenerateAlertAction('Foo', SeverityLevelEnum.Info, False)
-	# 	# action = ConcreteAction(False)
-	# 	# action = ConcreteAction(False, cooldown=timedelta(days=3))
-	# 	action_info = ActionInformation.from_action(action)
-	# 	loaded_action = action_info.to_action()
-	# 	print(loaded_action)
+		# action = GenerateAlertAction('Foo', SeverityLevelEnum.Info, False)
+		# # action = ConcreteAction(False)
+		# # action = ConcreteAction(False, cooldown=timedelta(days=3))
+		# action_info = ActionInformation.from_action(action)
+		# loaded_action = action_info.to_action()
+		# print(loaded_action)

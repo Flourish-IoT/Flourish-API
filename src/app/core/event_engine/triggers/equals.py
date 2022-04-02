@@ -1,16 +1,19 @@
 import logging
 from typing import List, TypeVar, Generic
 from app.core.util import Comparable
-from app.core.event_engine.events import Event
-from app.core.event_engine.triggers import Trigger
-from app.core.event_engine.actions import Action
+import app.core.event_engine.events as events
+from . import Trigger
+import app.core.event_engine.actions as actions
+# from app.core.event_engine.events import Event
+# from app.core.event_engine.triggers import Trigger
+# from app.core.event_engine.actions import Action
 
 T = TypeVar('T', bound=Comparable)
 
 # TODO: might need to investigate better equality for floats
 class EqualsTrigger(Trigger, Generic[T]):
 	"""Executes if value is equal to trigger value"""
-	def __init__(self, value: T, actions: List[Action] = [], *, field: str | None = None) -> None:
+	def __init__(self, value: T, actions: List[actions.Action] = [], *, field: str | None = None) -> None:
 		"""
 		Args:
 				value (T): Value to test against
@@ -20,7 +23,7 @@ class EqualsTrigger(Trigger, Generic[T]):
 		super().__init__(actions, field)
 		self.value = value
 
-	def execute(self, v: T | dict, event: Event) -> bool:
+	def execute(self, v: T | dict, event: events.Event) -> bool:
 		logging.info('Executing equals trigger')
 
 		value: T = self.get_value(v)

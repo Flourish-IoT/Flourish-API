@@ -30,7 +30,7 @@ def restore_schema(func):
 		return r
 	return f
 
-class TestActionInformation:
+class TestPolymorphicSchema:
 	@restore_schema
 	def test_register(self):
 		"""Ensure polymorphic schema is registering correctly"""

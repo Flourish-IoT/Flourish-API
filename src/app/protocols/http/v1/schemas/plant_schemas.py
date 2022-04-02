@@ -3,8 +3,8 @@ from marshmallow import Schema, fields, validate, post_load
 from marshmallow_enum import EnumField
 from app.core.models import Plant
 from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
-from app.protocols.http.v1.schemas.plant_type_schemas import PlantTypeSchema
-from app.protocols.http.v1.schemas.target_value_schemas import TargetValueSchema
+from .plant_type_schemas import PlantTypeSchema
+from .target_value_schemas import TargetValueSchema
 
 #######################
 # Schemas

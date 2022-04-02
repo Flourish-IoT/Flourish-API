@@ -1,11 +1,12 @@
 from dataclasses import dataclass
-from app.core.event_engine.events import Event
-from app.core.models import Plant, SensorData
+from . import event
+# from app.core.event_engine.events import Event
+import app.core.models as models
 
 @dataclass
-class PlantEventType(Event):
-	plant: Plant
+class PlantEventType(event.Event):
+	plant: models.Plant
 
 @dataclass
 class SensorDataEvent(PlantEventType):
-	data: SensorData
+	data: models.SensorData

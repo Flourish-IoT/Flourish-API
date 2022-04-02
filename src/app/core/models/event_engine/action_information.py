@@ -3,7 +3,7 @@ import json
 import logging
 from typing import cast
 
-from app.core.event_engine.actions import Action
+import app.core.event_engine.actions as actions
 from app.common.utils import PolymorphicSchema
 from ..base_model import BaseModel
 from sqlalchemy import Column, Integer, TIMESTAMP, Boolean, ForeignKey
@@ -28,7 +28,7 @@ class ActionInformation(BaseModel):
 		nullable=False
 	))
 
-	def to_action(self) -> Action:
+	def to_action(self) -> actions.Action:
 		try:
 			action = PolymorphicSchema().load(self.action)
 		except Exception as e:
@@ -36,13 +36,13 @@ class ActionInformation(BaseModel):
 			logging.exception(e)
 			raise e
 
-		if not isinstance(action, Action):
+		if not isinstance(action, actions.Action):
 			raise ValueError("Failed to decode action: ", action)
 
 		return action
 
 	@staticmethod
-	def from_action(action: Action):
+	def from_action(action: actions.Action):
 		a = ActionInformation(action_id=action.action_id)
 		action_json = PolymorphicSchema().dump(action)
 		a.action = action_json

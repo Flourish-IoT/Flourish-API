@@ -8,6 +8,7 @@ class ConcreteTrigger(Trigger):
 	def execute(self, value, event: Event) -> bool:
 		return True
 
+# TODO: test get_actions
 class TestTrigger:
 	@pytest.mark.parametrize('value, expected, field', [
 		(2, 2, None),

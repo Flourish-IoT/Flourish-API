@@ -1,22 +1,26 @@
 from datetime import datetime, timedelta
 import logging
-from app.core.event_engine.actions.action import ActionSchema
-from app.core.event_engine.events import Event, DeviceEventType, PlantEventType
-from app.core.event_engine.actions import Action
-from app.core.models import SeverityLevelEnum, Alert
-from app.core.services import create_alert
+# from app.core.event_engine.actions.action import ActionSchema
+# from app.core.event_engine.events import Event, DeviceEventType, PlantEventType
+# from app.core.event_engine.actions import Action
+from . import action as actions
+import app.core.event_engine.events as events
+# from app.core.models import SeverityLevelEnum, Alert
+import app.core.models as models
+
+# from app.core.services import create_alert
+import app.core.services as services
 
 from marshmallow import fields, validate, post_load, validates_schema, ValidationError
 from marshmallow_enum import EnumField
-from app.core.models import SeverityLevelEnum
-from app.common.utils import PolymorphicSchema
+# from app.core.models import SeverityLevelEnum
 
 #######################
 # Schemas
 #######################
-class GenerateAlertActionSchema(ActionSchema):
+class GenerateAlertActionSchema(actions.ActionSchema):
 	message_template = fields.Str()
-	severity = EnumField(SeverityLevelEnum)
+	severity = EnumField(models.SeverityLevelEnum)
 
 	@post_load
 	def make(self, data, **kwargs):
@@ -29,15 +33,15 @@ class GeneratePlantAlertActionSchema(GenerateAlertActionSchema):
 	pass
 #######################
 
-class GenerateAlertAction(Action):
+class GenerateAlertAction(actions.Action):
 	__schema__ = GenerateAlertActionSchema
 
 	message_template: str
-	severity: SeverityLevelEnum
+	severity: models.SeverityLevelEnum
 	# TODO:
 	# push_notification: bool
 
-	def __init__(self, message_template: str, severity: SeverityLevelEnum, disabled: bool, action_id: int | None, cooldown: timedelta | None = None, last_executed: datetime | None = None):
+	def __init__(self, message_template: str, severity: models.SeverityLevelEnum, disabled: bool, action_id: int | None, cooldown: timedelta | None = None, last_executed: datetime | None = None):
 		"""Generates an alert
 
 		Args:
@@ -51,7 +55,7 @@ class GenerateAlertAction(Action):
 		self.severity = severity
 		super().__init__(disabled, action_id=action_id, cooldown=cooldown, last_executed=last_executed)
 
-	def generate_message(self, event: Event) -> str:
+	def generate_message(self, event: events.Event) -> str:
 		"""Generates alert message
 
 		Args:
@@ -63,7 +67,7 @@ class GenerateAlertAction(Action):
 		# do we need to clean data first? Could leak user info if we have user events
 		return self.message_template.format(event=event)
 
-	def generate(self, event: Event) -> Alert:
+	def generate(self, event: events.Event) -> models.Alert:
 		"""Generates an Alert object
 
 		Args:
@@ -73,10 +77,10 @@ class GenerateAlertAction(Action):
 				Alert: Generated Alert object
 		"""
 		message = self.generate_message(event)
-		alert = Alert(message=message, severity=self.severity, time=datetime.now())
+		alert = models.Alert(message=message, severity=self.severity, time=datetime.now())
 		return alert
 
-	def execute(self, event: Event) -> bool:
+	def execute(self, event: events.Event) -> bool:
 		"""Executes action. Generates an Alert object and persists it in the database
 
 		Args:
@@ -93,7 +97,7 @@ class GenerateAlertAction(Action):
 		logging.info(f'Persisting alert: {alert}')
 
 		# persist alert
-		create_alert(event.user_id, alert, event.session)
+		services.create_alert(event.user_id, alert, event.session)
 
 		# TODO: push notification
 		return True
@@ -101,7 +105,7 @@ class GenerateAlertAction(Action):
 class GeneratePlantAlertAction(GenerateAlertAction):
 	__schema__ = GeneratePlantAlertActionSchema
 
-	def generate(self, event: PlantEventType):
+	def generate(self, event: events.PlantEventType):
 		alert = super().generate(event)
 		alert.plant_id = event.plant.plant_id
 		return alert
@@ -109,7 +113,7 @@ class GeneratePlantAlertAction(GenerateAlertAction):
 class GenerateDeviceAlertAction(GenerateAlertAction):
 	__schema__ = GenerateDeviceAlertActionSchema
 
-	def generate(self, event: DeviceEventType):
+	def generate(self, event: events.DeviceEventType):
 		alert = super().generate(event)
 		alert.device_id = event.device.device_id
 		return alert

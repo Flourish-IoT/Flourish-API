@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 import logging
 
-from app.core.event_engine.events import Event
+# from app.core.event_engine.events import Event
+import app.core.event_engine.events as events
 from app.common.utils import Serializable
 
 from marshmallow import Schema, fields
@@ -17,6 +18,7 @@ class ActionSchema(Schema):
 	last_executed = fields.DateTime(required=True, allow_none=True)
 #######################
 
+# TODO: seperate action metadata from implementation for storage
 class Action(Serializable, ABC):
 	__schema__ = ActionSchema
 
@@ -59,7 +61,7 @@ class Action(Serializable, ABC):
 		pass
 
 	@abstractmethod
-	def execute(self, event: Event) -> bool:
+	def execute(self, event: events.Event) -> bool:
 		"""Executes action
 
 		Args:

@@ -1,8 +1,11 @@
 import logging
 from typing import Any, List, TypeVar, Generic
-from app.core.event_engine.events import Event
-from app.core.event_engine.actions import Action
-from app.core.event_engine.triggers import Trigger
+import app.core.event_engine.events as events
+import app.core.event_engine.actions as actions
+from . import Trigger
+# from app.core.event_engine.events import Event
+# from app.core.event_engine.actions import Action
+# from app.core.event_engine.triggers import Trigger
 from app.core.util import Comparable
 
 T = TypeVar('T', bound=Comparable)
@@ -10,7 +13,7 @@ T = TypeVar('T', bound=Comparable)
 class BetweenTrigger(Trigger, Generic[T]):
 	"""Executes actions if value is between defined values"""
 	min: T
-	def __init__(self, min: T, max: T, actions: List[Action], *, field: str | None = None) -> None:
+	def __init__(self, min: T, max: T, actions: List[actions.Action], *, field: str | None = None) -> None:
 		"""
 		Args:
 				min (T): Minimum value
@@ -28,7 +31,7 @@ class BetweenTrigger(Trigger, Generic[T]):
 		self.min = min
 		self.max = max
 
-	def execute(self, v: T, event: Event) -> bool:
+	def execute(self, v: T, event: events.Event) -> bool:
 		logging.info('Executing equals trigger')
 		value: T = self.get_value(v)
 

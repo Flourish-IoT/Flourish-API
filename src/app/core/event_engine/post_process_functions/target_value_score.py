@@ -3,7 +3,8 @@ from enum import IntEnum
 import logging
 from typing import Any, Callable, Tuple, cast
 
-from app.core.models.plant import Plant
+import app.core.models as models
+# from app.core.models.plant import Plant
 from app.core.util import Comparable
 from sqlalchemy import Column
 
@@ -36,7 +37,7 @@ def score(value: Comparable, min: Comparable | None, max: Comparable | None) -> 
 
 	return score
 
-def _get_plant_min_max(plant: Plant, min_col: Column | Any, max_col: Column | Any) -> Tuple[Comparable | None, Comparable | None]:
+def _get_plant_min_max(plant: models.Plant, min_col: Column | Any, max_col: Column | Any) -> Tuple[Comparable | None, Comparable | None]:
 	plant_type = plant.plant_type
 	if plant_type is None:
 		logging.info('Plant has no plant type associated with it, cannot get min/max')
@@ -47,7 +48,7 @@ def _get_plant_min_max(plant: Plant, min_col: Column | Any, max_col: Column | An
 	max = plant_type.get_column_value(max_col)
 	return (min, max)
 
-def plant_value_score(plant: Plant, min_col: Column | Any, max_col: Column | Any) -> Callable[[Any], Any]:
+def plant_value_score(plant: models.Plant, min_col: Column | Any, max_col: Column | Any) -> Callable[[Any], Any]:
 	def _score(value: Comparable) -> ValueRating:
 		min, max = _get_plant_min_max(plant, min_col, max_col)
 		return score(value, min, max)

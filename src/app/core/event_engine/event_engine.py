@@ -4,42 +4,33 @@ from datetime import timedelta
 import logging
 from typing import List, cast
 from sqlalchemy import Column, Integer
-# from app.core.event_engine import Field
-# from app.core.event_engine.handlers import EventHandler
-# from app.core.event_engine.events import Event, PlantEventType, DeviceEventType
-# from app.core.event_engine.queries import ValueQuery, SlopeQuery
-# from app.core.event_engine.post_process_functions import ValueRating, target_value_score, plant_value_score
-# from app.core.event_engine.handlers import SensorDataEventHandler
-# from app.core.event_engine.actions import GeneratePlantAlertAction
-# from app.core.event_engine.triggers import EqualsTrigger, AndTrigger, LessThanTrigger, GreaterThanTrigger
-import app.core.event_engine as event_engine
-import app.core.event_engine.handlers as handlers
-import app.core.event_engine.events as events
-import app.core.event_engine.queries as queries
-import app.core.event_engine.post_process_functions as processing
-import app.core.event_engine.actions as actions
-import app.core.event_engine.triggers as triggers
+from app.core.event_engine import Field
+from app.core.event_engine.handlers import EventHandler
+from app.core.event_engine.events import Event, PlantEventType, DeviceEventType
+from app.core.event_engine.queries import ValueQuery, SlopeQuery
+from app.core.event_engine.post_process_functions import ValueRating, target_value_score, plant_value_score
+from app.core.event_engine.handlers import SensorDataEventHandler
+from app.core.event_engine.actions import GeneratePlantAlertAction
+from app.core.event_engine.triggers import EqualsTrigger, AndTrigger, LessThanTrigger, GreaterThanTrigger
 import app.core.models as models
 import app.core.models.event_engine as event_engine_models
-# from app.core.models import SensorData, Plant, Device, SeverityLevelEnum, EventHandlerInformation, PlantType, ActionInformation
-# from app.core.services.event_handler_service import get_event_handler_actions, get_event_handler_information
 import app.core.services.event_handler_service as services
 
 def hydrate_event_handler(event_info: event_engine_models.EventHandlerInformation, actions: List[event_engine_models.ActionInformation]):
 	action_map = {action.action_id: action.to_action() for action in actions}
 	return event_info.to_event_handler(action_map)
 
-def load_event_handlers(event: events.Event) -> List[handlers.EventHandler]:
+def load_event_handlers(event: Event) -> List[EventHandler]:
 	logging.info(f'Loading event handlers for event: {event}')
 
 	# use event type to determine id and column to find event handlers
 	id: int
 	id_column: Column[Integer]
 	match event:
-		case e if isinstance(e, events.PlantEventType):
+		case e if isinstance(e, PlantEventType):
 			id = e.plant.plant_id
 			id_column = cast(Column[Integer], event_engine_models.EventHandlerInformation.plant_id)
-		case e if isinstance(e, events.DeviceEventType):
+		case e if isinstance(e, DeviceEventType):
 			id = e.device.device_id
 			id_column = cast(Column[Integer], event_engine_models.EventHandlerInformation.device_id)
 		case _:
@@ -60,38 +51,38 @@ def load_event_handlers(event: events.Event) -> List[handlers.EventHandler]:
 def generate_default_plant_event_handlers(plant: models.Plant):
 	# TODO: batch queries?
 	return [
-		handlers.SensorDataEventHandler(
-			event_engine.Field(models.SensorData.temperature, {
-				'value': queries.ValueQuery(models.SensorData, models.SensorData.plant_id, models.SensorData.time, processing.plant_value_score(plant, models.PlantType.minimum_temperature, models.PlantType.maximum_temperature)),
+		SensorDataEventHandler(
+			Field(models.SensorData.temperature, {
+				'value': ValueQuery(models.SensorData, models.SensorData.plant_id, models.SensorData.time, processing.plant_value_score(plant, models.PlantType.minimum_temperature, models.PlantType.maximum_temperature)),
 				# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
 			}),
 			[
-				triggers.AndTrigger([
-						triggers.EqualsTrigger(field='value', value=models.ValueRating.TooLow),
+				AndTrigger([
+						EqualsTrigger(field='value', value=models.ValueRating.TooLow),
 						# LessThanTrigger(field='slope', value=0),
 					],
-					[actions.GeneratePlantAlertAction('{event.plant.name} is too cold! Turn up the heat', models.SeverityLevelEnum.Critical, False, timedelta(days=1))]
+					[GeneratePlantAlertAction('{event.plant.name} is too cold! Turn up the heat', models.SeverityLevelEnum.Critical, False, timedelta(days=1))]
 				),
-				triggers.AndTrigger([
-						triggers.EqualsTrigger(field='value', value=models.ValueRating.Low),
+				AndTrigger([
+						EqualsTrigger(field='value', value=models.ValueRating.Low),
 						# LessThanTrigger(field='slope', value=0),
 					],
-					[actions.GeneratePlantAlertAction('{event.plant.name} is feeling cold. You should consider increasing the temperature', models.SeverityLevelEnum.Warning, False, timedelta(days=1))]
+					[GeneratePlantAlertAction('{event.plant.name} is feeling cold. You should consider increasing the temperature', models.SeverityLevelEnum.Warning, False, timedelta(days=1))]
 				),
 				# EqualsTrigger(ValueRating.Nominal,
 				# 	[]
 				# ),
-				triggers.AndTrigger([
-						triggers.EqualsTrigger(field='value', value=models.ValueRating.High),
+				AndTrigger([
+						EqualsTrigger(field='value', value=models.ValueRating.High),
 						# GreaterThanTrigger(field='slope', value=0),
 					],
-					[actions.GeneratePlantAlertAction('{event.plant.name} is feeling hot. You should consider decreasing the temperature', models.SeverityLevelEnum.Warning, False, timedelta(days=1))]
+					[GeneratePlantAlertAction('{event.plant.name} is feeling hot. You should consider decreasing the temperature', models.SeverityLevelEnum.Warning, False, timedelta(days=1))]
 				),
-				triggers.AndTrigger([
-						triggers.EqualsTrigger(field='value', value=models.ValueRating.TooHigh),
+				AndTrigger([
+						EqualsTrigger(field='value', value=models.ValueRating.TooHigh),
 						# GreaterThanTrigger(field='slope', value=0),
 					],
-					[actions.GeneratePlantAlertAction('{event.plant.name} is too hot! Lower the heat', models.SeverityLevelEnum.Critical, False, timedelta(days=1))]
+					[GeneratePlantAlertAction('{event.plant.name} is too hot! Lower the heat', models.SeverityLevelEnum.Critical, False, timedelta(days=1))]
 				),
 			]
 		),
@@ -213,7 +204,7 @@ def generate_default_device_event_handlers(device: models.Device):
 	pass
 
 
-def handle(event: events.Event):
+def handle(event: Event):
 	"""Handles an event
 
 	Args:
@@ -221,7 +212,7 @@ def handle(event: events.Event):
 	"""
 	# TODO: get handlers from config
 	# handlers = load_event_handlers(event)
-	if isinstance(event, events.PlantEventType):
+	if isinstance(event, PlantEventType):
 		handlers = generate_default_plant_event_handlers(event.plant)
 	else:
 		raise ValueError("Only plant event types are implemented")

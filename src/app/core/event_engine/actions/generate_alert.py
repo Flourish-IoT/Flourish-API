@@ -1,24 +1,19 @@
 from datetime import datetime, timedelta
 import logging
-# from app.core.event_engine.actions.action import ActionSchema
-# from app.core.event_engine.events import Event, DeviceEventType, PlantEventType
-# from app.core.event_engine.actions import Action
-from . import action as actions
-import app.core.event_engine.events as events
-# from app.core.models import SeverityLevelEnum, Alert
-import app.core.models as models
 
-# from app.core.services import create_alert
+from . import ActionSchema, Action
+from app.core.event_engine.events import Event, DeviceEventType, PlantEventType
+
+import app.core.models as models
 import app.core.services as services
 
 from marshmallow import fields, validate, post_load, validates_schema, ValidationError
 from marshmallow_enum import EnumField
-# from app.core.models import SeverityLevelEnum
 
 #######################
 # Schemas
 #######################
-class GenerateAlertActionSchema(actions.ActionSchema):
+class GenerateAlertActionSchema(ActionSchema):
 	message_template = fields.Str()
 	severity = EnumField(models.SeverityLevelEnum)
 
@@ -33,7 +28,7 @@ class GeneratePlantAlertActionSchema(GenerateAlertActionSchema):
 	pass
 #######################
 
-class GenerateAlertAction(actions.Action):
+class GenerateAlertAction(Action):
 	__schema__ = GenerateAlertActionSchema
 
 	message_template: str
@@ -55,7 +50,7 @@ class GenerateAlertAction(actions.Action):
 		self.severity = severity
 		super().__init__(disabled, action_id=action_id, cooldown=cooldown, last_executed=last_executed)
 
-	def generate_message(self, event: events.Event) -> str:
+	def generate_message(self, event: Event) -> str:
 		"""Generates alert message
 
 		Args:
@@ -67,7 +62,7 @@ class GenerateAlertAction(actions.Action):
 		# do we need to clean data first? Could leak user info if we have user events
 		return self.message_template.format(event=event)
 
-	def generate(self, event: events.Event) -> models.Alert:
+	def generate(self, event: Event) -> models.Alert:
 		"""Generates an Alert object
 
 		Args:
@@ -80,7 +75,7 @@ class GenerateAlertAction(actions.Action):
 		alert = models.Alert(message=message, severity=self.severity, time=datetime.now())
 		return alert
 
-	def execute(self, event: events.Event) -> bool:
+	def execute(self, event: Event) -> bool:
 		"""Executes action. Generates an Alert object and persists it in the database
 
 		Args:
@@ -105,7 +100,7 @@ class GenerateAlertAction(actions.Action):
 class GeneratePlantAlertAction(GenerateAlertAction):
 	__schema__ = GeneratePlantAlertActionSchema
 
-	def generate(self, event: events.PlantEventType):
+	def generate(self, event: PlantEventType):
 		alert = super().generate(event)
 		alert.plant_id = event.plant.plant_id
 		return alert
@@ -113,7 +108,7 @@ class GeneratePlantAlertAction(GenerateAlertAction):
 class GenerateDeviceAlertAction(GenerateAlertAction):
 	__schema__ = GenerateDeviceAlertActionSchema
 
-	def generate(self, event: events.DeviceEventType):
+	def generate(self, event: DeviceEventType):
 		alert = super().generate(event)
 		alert.device_id = event.device.device_id
 		return alert

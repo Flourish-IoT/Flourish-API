@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import logging
 from typing import Any, Callable, Type, cast
-# from app.core.models import Device, SensorData
 import app.core.models as models
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import Column, Integer

@@ -1,18 +1,16 @@
 from abc import ABC, abstractmethod
 import logging
 from typing import Any, List, TypeVar, Generic
-import app.core.event_engine.events as events
-import app.core.event_engine.actions as event_actions
-# from app.core.event_engine.events import Event
-# from app.core.event_engine.actions import Action
+from app.core.event_engine.events import Event
+from app.core.event_engine.actions import Action
 
 T = TypeVar('T')
 
 class Trigger(ABC, Generic[T]):
-	actions: List[event_actions.Action]
+	actions: List[Action]
 	field: str | None
 
-	def __init__(self, actions: List[event_actions.Action], field: str | None = None) -> None:
+	def __init__(self, actions: List[Action], field: str | None = None) -> None:
 		"""
 		Args:
 				actions (List[Action]): List of actions to execute if the trigger executes
@@ -22,7 +20,7 @@ class Trigger(ABC, Generic[T]):
 		self.field = field
 
 	@abstractmethod
-	def execute(self, value: T, event: events.Event) -> bool:
+	def execute(self, value: T, event: Event) -> bool:
 		"""Tests trigger condition and executes actions on success
 
 		Args:
@@ -57,7 +55,7 @@ class Trigger(ABC, Generic[T]):
 
 		return value
 
-	def execute_actions(self, event: events.Event):
+	def execute_actions(self, event: Event):
 		"""Executes trigger actions
 
 		Args:
@@ -66,5 +64,5 @@ class Trigger(ABC, Generic[T]):
 		for action in self.actions:
 			action.execute(event)
 
-	def get_actions(self) -> List[event_actions.Action]:
+	def get_actions(self) -> List[Action]:
 		return self.actions

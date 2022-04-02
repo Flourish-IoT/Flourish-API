@@ -13,4 +13,6 @@ from .temperature_units import TemperatureUnits, TemperatureUnitEnum
 from .user_preferences import UserPreferences
 
 from .int_enum_field import IntEnumField
+
+# importing this will cause cyclic imports
 # from .event_engine import *

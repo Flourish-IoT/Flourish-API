@@ -3,8 +3,6 @@ import logging
 from typing import Dict, cast
 from app.common.utils.polymorphic_schema import PolymorphicSchema
 
-# from app.core.event_engine.actions import Action
-# from app.core.event_engine.handlers import EventHandler
 import app.core.event_engine.actions as actions
 import app.core.event_engine.handlers as handlers
 from ..base_model import BaseModel

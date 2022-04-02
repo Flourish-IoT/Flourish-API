@@ -1,6 +1,6 @@
 import logging
 from typing import Any, Callable, cast
-from .query import Query, WhitelistedTable
+from . import Query, WhitelistedTable
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, Column, TIMESTAMP, exc, Integer
 from datetime import datetime

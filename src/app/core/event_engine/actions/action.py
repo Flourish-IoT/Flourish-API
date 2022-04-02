@@ -2,8 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 import logging
 
-# from app.core.event_engine.events import Event
-import app.core.event_engine.events as events
+from app.core.event_engine.events import Event
 from app.common.utils import Serializable
 
 from marshmallow import Schema, fields
@@ -61,7 +60,7 @@ class Action(Serializable, ABC):
 		pass
 
 	@abstractmethod
-	def execute(self, event: events.Event) -> bool:
+	def execute(self, event: Event) -> bool:
 		"""Executes action
 
 		Args:

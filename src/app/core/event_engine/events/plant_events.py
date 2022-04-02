@@ -1,10 +1,9 @@
 from dataclasses import dataclass
-from . import event
-# from app.core.event_engine.events import Event
+from . import Event
 import app.core.models as models
 
 @dataclass
-class PlantEventType(event.Event):
+class PlantEventType(Event):
 	plant: models.Plant
 
 @dataclass

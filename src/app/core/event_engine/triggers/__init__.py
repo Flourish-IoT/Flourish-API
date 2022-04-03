@@ -1,4 +1,4 @@
-from .trigger import Trigger
+from .trigger import Trigger, TriggerSchema
 from .and_trigger import AndTrigger
 from .equals import EqualsTrigger
 from .less_than import LessThanTrigger

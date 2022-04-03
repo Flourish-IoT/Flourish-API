@@ -1,12 +1,24 @@
 from abc import ABC, abstractmethod
 import logging
 from typing import Any, List, TypeVar, Generic
+from app.common.utils import MappedField, Serializable
 from app.core.event_engine.events import Event
 from app.core.event_engine.actions import Action
 
-T = TypeVar('T')
+from marshmallow import Schema, fields
 
-class Trigger(ABC, Generic[T]):
+#######################
+# Schemas
+#######################
+class TriggerSchema(Schema):
+	field = fields.String()
+	actions = fields.List(MappedField[Action]('action_map', lambda action: action.action_id))
+#######################
+
+T = TypeVar('T')
+class Trigger(Serializable, ABC, Generic[T]):
+	__schema__ = TriggerSchema
+
 	actions: List[Action]
 	field: str | None
 

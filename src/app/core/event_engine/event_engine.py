@@ -53,7 +53,7 @@ def generate_default_plant_event_handlers(plant: models.Plant):
 	return [
 		SensorDataEventHandler(
 			Field(models.SensorData.temperature, {
-				'value': ValueQuery(models.SensorData, models.SensorData.plant_id, models.SensorData.time, processing.plant_value_score(plant, models.PlantType.minimum_temperature, models.PlantType.maximum_temperature)),
+				'value': ValueQuery(models.SensorData, models.SensorData.plant_id, models.SensorData.time, plant_value_score(plant, models.PlantType.minimum_temperature, models.PlantType.maximum_temperature)),
 				# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
 			}),
 			[

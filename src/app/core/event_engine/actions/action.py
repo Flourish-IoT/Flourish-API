@@ -70,3 +70,9 @@ class Action(Serializable, ABC):
 				bool: Action executed
 		"""
 		pass
+
+	def __eq__(self, other: object) -> bool:
+		if not isinstance(other, Action):
+			return False
+
+		return self.action_id == other.action_id and self.cooldown == other.cooldown and self.disabled == other.disabled

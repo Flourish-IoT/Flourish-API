@@ -1,13 +1,25 @@
 from abc import ABC, abstractmethod
 import itertools
 from typing import List, Type
+from app.common.utils.polymorphic_schema import PolymorphicSchema
 from app.core.event_engine import Field
 from app.core.event_engine.actions import Action
 from app.core.event_engine.events import Event
 from app.core.event_engine.triggers import Trigger
+from marshmallow import Schema, fields
+
+#######################
+# Schemas
+#######################
+class EventHandlerSchema(Schema):
+	event_handler_id = fields.Int()
+	field = fields.Nested(PolymorphicSchema)
+	triggers = fields.Nested(PolymorphicSchema, many=True)
+#######################
+
 
 class EventHandler(ABC):
-	# event_handler_id: int
+	event_handler_id: int
 	field: Field
 	triggers: List[Trigger]
 	supported_events: List[Type[Event]]
@@ -37,6 +49,7 @@ class EventHandler(ABC):
 		return list(itertools.chain.from_iterable([trigger.get_actions() for trigger in self.triggers]))
 
 	@abstractmethod
+	# TODO: add new param for info to be returned to device
 	def handle(self, event: Event):
 		"""Handles an event. Retrieves Field value and executes all triggers
 

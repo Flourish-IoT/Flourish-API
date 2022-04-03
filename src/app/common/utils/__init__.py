@@ -2,4 +2,4 @@ from .marshal import *
 from .unpack_response import unpack_response
 from .serialize import *
 from .polymorphic_schema import PolymorphicSchema, Serializable
-from .pointer_field import PointerField
+from .mapped_field import MappedField

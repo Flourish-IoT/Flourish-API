@@ -10,6 +10,7 @@ from sqlalchemy import Column, Integer, TIMESTAMP, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy_json import mutable_json_type
 
+# rename to ActionMetadata and create new class ActionDefinition to store actual action
 class ActionInformation(BaseModel):
 	__tablename__ = 'actions'
 

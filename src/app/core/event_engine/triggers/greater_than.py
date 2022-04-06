@@ -3,12 +3,24 @@ from typing import List, TypeVar, Generic
 from app.core.util import Comparable
 from . import Trigger
 from app.core.event_engine.events import Event
-from app.core.event_engine.triggers import Trigger
+from app.core.event_engine.triggers import Trigger, ValueTriggerSchema
 from app.core.event_engine.actions import Action
 
-T = TypeVar('T', bound=Comparable)
+from marshmallow import post_load
 
+#######################
+# Schemas
+#######################
+class GreaterThanTriggerSchema(ValueTriggerSchema):
+	@post_load
+	def make(self, data, **kwargs):
+		return GreaterThanTrigger(**data)
+#######################
+
+T = TypeVar('T', bound=Comparable)
 class GreaterThanTrigger(Trigger, Generic[T]):
+	__schema__ = GreaterThanTriggerSchema
+
 	"""Executes if value is greater than trigger value"""
 	def __init__(self, value: T, actions: List[Action] = [], *, field: str | None = None) -> None:
 		"""

@@ -75,4 +75,5 @@ class Action(Serializable, ABC):
 		if not isinstance(other, Action):
 			return False
 
-		return self.action_id == other.action_id and self.cooldown == other.cooldown and self.disabled == other.disabled
+		return self.__dict__ == other.__dict__
+		# return self.action_id == other.action_id and self.cooldown == other.cooldown and self.disabled == other.disabled

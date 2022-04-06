@@ -3,7 +3,7 @@ from flask.app import Flask
 from app import create_rest_app, Environment
 from argparse import ArgumentParser
 
-
+# TODO: look at logging.getlogger
 def configure_app():
 	parser = ArgumentParser(description='Flourish Backend API')
 	parser.add_argument('-c', '--config', type=str, choices=Environment.get_environments(), default=Environment.local.env, dest='config', help='Config file to use')

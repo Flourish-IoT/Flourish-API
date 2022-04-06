@@ -3,14 +3,32 @@ from typing import Any, List, TypeVar, Generic
 from . import Trigger
 from app.core.event_engine.events import Event
 from app.core.event_engine.actions import Action
-from app.core.event_engine.triggers import Trigger
+from app.core.event_engine.triggers import Trigger, TriggerSchema
+from app.common.schemas import GenericField
 from app.core.util import Comparable
 
-T = TypeVar('T', bound=Comparable)
+from marshmallow import post_load
 
+#######################
+# Schemas
+#######################
+class BetweenTriggerSchema(TriggerSchema):
+	min = GenericField()
+	max = GenericField()
+
+	@post_load
+	def make(self, data, **kwargs):
+		return BetweenTrigger(**data)
+#######################
+
+T = TypeVar('T', bound=Comparable)
 class BetweenTrigger(Trigger, Generic[T]):
 	"""Executes actions if value is between defined values"""
+	__schema__ = BetweenTriggerSchema
+
 	min: T
+	max: T
+
 	def __init__(self, min: T, max: T, actions: List[Action], *, field: str | None = None) -> None:
 		"""
 		Args:

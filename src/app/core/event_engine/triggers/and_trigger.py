@@ -3,14 +3,29 @@ import itertools
 import logging
 from typing import List, TypeVar, Generic
 from app.core.util import Comparable
-from . import Trigger
 from app.core.event_engine.events import Event
+from app.core.event_engine.triggers import Trigger, TriggerSchema
 from app.core.event_engine.actions import Action
+from app.common.utils import PolymorphicSchema
+
+from marshmallow import post_load, fields
+
+#######################
+# Schemas
+#######################
+class AndTriggerSchema(TriggerSchema):
+	triggers = fields.List(fields.Nested(PolymorphicSchema([TriggerSchema])))
+
+	@post_load
+	def make(self, data, **kwargs):
+		return AndTrigger(**data)
+#######################
 
 T = TypeVar('T', bound=Comparable)
-
 class AndTrigger(Trigger, Generic[T]):
 	"""Executes if all nested triggers return True"""
+	__schema__ = AndTriggerSchema
+
 	def __init__(self, triggers: List[Trigger[T]], actions: List[Action] = []) -> None:
 		"""
 		Args:

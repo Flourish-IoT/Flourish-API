@@ -4,6 +4,7 @@ from typing import Any, List, TypeVar, Generic
 from app.common.utils import MappedField, Serializable
 from app.core.event_engine.events import Event
 from app.core.event_engine.actions import Action
+from app.common.schemas import GenericField
 
 from marshmallow import Schema, fields
 
@@ -11,8 +12,12 @@ from marshmallow import Schema, fields
 # Schemas
 #######################
 class TriggerSchema(Schema):
-	field = fields.String()
+	field = fields.String(required=False, allow_none=True)
 	actions = fields.List(MappedField[Action]('action_map', lambda action: action.action_id))
+
+class ValueTriggerSchema(TriggerSchema):
+	value = GenericField()
+
 #######################
 
 T = TypeVar('T')
@@ -78,3 +83,9 @@ class Trigger(Serializable, ABC, Generic[T]):
 
 	def get_actions(self) -> List[Action]:
 		return self.actions
+
+	def __eq__(self, other: object) -> bool:
+		if not isinstance(other, Trigger):
+			return False
+
+		return self.__dict__ == other.__dict__

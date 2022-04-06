@@ -3,14 +3,26 @@ from typing import List, TypeVar, Generic
 from app.core.util import Comparable
 from . import Trigger
 from app.core.event_engine.events import Event
-from app.core.event_engine.triggers import Trigger
+from app.core.event_engine.triggers import Trigger, ValueTriggerSchema
 from app.core.event_engine.actions import Action
 
-T = TypeVar('T', bound=Comparable)
+from marshmallow import post_load
 
+#######################
+# Schemas
+#######################
+class EqualsTriggerSchema(ValueTriggerSchema):
+	@post_load
+	def make(self, data, **kwargs):
+		return EqualsTrigger(**data)
+#######################
+
+T = TypeVar('T', bound=Comparable)
 # TODO: might need to investigate better equality for floats
 class EqualsTrigger(Trigger, Generic[T]):
 	"""Executes if value is equal to trigger value"""
+	__schema__ = EqualsTriggerSchema
+
 	def __init__(self, value: T, actions: List[Action] = [], *, field: str | None = None) -> None:
 		"""
 		Args:

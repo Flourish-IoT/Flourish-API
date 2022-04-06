@@ -39,10 +39,10 @@ class TestTrigger:
 			'actions': [],
 			'field': 'foo'
 		}),
-		(ConcreteTrigger([ConcreteAction(action_id=-1, disabled=False)], 'foo'), {
+		(ConcreteTrigger([ConcreteAction(action_id=-1, disabled=False)]), {
 			'type': 'ConcreteTrigger',
 			'actions': [-1],
-			'field': 'foo'
+			'field': None
 		}),
 		(ConcreteTrigger([ConcreteAction(action_id=-1, disabled=False), ConcreteAction(action_id=-2, disabled=True)], 'foo'), {
 			'type': 'ConcreteTrigger',
@@ -63,8 +63,8 @@ class TestTrigger:
 		({
 			'type': 'ConcreteTrigger',
 			'actions': [],
-			'field': 'foo'
-		}, {'action_map': {-1: ConcreteAction(action_id=-1, disabled=False)} }, ConcreteTrigger([], 'foo')),
+			'field': None,
+		}, {'action_map': {-1: ConcreteAction(action_id=-1, disabled=False)} }, ConcreteTrigger([])),
 		({
 			'type': 'ConcreteTrigger',
 			'actions': [-1],
@@ -80,4 +80,4 @@ class TestTrigger:
 		schema = PolymorphicSchema()
 		schema.context = context
 		res = schema.load(data)
-		assert res.__dict__ == expected.__dict__
+		assert res == expected

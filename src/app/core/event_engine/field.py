@@ -1,16 +1,30 @@
 import logging
 from typing import Any, Dict
 
-# import app.core.event_engine.queries as event_queries
-from . import queries as event_queries
+from app.common.utils import Serializable, PolymorphicSchema
+from app.common.schemas import SQLAlchemyColumnField
+
+from .queries import Query, QuerySchema
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import Column
 
-class Field:
-	field: Column
-	queries: Dict[str, event_queries.Query]
+from marshmallow import Schema, fields
 
-	def __init__(self, field: Column | Any, queries: Dict[str, event_queries.Query]) -> None:
+#######################
+# Schemas
+#######################
+class FieldSchema(Schema):
+	field = SQLAlchemyColumnField()
+	queries = fields.Dict(keys=fields.String(), values=fields.Nested(PolymorphicSchema([QuerySchema])))
+#######################
+
+class Field(Serializable):
+	__schema__ = FieldSchema
+
+	field: Column
+	queries: Dict[str, Query]
+
+	def __init__(self, field: Column | Any, queries: Dict[str, Query]) -> None:
 		self.field = field
 		self.queries = queries
 

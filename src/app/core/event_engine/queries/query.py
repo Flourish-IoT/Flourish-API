@@ -1,14 +1,30 @@
 from abc import ABC, abstractmethod
 import logging
 from typing import Any, Callable, Type, cast
-import app.core.models as models
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import Column, Integer
+from app.common.schemas.sqlalchemy_column_field import SQLAlchemyColumnField
+
+import app.core.models as models
+from app.common.utils import PolymorphicSchema, Serializable
+
+from marshmallow import Schema, fields
+
+#######################
+# Schemas
+#######################
+class QuerySchema(Schema):
+	table = fields.Raw()
+	id_column = SQLAlchemyColumnField()
+	post_process_function = PolymorphicSchema()
+#######################
 
 whitelisted_tables = [models.SensorData, models.Device]
 WhitelistedTable = Type[models.SensorData] | Type[models.Device]
 
-class Query(ABC):
+class Query(Serializable, ABC):
+	__schema__ = QuerySchema
+
 	table: WhitelistedTable
 	id_column: Column[Integer]
 	post_process_function: Callable[[Any], Any] | None

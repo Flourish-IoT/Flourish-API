@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 import itertools
 from typing import List, Type
-from app.common.utils.polymorphic_schema import PolymorphicSchema
-from app.core.event_engine import Field
+from app.common.utils import PolymorphicSchema, Serializable
+from app.core.event_engine import Field, FieldSchema
 from app.core.event_engine.actions import Action
 from app.core.event_engine.events import Event
-from app.core.event_engine.triggers import Trigger
+from app.core.event_engine.triggers import Trigger, TriggerSchema
+
 from marshmallow import Schema, fields
 
 #######################
@@ -13,12 +14,13 @@ from marshmallow import Schema, fields
 #######################
 class EventHandlerSchema(Schema):
 	event_handler_id = fields.Int()
-	field = fields.Nested(PolymorphicSchema)
-	triggers = fields.Nested(PolymorphicSchema, many=True)
+	field = fields.Nested(PolymorphicSchema([FieldSchema]))
+	triggers = fields.Nested(PolymorphicSchema([TriggerSchema]), many=True)
 #######################
 
+class EventHandler(Serializable, ABC):
+	__schema__ = EventHandlerSchema
 
-class EventHandler(ABC):
 	event_handler_id: int
 	field: Field
 	triggers: List[Trigger]
@@ -57,3 +59,6 @@ class EventHandler(ABC):
 				event (Event): Event being handled
 		"""
 		raise NotImplementedError
+
+	def dump(self):
+		actions = self.get_actions()

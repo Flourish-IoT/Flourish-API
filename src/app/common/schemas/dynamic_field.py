@@ -1,9 +1,14 @@
-from marshmallow.fields import Field
-from marshmallow import ValidationError
+from enum import Enum
+from typing import Dict, Type
+from marshmallow.fields import Field, List as ListField
+from marshmallow import ValidationError, Schema
 from pydoc import locate
 from inspect import isclass
+from app.common.utils import PolymorphicSchema
 
-class GenericField(Field):
+class DynamicField(Field):
+	type_mapping: Dict[Type, Type[Field]] = {**Schema.TYPE_MAPPING, list: ListField}
+
 	# TODO: whitelist for allowed types?
 	def __init__(self, *args, **kwargs) -> None:
 		super().__init__(*args, **kwargs)
@@ -18,6 +23,9 @@ class GenericField(Field):
 		else:
 			val_type = f'{module}.{type(value).__qualname__}'
 
+		if isinstance(value, Enum):
+			value = value.value
+
 		# TODO: special field for classes that have a __schema__ property?
 		return {
 			'value': value,
@@ -26,11 +34,11 @@ class GenericField(Field):
 
 	def _deserialize(self, value, attr, data, **kwargs):
 		if 'value' not in value:
-			raise ValidationError(f'Generic field requires a value')
+			raise ValidationError(f'Dynamic field requires a value')
 
 		val_type = value.get('type')
 		if val_type is None:
-			raise ValidationError(f'Generic field requires a type')
+			raise ValidationError(f'Dynamic field requires a type')
 
 		# special case for None
 		if val_type == 'NoneType':
@@ -42,3 +50,15 @@ class GenericField(Field):
 			raise ValidationError(f'Invalid type')
 
 		return cls(value['value'])
+
+	@classmethod
+	def register(cls, t: Type, field: Type[Field]):
+		"""All classes that can be loaded by the dynamic field must be registered first
+
+		Args:
+				type (Type): Class type
+				schema (Type[Field]): Field to use when serializing/deserializing class
+		"""
+		# if t.__name__ in cls.type_schemas:
+		# 	raise ValueError(f'Class has already been registered: {{{t.__name__}: {cls.type_schemas[t.__name__]}}}')
+		cls.type_mapping[t.__name__] = field

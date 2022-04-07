@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
-from app.common.schemas.generic_field import GenericField
+from app.common.schemas.dynamic_field import DynamicField
 from app.common.utils import PolymorphicSchema, Serializable
 from app.core.event_engine.post_process_functions import ValueRating
 from marshmallow import fields, post_load, Schema
 import pytest
 
 class FooSchema(Schema):
-	foo = GenericField()
+	foo = DynamicField()
 
 	@post_load
 	def make(self, data, **kwargs):
@@ -18,7 +18,7 @@ class FooSchema(Schema):
 class Foo():
 	foo: Any
 
-class TestAnyField:
+class TestDynamicField:
 	@pytest.mark.parametrize('value, expected', [
 		(Foo(foo=5), {
 			'foo': {

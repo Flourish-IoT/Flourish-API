@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 import logging
+from typing import Optional
 
 from app.core.event_engine.events import Event
 from app.common.utils import Serializable
@@ -26,7 +27,7 @@ class Action(Serializable, ABC):
 	cooldown: timedelta | None
 	last_executed: datetime | None
 
-	def __init__(self, disabled: bool, action_id: int | None = None, cooldown: timedelta | None = None, last_executed: datetime | None = None):
+	def __init__(self, disabled: bool, action_id: Optional[ int ] = None, cooldown: timedelta | None = None, last_executed: datetime | None = None):
 		"""
 		Args:
 				disabled (bool): Enables/disables action

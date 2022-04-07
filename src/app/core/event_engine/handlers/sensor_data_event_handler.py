@@ -1,11 +1,16 @@
 from typing import List, cast
 from app.core.event_engine import Field
-from app.core.event_engine.handlers import EventHandler
+from app.core.event_engine.handlers import EventHandler, EventHandlerSchema
 from app.core.event_engine.events import SensorDataEvent, Event
 from app.core.event_engine.triggers import Trigger
 
+class SensorDataEventHandlerSchema(EventHandlerSchema):
+	pass
+
 class SensorDataEventHandler(EventHandler):
 	"""An EventHandler to handle SensorDataEvents"""
+	__schema__ = SensorDataEventHandlerSchema
+
 	events = [SensorDataEvent]
 	def __init__(self, field: Field, triggers: List[Trigger]) -> None:
 		super().__init__(field, triggers)

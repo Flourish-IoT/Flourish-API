@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import logging
+from typing import Optional
 
 from . import ActionSchema, Action
 from app.core.event_engine.events import Event, DeviceEventType, PlantEventType
@@ -36,7 +37,7 @@ class GenerateAlertAction(Action):
 	# TODO:
 	# push_notification: bool
 
-	def __init__(self, message_template: str, severity: models.SeverityLevelEnum, disabled: bool, action_id: int | None, cooldown: timedelta | None = None, last_executed: datetime | None = None):
+	def __init__(self, message_template: str, severity: models.SeverityLevelEnum, disabled: bool, action_id: Optional[int] = None, cooldown: timedelta | None = None, last_executed: datetime | None = None):
 		"""Generates an alert
 
 		Args:

@@ -4,7 +4,7 @@ from . import Trigger
 from app.core.event_engine.events import Event
 from app.core.event_engine.actions import Action
 from app.core.event_engine.triggers import Trigger, TriggerSchema
-from app.common.schemas import GenericField
+from app.common.schemas import DynamicField
 from app.core.util import Comparable
 
 from marshmallow import post_load
@@ -13,8 +13,8 @@ from marshmallow import post_load
 # Schemas
 #######################
 class BetweenTriggerSchema(TriggerSchema):
-	min = GenericField()
-	max = GenericField()
+	min = DynamicField()
+	max = DynamicField()
 
 	@post_load
 	def make(self, data, **kwargs):

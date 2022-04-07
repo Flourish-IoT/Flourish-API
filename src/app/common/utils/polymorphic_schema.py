@@ -1,10 +1,8 @@
-
-from abc import ABC
 from typing import List, Optional, Type
 from marshmallow import Schema, ValidationError
 from marshmallow_oneofschema import OneOfSchema
 
-class Serializable(ABC):
+class Serializable:
 	"""Registers a class with the PolymorphicSchema"""
 	__schema__: Type[Schema] | None
 
@@ -13,7 +11,6 @@ class Serializable(ABC):
 		# register all subclasses with the polymorphic schema loader
 		if cls.__schema__ is None:
 			raise ValueError("Schema must be defined")
-
 		PolymorphicSchema.register(cls, cls.__schema__)
 
 class PolymorphicSchema(OneOfSchema):

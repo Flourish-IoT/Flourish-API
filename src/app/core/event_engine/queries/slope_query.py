@@ -1,13 +1,25 @@
 import logging
 from typing import Any, Callable
-from . import Query, WhitelistedTable
+from . import Query, WhitelistedTable, QuerySchema
 # from .query import Query, WhitelistedTable
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, Column, TIMESTAMP, exc, Integer
 from datetime import datetime, timedelta
 
+from marshmallow import fields
+
+#######################
+# Schemas
+#######################
+class SlopeQuerySchema(QuerySchema):
+	time_start = fields.TimeDelta()
+	time_end = fields.TimeDelta(required=False, default=None)
+#######################
+
 class SlopeQuery(Query):
 	"""Retrieve the slope of a column from the database"""
+	__schema__ = SlopeQuerySchema
+
 	time_start: timedelta
 	time_end: timedelta | None
 	def __init__(self, table: WhitelistedTable, id_column: Column[Integer] | int, time_start: timedelta, time_end: timedelta | None = None, post_process_function: Callable[[Any], Any] | None = None):

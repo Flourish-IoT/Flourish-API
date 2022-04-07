@@ -1,14 +1,26 @@
 import logging
 from typing import Any, Callable, cast
-from . import Query, WhitelistedTable
+
+from app.common.schemas import SQLAlchemyColumnField
+from . import Query, WhitelistedTable, QuerySchema
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, Column, TIMESTAMP, exc, Integer
 from datetime import datetime
 
+from marshmallow import fields
+
+#######################
+# Schemas
+#######################
+class ValueQuerySchema(QuerySchema):
+	order_column = SQLAlchemyColumnField()
+#######################
+
 class ValueQuery(Query):
 	"""Retrieve a single value from the database"""
-	order_column: Column | None
+	__schema__ = ValueQuerySchema
 
+	order_column: Column | None
 	def __init__(self, table: WhitelistedTable, id_column: Column[Integer] | int , order_column: Column | Any = None, post_process_function: Callable[[Any], Any] | None = None):
 		"""Retrieves a single value from the database
 

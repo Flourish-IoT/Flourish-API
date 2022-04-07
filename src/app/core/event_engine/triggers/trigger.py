@@ -4,7 +4,7 @@ from typing import Any, List, TypeVar, Generic
 from app.common.utils import MappedField, Serializable
 from app.core.event_engine.events import Event
 from app.core.event_engine.actions import Action
-from app.common.schemas import GenericField
+from app.common.schemas import DynamicField
 
 from marshmallow import Schema, fields
 
@@ -16,8 +16,7 @@ class TriggerSchema(Schema):
 	actions = fields.List(MappedField[Action]('action_map', lambda action: action.action_id))
 
 class ValueTriggerSchema(TriggerSchema):
-	value = GenericField()
-
+	value = DynamicField()
 #######################
 
 T = TypeVar('T')

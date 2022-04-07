@@ -33,3 +33,9 @@ def get_event_handler_actions(event_handler_id: int, session: ScopedSession) -> 
 		raise e
 
 	return actions
+
+# def get_event_handler(event_handler_id: int, session: ScopedSession):
+# 	event_handler_information = models.EventHandlerInformation()
+# 	config = PolymorphicSchema().dump(event_handler)
+# 	event_handler_information.config = config
+# 	return event_handler_information

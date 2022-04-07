@@ -14,11 +14,12 @@ from app.core.event_engine.actions import GeneratePlantAlertAction
 from app.core.event_engine.triggers import EqualsTrigger, AndTrigger, LessThanTrigger, GreaterThanTrigger
 import app.core.models as models
 import app.core.models.event_engine as event_engine_models
+from app.core.models.event_engine.event_handler_information import EventHandlerInformation
 import app.core.services.event_handler_service as services
 
-def hydrate_event_handler(event_info: event_engine_models.EventHandlerInformation, actions: List[event_engine_models.ActionInformation]):
-	action_map = {action.action_id: action.to_action() for action in actions}
-	return event_info.to_event_handler(action_map)
+# def hydrate_event_handler(event_info: event_engine_models.EventHandlerInformation, actions: List[event_engine_models.ActionInformation]):
+# 	action_map = {action.action_id: action.to_action() for action in actions}
+# 	return event_info.to_event_handler(action_map)
 
 def load_event_handlers(event: Event) -> List[EventHandler]:
 	logging.info(f'Loading event handlers for event: {event}')
@@ -39,10 +40,11 @@ def load_event_handlers(event: Event) -> List[EventHandler]:
 	# get event handler configs from db
 	event_handlers = []
 	event_handler_information = services.get_event_handler_information(id, id_column, event.session)
-	for event_handler_info in event_handler_information:
-		actions = services.get_event_handler_actions(event_handler_info.event_handler_id, event.session)
-		event_handler = hydrate_event_handler(event_handler_info, actions)
-		event_handlers.append(event_handler)
+	# for event_handler_info in event_handler_information:
+	# 	# event_handler = event_handler_info.to_event_handler(event.session)
+	# 	# actions = services.get_event_handler_actions(event_handler_info.event_handler_id, event.session)
+	# 	# event_handler = hydrate_event_handler(event_handler_info, actions)
+	# 	event_handlers.append(event_handler)
 
 	return event_handlers
 
@@ -61,13 +63,13 @@ def generate_default_plant_event_handlers(plant: models.Plant):
 						EqualsTrigger(field='value', value=models.ValueRating.TooLow),
 						# LessThanTrigger(field='slope', value=0),
 					],
-					[GeneratePlantAlertAction('{event.plant.name} is too cold! Turn up the heat', models.SeverityLevelEnum.Critical, False, timedelta(days=1))]
+					[GeneratePlantAlertAction('{event.plant.name} is too cold! Turn up the heat', models.SeverityLevelEnum.Critical, False, cooldown=timedelta(days=1))]
 				),
 				AndTrigger([
 						EqualsTrigger(field='value', value=models.ValueRating.Low),
 						# LessThanTrigger(field='slope', value=0),
 					],
-					[GeneratePlantAlertAction('{event.plant.name} is feeling cold. You should consider increasing the temperature', models.SeverityLevelEnum.Warning, False, timedelta(days=1))]
+					[GeneratePlantAlertAction('{event.plant.name} is feeling cold. You should consider increasing the temperature', models.SeverityLevelEnum.Warning, False, cooldown=timedelta(days=1))]
 				),
 				# EqualsTrigger(ValueRating.Nominal,
 				# 	[]
@@ -76,13 +78,13 @@ def generate_default_plant_event_handlers(plant: models.Plant):
 						EqualsTrigger(field='value', value=models.ValueRating.High),
 						# GreaterThanTrigger(field='slope', value=0),
 					],
-					[GeneratePlantAlertAction('{event.plant.name} is feeling hot. You should consider decreasing the temperature', models.SeverityLevelEnum.Warning, False, timedelta(days=1))]
+					[GeneratePlantAlertAction('{event.plant.name} is feeling hot. You should consider decreasing the temperature', models.SeverityLevelEnum.Warning, False, cooldown=timedelta(days=1))]
 				),
 				AndTrigger([
 						EqualsTrigger(field='value', value=models.ValueRating.TooHigh),
 						# GreaterThanTrigger(field='slope', value=0),
 					],
-					[GeneratePlantAlertAction('{event.plant.name} is too hot! Lower the heat', models.SeverityLevelEnum.Critical, False, timedelta(days=1))]
+					[GeneratePlantAlertAction('{event.plant.name} is too hot! Lower the heat', models.SeverityLevelEnum.Critical, False, cooldown=timedelta(days=1))]
 				),
 			]
 		),

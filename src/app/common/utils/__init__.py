@@ -1,5 +1,5 @@
 from .marshal import *
 from .unpack_response import unpack_response
 from .serialize import *
-from .polymorphic_schema import PolymorphicSchema, Serializable
+from .polymorphic_schema import PolymorphicSchema
 from .mapped_field import MappedField

@@ -2,16 +2,16 @@ from typing import List, Optional, Type
 from marshmallow import Schema, ValidationError
 from marshmallow_oneofschema import OneOfSchema
 
-class Serializable:
-	"""Registers a class with the PolymorphicSchema"""
-	__schema__: Type[Schema] | None
+# class Serializable:
+# 	"""Registers a class with the PolymorphicSchema"""
+# 	__schema__: Type[Schema] | None
 
-	def __init_subclass__(cls, **kwargs) -> None:
-		super().__init_subclass__(**kwargs)
-		# register all subclasses with the polymorphic schema loader
-		if cls.__schema__ is None:
-			raise ValueError("Schema must be defined")
-		PolymorphicSchema.register(cls, cls.__schema__)
+# 	def __init_subclass__(cls, **kwargs) -> None:
+# 		super().__init_subclass__(**kwargs)
+# 		# register all subclasses with the polymorphic schema loader
+# 		if cls.__schema__ is None:
+# 			raise ValueError("Schema must be defined")
+# 		PolymorphicSchema.register(cls, cls.__schema__)
 
 class PolymorphicSchema(OneOfSchema):
 	"""

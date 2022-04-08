@@ -2,6 +2,7 @@ from functools import reduce
 import itertools
 import logging
 from typing import List, TypeVar, Generic
+from app.common.schemas.dynamic_field import DynamicField
 from app.core.util import Comparable
 from app.core.event_engine.events import Event
 from app.core.event_engine.triggers import Trigger, TriggerSchema
@@ -14,7 +15,7 @@ from marshmallow import post_load, fields
 # Schemas
 #######################
 class AndTriggerSchema(TriggerSchema):
-	triggers = fields.List(fields.Nested(PolymorphicSchema([TriggerSchema])))
+	triggers = fields.List(DynamicField([Trigger]))
 
 	@post_load
 	def make(self, data, **kwargs):

@@ -3,10 +3,8 @@ import logging
 from typing import Any, Callable, Type, cast
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import Column, Integer
-from app.common.schemas.sqlalchemy_column_field import SQLAlchemyColumnField
-
+from app.common.schemas import DynamicField, SQLAlchemyColumnField, SerializableClass
 import app.core.models as models
-from app.common.utils import PolymorphicSchema, Serializable
 
 from marshmallow import Schema, fields
 
@@ -14,15 +12,17 @@ from marshmallow import Schema, fields
 # Schemas
 #######################
 class QuerySchema(Schema):
+	# TODO:
 	table = fields.Raw()
 	id_column = SQLAlchemyColumnField()
-	post_process_function = PolymorphicSchema()
+	post_process_function = fields.Raw()
+	# post_process_function = DynamicField()
 #######################
 
 whitelisted_tables = [models.SensorData, models.Device]
 WhitelistedTable = Type[models.SensorData] | Type[models.Device]
 
-class Query(Serializable, ABC):
+class Query(SerializableClass, ABC):
 	__schema__ = QuerySchema
 
 	table: WhitelistedTable

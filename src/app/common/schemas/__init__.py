@@ -1,2 +1,2 @@
-from .dynamic_field import DynamicField
+from .dynamic_field import DynamicField, Serializable, SerializableClass
 from .sqlalchemy_column_field import SQLAlchemyColumnField

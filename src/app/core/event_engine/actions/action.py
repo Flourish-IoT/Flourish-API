@@ -4,7 +4,7 @@ import logging
 from typing import Optional
 
 from app.core.event_engine.events import Event
-from app.common.utils import Serializable
+from app.common.schemas import SerializableClass
 
 from marshmallow import Schema, fields
 
@@ -19,7 +19,7 @@ class ActionSchema(Schema):
 #######################
 
 # TODO: seperate action metadata from implementation for storage
-class Action(Serializable, ABC):
+class Action(SerializableClass, ABC):
 	__schema__ = ActionSchema
 
 	action_id: int | None

@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 import logging
 from typing import Any, List, TypeVar, Generic
-from app.common.utils import MappedField, Serializable
+from app.common.utils import MappedField
 from app.core.event_engine.events import Event
 from app.core.event_engine.actions import Action
-from app.common.schemas import DynamicField
+from app.common.schemas import DynamicField, SerializableClass
 
 from marshmallow import Schema, fields
 
@@ -20,7 +20,7 @@ class ValueTriggerSchema(TriggerSchema):
 #######################
 
 T = TypeVar('T')
-class Trigger(Serializable, ABC, Generic[T]):
+class Trigger(SerializableClass, ABC, Generic[T]):
 	__schema__ = TriggerSchema
 
 	actions: List[Action]

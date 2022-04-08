@@ -1,10 +1,10 @@
 import logging
 from typing import Any, Dict
 
-from app.common.utils import Serializable, PolymorphicSchema
-from app.common.schemas import SQLAlchemyColumnField
+from app.common.utils import PolymorphicSchema
+from app.common.schemas import SQLAlchemyColumnField, SerializableClass, DynamicField
 
-from .queries import Query, QuerySchema
+from .queries import Query
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import Column
 
@@ -15,10 +15,10 @@ from marshmallow import Schema, fields
 #######################
 class FieldSchema(Schema):
 	field = SQLAlchemyColumnField()
-	queries = fields.Dict(keys=fields.String(), values=fields.Nested(PolymorphicSchema([QuerySchema])))
+	queries = fields.Dict(keys=fields.String(), values=DynamicField([Query]))
 #######################
 
-class Field(Serializable):
+class Field(SerializableClass):
 	__schema__ = FieldSchema
 
 	field: Column

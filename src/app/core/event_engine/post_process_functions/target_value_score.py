@@ -4,11 +4,21 @@ import logging
 from typing import Any, Callable, Tuple, cast
 
 import app.core.models as models
+from app.common.schemas import Serializable
 # from app.core.models.plant import Plant
 from app.core.util import Comparable
 from sqlalchemy import Column
+from functools import partial
 
-class ValueRating(IntEnum):
+from marshmallow_enum import EnumField
+
+class ValueRating(Serializable, IntEnum):
+	__field__ = EnumField
+
+	@classmethod
+	def __field_kwargs__(cls):
+		return {'enum': __class__}
+
 	NoRating = -1
 	TooLow = 1,
 	Low = 2,

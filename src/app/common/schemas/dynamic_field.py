@@ -6,6 +6,8 @@ from marshmallow import ValidationError, Schema
 from pydoc import locate
 from inspect import isclass
 
+from app.common.utils.polymorphic_schema import PolymorphicSchema
+
 class Serializable:
 	"""Registers a class containing a Field with DynamicField"""
 	__field__: Type[Field]
@@ -34,6 +36,7 @@ class SerializableClass:
 		if cls.__schema__ is None:
 			raise ValueError(f"Can't instantiate class {cls} without __schema__ attribute defined")
 		DynamicField.register(cls, Nested, {'nested': cls.__schema__})
+		PolymorphicSchema.register(cls, cls.__schema__)
 
 class DynamicField(Field):
 	"""Dynamically loads/dumps a field"""
@@ -80,7 +83,8 @@ class DynamicField(Field):
 		field, field_kwargs = self.type_mapping[type(value)]
 
 		return {
-			'value': field(*self.field_args, **field_kwargs, **self.field_kwargs).serialize(attr, obj, **kwargs),
+			'value': field(*self.field_args, **field_kwargs, **self.field_kwargs)._serialize(value, attr, obj, **kwargs),
+			# 'value': field(*self.field_args, **field_kwargs, **self.field_kwargs).serialize(attr, obj, **kwargs),
 			'type': type(value).__qualname__
 		}
 

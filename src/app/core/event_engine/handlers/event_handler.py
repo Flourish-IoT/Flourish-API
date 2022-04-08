@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 import itertools
 from typing import List, Type
-from app.common.utils import PolymorphicSchema, Serializable
+from app.common.utils import PolymorphicSchema
+from app.common.schemas import DynamicField, SerializableClass
 from app.core.event_engine import Field, FieldSchema
 from app.core.event_engine.actions import Action
 from app.core.event_engine.events import Event
@@ -14,11 +15,11 @@ from marshmallow import Schema, fields
 #######################
 class EventHandlerSchema(Schema):
 	event_handler_id = fields.Int()
-	field = fields.Nested(PolymorphicSchema([FieldSchema]))
-	triggers = fields.Nested(PolymorphicSchema([TriggerSchema]), many=True)
+	field = DynamicField([Field])
+	triggers = fields.List(DynamicField([Trigger]))
 #######################
 
-class EventHandler(Serializable, ABC):
+class EventHandler(SerializableClass, ABC):
 	__schema__ = EventHandlerSchema
 
 	event_handler_id: int

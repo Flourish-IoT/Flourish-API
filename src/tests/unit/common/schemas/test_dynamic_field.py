@@ -43,44 +43,35 @@ class TestDynamicField:
 	@pytest.mark.parametrize('value, expected', [
 		(Foo(foo=5), {
 			'foo': {
-				'value': 5,
-				'type': 'int'
+				'int': 5
 			}
 		}),
 		(Foo(foo=2.3), {
 			'foo': {
-				'value': 2.3,
-				'type': 'float'
+				'float': 2.3
 			}
 		}),
 		(Foo(foo=float(2)), {
 			'foo': {
-				'value': 2.0,
-				'type': 'float'
+				'float': 2
 			}
 		}),
 		(Foo(foo=None), {
-			'foo': {
-				'value': None,
-				'type': 'NoneType'
-			}
+			'foo': None
 		}),
 		(Foo(foo='abc'), {
 			'foo': {
-				'value': 'abc',
-				'type': 'str'
+				'str': 'abc'
 			}
 		}),
 		(Foo(foo=datetime(1, 1, 1, 1)), {
 			'foo': {
-				'value': '0001-01-01T01:00:00',
-				'type': 'datetime'
+				'datetime': '0001-01-01T01:00:00',
 			}
 		}),
 		(Foo(foo=ValueRating.High), {
 			'foo': {
-				'value': 'High',
-				'type': 'ValueRating'
+				'ValueRating': 'High',
 			}
 		}),
 	])
@@ -137,44 +128,35 @@ class TestDynamicField:
 	@pytest.mark.parametrize('value, expected', [
 		({
 			'foo': {
-				'value': 5,
-				'type': 'int'
+				'int': 5
 			}
 		}, Foo(foo=5)),
 		({
 			'foo': {
-				'value': 2.3,
-				'type': 'float'
+				'float': 2.3,
 			}
 		}, Foo(foo=2.3)),
 		({
 			'foo': {
-				'value': 2.0,
-				'type': 'float'
+				'float': 2.0,
 			}
 		}, Foo(foo=float(2))),
 		({
-			'foo': {
-				'value': None,
-				'type': 'NoneType'
-			}
+			'foo': None
 		}, Foo(foo=None)),
 		({
 			'foo': {
-				'value': 'abc',
-				'type': 'str'
+				'str': 'abc',
 			}
 		}, Foo(foo='abc')),
 		({
 			'foo': {
-				'value': '0001-01-01T01:00:00',
-				'type': 'datetime'
+				'datetime': '0001-01-01T01:00:00',
 			}
 		}, Foo(foo=datetime(1, 1, 1, 1))),
 		({
 			'foo': {
-				'value': 'High',
-				'type': 'ValueRating'
+				'ValueRating': 'High',
 			}
 		}, Foo(foo=ValueRating.High)),
 	])
@@ -185,24 +167,17 @@ class TestDynamicField:
 	@pytest.mark.parametrize('value', [
 		({
 			'foo': {
-				'value': 'bar',
-				'type': 'BadType'
+				'BadType': 'bar',
 			}
 		}),
 		({
 			'foo': {
-				'type': 'int'
+				'': 'MissingType'
 			}
 		}),
 		({
 			'foo': {
-				'value': 'MissingType'
-			}
-		}),
-		({
-			'foo': {
-				'value': 'BadValue',
-				'type': 'int'
+				'int': 'BadValue',
 			}
 		}),
 	])
@@ -213,52 +188,43 @@ class TestDynamicField:
 	@pytest.mark.parametrize('value, whitelist', [
 		({
 			'a': {
-				'value': 5,
-				'type': 'int'
+				'int': 5,
 			}
 		}, [int]),
 		({
 			'a': {
-				'value': 5,
-				'type': 'int'
+				'int': 5,
 			}
 		}, [int, float, str]),
 		({
 			'a': {
-				'value': 'High',
-				'type': 'ValueRating'
+				'ValueRating': 'High',
 			}
 		}, [ValueRating]),
 		({
 			'a': {
-				'value': 'High',
-				'type': 'ValueRating'
+				'ValueRating': 'High',
 			}
 		}, [int]),
 		({
 			'a': {
-				'value': {
+				'Baz': {
 					'baz': {
-						'value': 5,
-						'type': 'int'
+						'int': 5,
 					}
 				},
-				'type': 'Baz'
 			}
 		}, [Baz]),
 		({
 			'a': {
-				'value': {
+				'Baz2': {
 					'baz': {
-						'value': 5,
-						'type': 'int'
+						'int': 5,
 					},
 					'bar': {
-						'value': 5,
-						'type': 'int'
+						'int': 5,
 					}
 				},
-				'type': 'Baz2'
 			}
 		}, [Baz]),
 	])
@@ -270,20 +236,17 @@ class TestDynamicField:
 	@pytest.mark.parametrize('value, whitelist', [
 		({
 			'a': {
-				'value': 5,
-				'type': 'int'
+				'int': 5,
 			}
 		}, [str]),
 		({
 			'a': {
-				'value': 'foo',
-				'type': 'str'
+				'str': 'foo',
 			}
 		}, [int, float, datetime]),
 		({
 			'a': {
-				'value': 'High',
-				'type': 'ValueRating'
+				'ValueRating': 'High',
 			}
 		}, [str]),
 	])

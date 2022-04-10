@@ -44,8 +44,9 @@ class DynamicField(Field):
 			if not self.allow_none:
 				raise ValidationError(f'Field cannot be None')
 
-		# don't check for None in whitelist, allow_none ctor arg implies it is allowed
-		if value is not None and not self.is_whitelisted_type(type(value)):
+			return None
+
+		if not self.is_whitelisted_type(type(value)):
 			raise ValidationError(f'Type {type(value)} is not allowed')
 
 		# use the value type to find the field used to serialize it
@@ -55,17 +56,24 @@ class DynamicField(Field):
 		field, field_kwargs = self.type_mapping[type(value)]
 
 		return {
-			'value': field(*self.field_args, **field_kwargs, **self.field_kwargs)._serialize(value, attr, obj, **kwargs),
-			# 'value': field(*self.field_args, **field_kwargs, **self.field_kwargs).serialize(attr, obj, **kwargs),
-			'type': type(value).__qualname__
+			type(value).__qualname__: field(*self.field_args, **field_kwargs, **self.field_kwargs)._serialize(value, attr, obj, **kwargs),
 		}
 
 	def _deserialize(self, value, attr, data, **kwargs):
-		if 'value' not in value:
-			raise ValidationError(f'Dynamic field requires a value')
+		if value is None:
+			if not self.allow_none:
+				raise ValidationError(f'Field cannot be None')
+
+			return None
+
+		if not isinstance(value, dict):
+			raise ValidationError(f'Missing data for required field.')
+
+		if len(value.keys()) != 1:
+			raise ValidationError(f'Invalid field')
 
 		# get the type associated with the field
-		val_type = value.get('type')
+		val_type = next(iter(value.keys()))
 		if val_type is None:
 			raise ValidationError(f'Dynamic field requires a type')
 
@@ -80,7 +88,7 @@ class DynamicField(Field):
 		field, field_kwargs = self.type_mapping[_type]
 
 		# use field to deserialize value
-		return field(*self.field_args, **field_kwargs, **self.field_kwargs).deserialize(value['value'], 'value', value, **kwargs)
+		return field(*self.field_args, **field_kwargs, **self.field_kwargs).deserialize(value[val_type], val_type, value, **kwargs)
 
 	@classmethod
 	def register(cls, _type: Type, field: Type[Field], field_kwargs: Dict[str, Any] = {}):

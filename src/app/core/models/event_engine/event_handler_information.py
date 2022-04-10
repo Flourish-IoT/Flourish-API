@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 from typing import Dict, cast
-from app.common.utils.polymorphic_schema import PolymorphicSchema
+from app.common.schemas.dynamic_schema import DynamicSchema
 
 import app.core.event_engine.actions as actions
 import app.core.event_engine.handlers as handlers
@@ -58,6 +58,6 @@ class EventHandlerInformation(BaseModel):
 	def from_event_handler(event_handler: handlers.EventHandler):
 		event_handler_information = EventHandlerInformation()
 		# event_handler_information = EventHandlerInformation(event_handler_id=event_handler.)
-		config = PolymorphicSchema().dump(event_handler)
+		config = DynamicSchema().dump(event_handler)
 		event_handler_information.config = config
 		return event_handler_information

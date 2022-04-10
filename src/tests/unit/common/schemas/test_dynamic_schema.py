@@ -1,6 +1,7 @@
+from copy import deepcopy
 from dataclasses import dataclass
 from datetime import timedelta
-from app.common.utils import PolymorphicSchema, Serializable
+from app.common.schemas import DynamicSchema, Serializable
 from marshmallow import fields, post_load, Schema, ValidationError
 import pytest
 from functools import wraps
@@ -49,28 +50,28 @@ def restore_schema(func):
 	"""Decorator to restore the PolymorphicSchema to previous state after test completes"""
 	@wraps(func)
 	def f(*args, **kwargs):
-		prev_schema = PolymorphicSchema.type_schemas
+		prev_schema = deepcopy(DynamicSchema.type_schemas)
 		try:
 			r = func(*args, **kwargs)
 		finally:
-			PolymorphicSchema.type_schemas = prev_schema
+			DynamicSchema.type_schemas = prev_schema
 		return r
 	return f
 
-class TestPolymorphicSchema:
+class TestDynamicSchema:
 	@restore_schema
 	def test_register(self):
 		"""Ensure polymorphic schema is registering correctly"""
-		PolymorphicSchema.type_schemas = {}
-		PolymorphicSchema.register(Foo, Foo.__schema__)
+		DynamicSchema.type_schemas = {}
+		DynamicSchema.register(Foo, Foo.__schema__)
 
-		assert PolymorphicSchema.type_schemas == {
+		assert DynamicSchema.type_schemas == {
 			'Foo': FooSchema
 		}
 
-		PolymorphicSchema.register(Aaa, Aaa.__schema__)
+		DynamicSchema.register(Aaa, Aaa.__schema__)
 
-		assert PolymorphicSchema.type_schemas == {
+		assert DynamicSchema.type_schemas == {
 			'Foo': FooSchema,
 			'Aaa': AaaSchema
 		}
@@ -91,7 +92,7 @@ class TestPolymorphicSchema:
 	@restore_schema
 	def test_serializable(self):
 		"""Ensure Serializable registration works correctly"""
-		PolymorphicSchema.type_schemas = {}
+		DynamicSchema.type_schemas = {}
 
 		class BarSchema(Schema):
 			baz = fields.Email()
@@ -121,7 +122,7 @@ class TestPolymorphicSchema:
 			foo: Foo
 			bar: Bar
 
-		assert PolymorphicSchema.type_schemas == {
+		assert DynamicSchema.type_schemas == {
 			'Bar': BarSchema,
 			'Baz': BazSchema
 		}
@@ -141,10 +142,10 @@ class TestPolymorphicSchema:
 	])
 	def test_dump(self, cls, value, expected):
 		"""Ensure polymorphic schema is dumped correctly"""
-		PolymorphicSchema.type_schemas = {}
-		PolymorphicSchema.register(cls, cls.__schema__)
+		DynamicSchema.type_schemas = {}
+		DynamicSchema.register(cls, cls.__schema__)
 
-		res = PolymorphicSchema().dump(value)
+		res = DynamicSchema().dump(value)
 		assert res == expected
 
 	@restore_schema
@@ -162,10 +163,10 @@ class TestPolymorphicSchema:
 	])
 	def test_load(self, cls, value, expected):
 		"""Ensure polymorphic schema is loaded correctly"""
-		PolymorphicSchema.type_schemas = {}
-		PolymorphicSchema.register(cls, cls.__schema__)
+		DynamicSchema.type_schemas = {}
+		DynamicSchema.register(cls, cls.__schema__)
 
-		res = PolymorphicSchema().load(value)
+		res = DynamicSchema().load(value)
 		assert res == expected
 
 	@pytest.mark.parametrize('cls, value, whitelisted', [
@@ -174,11 +175,11 @@ class TestPolymorphicSchema:
 	])
 	def test_whitelist_dump_raises(self, cls, value, whitelisted):
 		# test that whitelist raises error if dumping a value not in whitelist
-		PolymorphicSchema.type_schemas = {}
-		PolymorphicSchema.register(cls, cls.__schema__)
+		DynamicSchema.type_schemas = {}
+		DynamicSchema.register(cls, cls.__schema__)
 
 		with pytest.raises(ValidationError):
-			PolymorphicSchema(whitelisted).dump(value)
+			DynamicSchema(whitelisted).dump(value)
 
 	@pytest.mark.parametrize('cls, value, whitelisted', [
 		(Foo, Foo(foo=True, bar=2), [FooSchema]),
@@ -187,10 +188,10 @@ class TestPolymorphicSchema:
 	])
 	def test_whitelist_dump(self, cls, value, whitelisted):
 		# test that whitelist allows values in whitelist to be dumped
-		PolymorphicSchema.type_schemas = {}
-		PolymorphicSchema.register(cls, cls.__schema__)
+		DynamicSchema.type_schemas = {}
+		DynamicSchema.register(cls, cls.__schema__)
 
-		PolymorphicSchema(whitelisted).dump(value)
+		DynamicSchema(whitelisted).dump(value)
 
 	@pytest.mark.parametrize('cls, value, whitelisted', [
 		(Foo, {
@@ -212,10 +213,10 @@ class TestPolymorphicSchema:
 	])
 	def test_whitelist_load(self, cls, value, whitelisted):
 		# test that whitelist allows values that are in the whitelist to be loaded
-		PolymorphicSchema.type_schemas = {}
-		PolymorphicSchema.register(cls, cls.__schema__)
+		DynamicSchema.type_schemas = {}
+		DynamicSchema.register(cls, cls.__schema__)
 
-		PolymorphicSchema(whitelisted).load(value)
+		DynamicSchema(whitelisted).load(value)
 
 	@pytest.mark.parametrize('cls, value, whitelisted', [
 		(Foo, {
@@ -232,8 +233,8 @@ class TestPolymorphicSchema:
 	])
 	def test_whitelist_load_raises(self, cls, value, whitelisted):
 		# test that whitelist allows values that are in the whitelist to be loaded
-		PolymorphicSchema.type_schemas = {}
-		PolymorphicSchema.register(cls, cls.__schema__)
+		DynamicSchema.type_schemas = {}
+		DynamicSchema.register(cls, cls.__schema__)
 
 		with pytest.raises(ValidationError):
-			PolymorphicSchema(whitelisted).load(value)
+			DynamicSchema(whitelisted).load(value)

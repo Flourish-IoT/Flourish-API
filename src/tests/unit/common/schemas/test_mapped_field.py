@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import timedelta
 from marshmallow import fields, post_load, Schema
-from app.common.utils import MappedField
+from app.common.schemas import MappedField
 import pytest
 
 

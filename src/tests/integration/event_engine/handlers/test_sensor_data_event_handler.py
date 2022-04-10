@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 from unittest import mock
-from app.common.utils.polymorphic_schema import PolymorphicSchema
+from app.common.schemas.dynamic_schema import DynamicSchema
 from app.core.event_engine import Field
 from app.core.event_engine.events import SensorDataEvent
 from app.core.event_engine.queries import ValueQuery, SlopeQuery
-from app.core.event_engine.post_process_functions import ValueRating, plant_value_score
+from app.core.event_engine.post_process_functions import ValueRating
 from app.core.event_engine.handlers import SensorDataEventHandler
 from app.core.event_engine.actions import GeneratePlantAlertAction
 from app.core.event_engine.triggers import EqualsTrigger, AndTrigger, LessThanTrigger

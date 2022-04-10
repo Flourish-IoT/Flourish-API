@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 import itertools
 from typing import List, Type
-from app.common.utils import PolymorphicSchema
-from app.common.schemas import DynamicField, SerializableClass
+from app.common.schemas import DynamicField, SerializableClass, DynamicSchema
 from app.core.event_engine import Field, FieldSchema
 from app.core.event_engine.actions import Action
 from app.core.event_engine.events import Event

@@ -1,4 +1,4 @@
-from app.common.utils import PolymorphicSchema
+from app.common.schemas import DynamicSchema
 from app.core.event_engine.actions.action import Action
 from app.core.event_engine.events import Event
 from app.core.event_engine.triggers import LessThanTrigger
@@ -69,7 +69,7 @@ class TestLessThan:
 		}),
 	])
 	def test_serialization(self, trigger, expected):
-		res = PolymorphicSchema().dump(trigger)
+		res = DynamicSchema().dump(trigger)
 		assert res == expected
 
 	@pytest.mark.parametrize('data, context, expected', [
@@ -111,7 +111,7 @@ class TestLessThan:
 		}, {'action_map': {} }, LessThanTrigger(ValueRating.TooHigh, [], field='foo')),
 	])
 	def test_deserialization(self, data, context, expected):
-		schema = PolymorphicSchema()
+		schema = DynamicSchema()
 		schema.context = context
 		res = schema.load(data)
 		assert res == expected

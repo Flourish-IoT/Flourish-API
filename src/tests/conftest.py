@@ -5,7 +5,7 @@ import pytest
 from app import Environment, db, create_rest_app
 from app.core.event_engine import Field
 from app.core.event_engine.queries import ValueQuery, SlopeQuery
-from app.core.event_engine.post_process_functions import ValueRating, plant_value_score
+from app.core.event_engine.post_process_functions import ValueRating, PlantValueScore
 from app.core.event_engine.handlers import SensorDataEventHandler
 from app.core.event_engine.actions import GeneratePlantAlertAction
 from app.core.event_engine.triggers import EqualsTrigger, AndTrigger, LessThanTrigger
@@ -35,7 +35,7 @@ def default_handler(default_plant):
 	return SensorDataEventHandler(
 		Field(
 			SensorData.temperature, {
-				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, plant_value_score(default_plant, PlantType.minimum_temperature, PlantType.maximum_temperature)),
+				'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, PlantValueScore(PlantType.minimum_temperature, PlantType.maximum_temperature)),
 				'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
 			}
 		),

@@ -1,4 +1,4 @@
-from app.common.utils.polymorphic_schema import PolymorphicSchema
+from app.common.schemas.dynamic_schema import DynamicSchema
 from app.core.event_engine.events import Event
 from app.core.event_engine.triggers import Trigger, TriggerSchema
 from unittest.mock import MagicMock
@@ -51,7 +51,7 @@ class TestTrigger:
 		}),
 	])
 	def test_serialization(self, trigger, expected):
-		res = PolymorphicSchema().dump(trigger)
+		res = DynamicSchema().dump(trigger)
 		assert res == expected
 
 	@pytest.mark.parametrize('data, context, expected', [
@@ -77,7 +77,7 @@ class TestTrigger:
 		}, {'action_map': {-1: ConcreteAction(action_id=-1, disabled=False), -2: ConcreteAction(action_id=-2, disabled=True)} }, ConcreteTrigger([ConcreteAction(action_id=-1, disabled=False), ConcreteAction(action_id=-2, disabled=True)], 'foo')),
 	])
 	def test_deserialization(self, data, context, expected):
-		schema = PolymorphicSchema()
+		schema = DynamicSchema()
 		schema.context = context
 		res = schema.load(data)
 		assert res == expected

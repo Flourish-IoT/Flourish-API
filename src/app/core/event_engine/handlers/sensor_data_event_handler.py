@@ -23,7 +23,7 @@ class SensorDataEventHandler(EventHandler):
 		event = cast(SensorDataEvent, event)
 
 		# get field value
-		value = self.field.get_value(event.plant.plant_id, event.session)
+		value = self.field.get_value(event, event.plant.plant_id, event.session)
 
 		# execute triggers
 		for trigger in self.triggers:

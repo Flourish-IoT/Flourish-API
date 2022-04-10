@@ -2,20 +2,9 @@ from typing import List, Optional, Type
 from marshmallow import Schema, ValidationError
 from marshmallow_oneofschema import OneOfSchema
 
-# class Serializable:
-# 	"""Registers a class with the PolymorphicSchema"""
-# 	__schema__: Type[Schema] | None
-
-# 	def __init_subclass__(cls, **kwargs) -> None:
-# 		super().__init_subclass__(**kwargs)
-# 		# register all subclasses with the polymorphic schema loader
-# 		if cls.__schema__ is None:
-# 			raise ValueError("Schema must be defined")
-# 		PolymorphicSchema.register(cls, cls.__schema__)
-
-class PolymorphicSchema(OneOfSchema):
+class DynamicSchema(OneOfSchema):
 	"""
-	Special kind of schema that allows for polymorphic schemas based on Schema type.
+	Special kind of schema that allows for dynamic schemas based on Schema type.
 	"""
 	whitelist: List[Type] | None
 	def __init__(self, whitelist: Optional[List[Type[Schema]]] = None, *args, **kwargs):
@@ -58,7 +47,7 @@ class PolymorphicSchema(OneOfSchema):
 
 	@classmethod
 	def register(cls, t: Type, schema: Type[Schema]):
-		"""All classes that can be dynamically loaded by the polymorphic schema loader must be registered first
+		"""All classes that can be dynamically loaded by the dynamic schema loader must be registered first
 
 		Args:
 				type (Type): Class type

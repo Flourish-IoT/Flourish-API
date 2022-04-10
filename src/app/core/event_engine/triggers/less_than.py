@@ -1,6 +1,6 @@
 import logging
 from typing import List, TypeVar, Generic
-from app.common.utils.polymorphic_schema import PolymorphicSchema
+from app.common.schemas.dynamic_schema import DynamicSchema
 from app.core.util import Comparable
 from . import Trigger
 from app.core.event_engine.events import Event

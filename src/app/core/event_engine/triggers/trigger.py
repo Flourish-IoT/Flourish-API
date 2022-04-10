@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 import logging
 from typing import Any, List, TypeVar, Generic
-from app.common.utils import MappedField
 from app.core.event_engine.events import Event
 from app.core.event_engine.actions import Action
-from app.common.schemas import DynamicField, SerializableClass
+from app.common.schemas import DynamicField, SerializableClass, MappedField
 
 from marshmallow import Schema, fields
 

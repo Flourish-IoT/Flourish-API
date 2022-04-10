@@ -3,12 +3,13 @@ from sqlalchemy import Column
 from sqlalchemy.orm import registry
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 from copy import deepcopy
+from app.common.schemas import SerializableType
 
 from app.core.util import PrettyPrint
 
 mapper_registry = registry()
 
-class BaseModel(PrettyPrint, metaclass=DeclarativeMeta):
+class BaseModel(PrettyPrint, SerializableType, metaclass=DeclarativeMeta):
     __abstract__ = True
 
     # these are supplied by the sqlalchemy2-stubs, so may be omitted

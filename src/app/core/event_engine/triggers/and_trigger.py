@@ -2,12 +2,11 @@ from functools import reduce
 import itertools
 import logging
 from typing import List, TypeVar, Generic
-from app.common.schemas.dynamic_field import DynamicField
+from app.common.schemas import DynamicField
 from app.core.util import Comparable
 from app.core.event_engine.events import Event
 from app.core.event_engine.triggers import Trigger, TriggerSchema
 from app.core.event_engine.actions import Action
-from app.common.utils import PolymorphicSchema
 
 from marshmallow import post_load, fields
 

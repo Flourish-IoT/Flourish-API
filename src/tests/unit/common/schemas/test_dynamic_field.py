@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
 from app.common.schemas import DynamicField, SerializableClass
-from app.common.utils import PolymorphicSchema
 from app.core.event_engine.post_process_functions import ValueRating
 from marshmallow import fields, post_load, Schema, ValidationError
 import pytest
@@ -120,6 +119,20 @@ class TestDynamicField:
 
 		with pytest.raises(ValidationError):
 			BarSchema().dump(value)
+
+	def test_dump_allow_none(self):
+		class AllowNoneSchema(Schema):
+			a = DynamicField(allow_none=True)
+		class DontAllowNoneSchema(Schema):
+			a = DynamicField(allow_none=False)
+
+		@dataclass
+		class Container():
+			a: Any
+
+		AllowNoneSchema().dump(Container(a=None))
+		with pytest.raises(ValidationError):
+			DontAllowNoneSchema().dump(Container(a=None))
 
 	@pytest.mark.parametrize('value, expected', [
 		({
@@ -280,3 +293,13 @@ class TestDynamicField:
 
 		with pytest.raises(ValidationError):
 			BarSchema().load(value)
+
+	def test_load_allow_none(self):
+		class AllowNoneSchema(Schema):
+			a = DynamicField(allow_none=True)
+		class DontAllowNoneSchema(Schema):
+			a = DynamicField(allow_none=False)
+
+		AllowNoneSchema().load({'a': None})
+		with pytest.raises(ValidationError):
+			DontAllowNoneSchema().dump({'a': None})

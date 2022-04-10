@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 import logging
-from typing import Any, Callable, Type, cast
+from typing import Any, Callable, Optional, Type, cast
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import Column, Integer
-from app.common.schemas import DynamicField, SQLAlchemyColumnField, SerializableClass
+from app.common.schemas import SQLAlchemyColumnField, SerializableClass, TypeField, DynamicField
+from app.core.event_engine.events import Event
+from app.core.event_engine.post_process_functions import PostProcessor
 import app.core.models as models
 
 from marshmallow import Schema, fields
@@ -12,11 +14,9 @@ from marshmallow import Schema, fields
 # Schemas
 #######################
 class QuerySchema(Schema):
-	# TODO:
-	table = fields.Raw()
+	table = TypeField([models.SensorData, models.Device])
 	id_column = SQLAlchemyColumnField()
-	post_process_function = fields.Raw()
-	# post_process_function = DynamicField()
+	post_processor = DynamicField([PostProcessor], allow_none = True)
 #######################
 
 whitelisted_tables = [models.SensorData, models.Device]
@@ -27,9 +27,9 @@ class Query(SerializableClass, ABC):
 
 	table: WhitelistedTable
 	id_column: Column[Integer]
-	post_process_function: Callable[[Any], Any] | None
+	post_processor: PostProcessor | None
 
-	def __init__(self, table: WhitelistedTable, id_column: Column[Integer] | int , post_process_function: Callable[[Any], Any] | None = None):
+	def __init__(self, table: WhitelistedTable, id_column: Column[Integer] | int , post_processor: Optional[PostProcessor] = None):
 		"""Retrieves a value from a table
 
 		Args:
@@ -45,9 +45,9 @@ class Query(SerializableClass, ABC):
 
 		self.table = table
 		self.id_column = cast(Column[Integer], id_column)
-		self.post_process_function = post_process_function
+		self.post_processor = post_processor
 
-	def post_process(self, value: Any) -> Any:
+	def post_process(self, event: Event, value: Any) -> Any:
 		"""If post_process function is defined, call it
 
 		Args:
@@ -57,15 +57,15 @@ class Query(SerializableClass, ABC):
 				Any: Processed value
 		"""
 		logging.info('Running post_process')
-		if self.post_process_function is not None:
+		if self.post_processor is not None:
 			logging.info('post_process_function is defined, processing')
-			return self.post_process_function(value)
+			return self.post_processor.process(value, event)
 
 		logging.info('post_process_function is None, not processing')
 		return value
 
 	@abstractmethod
-	def execute(self, id: int, column: Column | Any, session: ScopedSession) -> Any:
+	def execute(self, event: Event, id: int, column: Column | Any, session: ScopedSession) -> Any:
 		"""Executes query
 
 		Args:

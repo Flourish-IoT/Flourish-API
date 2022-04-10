@@ -1,8 +1,8 @@
 import logging
 from typing import Any, Dict
 
-from app.common.utils import PolymorphicSchema
 from app.common.schemas import SQLAlchemyColumnField, SerializableClass, DynamicField
+from app.core.event_engine.events import Event
 
 from .queries import Query
 from sqlalchemy.orm.scoping import ScopedSession
@@ -28,11 +28,11 @@ class Field(SerializableClass):
 		self.field = field
 		self.queries = queries
 
-	def get_value(self, id: int, session: ScopedSession):
+	def get_value(self, event: Event, id: int, session: ScopedSession):
 		logging.info(f'Getting value for field {self.field} and id {id}')
 		value = {}
 		for field, query in self.queries.items():
-			value[field] = query.execute(id, self.field, session)
+			value[field] = query.execute(event, id, self.field, session)
 
 		logging.info(f'Value={value}')
 		return value

@@ -1,10 +1,12 @@
 import logging
-from typing import Any, Callable, cast
+from typing import Any, Callable, Optional, cast
 
 from app.common.schemas import SQLAlchemyColumnField
+from app.core.event_engine.post_process_functions import PostProcessor
 from . import Query, WhitelistedTable, QuerySchema
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, Column, TIMESTAMP, exc, Integer
+from app.core.event_engine.events import Event
 from datetime import datetime
 
 from marshmallow import fields
@@ -21,7 +23,7 @@ class ValueQuery(Query):
 	__schema__ = ValueQuerySchema
 
 	order_column: Column | None
-	def __init__(self, table: WhitelistedTable, id_column: Column[Integer] | int , order_column: Column | Any = None, post_process_function: Callable[[Any], Any] | None = None):
+	def __init__(self, table: WhitelistedTable, id_column: Column[Integer] | int , order_column: Column | Any = None, post_processor: Optional[PostProcessor] = None):
 		"""Retrieves a single value from the database
 
 		Args:
@@ -33,11 +35,11 @@ class ValueQuery(Query):
 		Raises:
 				ValueError: Table is not a whitelisted table
 		"""
-		super().__init__(table, id_column, post_process_function)
+		super().__init__(table, id_column, post_processor)
 		self.order_column = cast(Column | None, order_column)
 
 	"""Retrieves a single value from the database"""
-	def execute(self, id: int, column: Column | Any, session: ScopedSession) -> Any:
+	def execute(self, event: Event, id: int, column: Column | Any, session: ScopedSession) -> Any:
 		logging.info(f'Value Query. table={self.table}, column={column}, order_column={self.order_column}, id_column={self.id_column}, id={id}')
 		query = select(column).where(self.id_column == id)
 
@@ -55,4 +57,4 @@ class ValueQuery(Query):
 
 		logging.info(f'Latest value: {value}')
 
-		return self.post_process(value)
+		return self.post_process(event, value)

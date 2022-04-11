@@ -30,7 +30,7 @@ def simulate(config: SimulationConfig):
 				**row,
 			}
 
-			if config.delay:
+			if config.delay is not None:
 				payload['timestamp'] = datetime.datetime.now().isoformat()
 
 			print(f'Sending: {payload}')

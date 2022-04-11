@@ -126,17 +126,17 @@ def get_plant_sensor_data(plant_id: int, start_date: string, end_date: string, s
 
 def get_plant_target_value_ratings(plant: Plant):
 	# TODO: make this right
-	if (plant.plant_type.maximum_temperature != None or plant.plant_type.minimum_temperature != None):
+	# if (plant.plant_type.maximum_temperature != None or plant.plant_type.minimum_temperature != None):
 		#insert moks logic
-		temp = 15 #replace hard coded value with actual
-		soil = .2
-		light = 200
-		humidity = .4
+	temp = 15 #replace hard coded value with actual
+	soil = .2
+	light = 200
+	humidity = .4
 
-		plant.target_value_ratings['temperature'] = check_rating(temp, plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
-		plant.target_value_ratings['soil_moisture'] = check_rating(soil, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
-		plant.target_value_ratings['light'] = check_rating(light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
-		plant.target_value_ratings['humidity'] = check_rating(humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
+	plant.target_value_ratings['temperature'] = check_rating(temp, plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
+	plant.target_value_ratings['soil_moisture'] = check_rating(soil, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
+	plant.target_value_ratings['light'] = check_rating(light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
+	plant.target_value_ratings['humidity'] = check_rating(humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
 
 def check_rating(val, min_value, max_value):
 	match val:

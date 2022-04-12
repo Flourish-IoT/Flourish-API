@@ -11,7 +11,7 @@ class SensorDataEventHandler(EventHandler):
 	"""An EventHandler to handle SensorDataEvents"""
 	__schema__ = SensorDataEventHandlerSchema
 
-	events = [SensorDataEvent]
+	supported_events = [SensorDataEvent]
 	def __init__(self, field: Field, triggers: List[Trigger]) -> None:
 		super().__init__(field, triggers)
 
@@ -23,7 +23,7 @@ class SensorDataEventHandler(EventHandler):
 		event = cast(SensorDataEvent, event)
 
 		# get field value
-		value = self.field.get_value(event, event.plant.plant_id, event.session)
+		value = self.field.get_value(event.plant.plant_id, event.session, event)
 
 		# execute triggers
 		for trigger in self.triggers:

@@ -65,7 +65,7 @@ class Query(SerializableClass, ABC):
 		return value
 
 	@abstractmethod
-	def execute(self, event: Event, id: int, column: Column | Any, session: ScopedSession) -> Any:
+	def execute(self, id: int, column: Column | Any, session: ScopedSession, event: Event) -> Any:
 		"""Executes query
 
 		Args:

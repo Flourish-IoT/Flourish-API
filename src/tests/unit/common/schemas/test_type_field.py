@@ -26,18 +26,6 @@ class Bar():
 def test_func():
 	pass
 
-def restore_type_mapping(func):
-	"""Decorator to restore the TypeField to previous state after test completes"""
-	@wraps(func)
-	def f(*args, **kwargs):
-		prev_schema = deepcopy(TypeField.type_name_mapping)
-		try:
-			r = func(*args, **kwargs)
-		finally:
-			TypeField.type_name_mapping = prev_schema
-		return r
-	return f
-
 class TestTypeField:
 	@pytest.mark.parametrize('value, expected, cls', [
 		(Foo(foo=int), {
@@ -59,7 +47,6 @@ class TestTypeField:
 			'foo': 'test_func'
 		}, test_func),
 	])
-	@restore_type_mapping
 	def test_dump(self, value, expected, cls):
 		if cls is not None:
 			TypeField.register(cls)
@@ -83,7 +70,6 @@ class TestTypeField:
 		(Foo(foo=ValueRating), [ValueRating], ValueRating),
 		(Foo(foo=ValueRating), [int], ValueRating),
 	])
-	@restore_type_mapping
 	def test_dump_whitelist(self, value, whitelist, cls):
 		if cls is not None:
 			TypeField.register(cls)
@@ -97,7 +83,6 @@ class TestTypeField:
 		(Foo(foo=str), [int, float, datetime], None),
 		(Foo(foo=ValueRating), [str], ValueRating),
 	])
-	@restore_type_mapping
 	def test_dump_whitelist_raises(self, value, whitelist, cls):
 		if cls is not None:
 			TypeField.register(cls)
@@ -152,7 +137,6 @@ class TestTypeField:
 			'foo': 'ValueRating'
 		}, [int], ValueRating),
 	])
-	@restore_type_mapping
 	def test_load_whitelist(self, value, whitelist, cls):
 		if cls is not None:
 			TypeField.register(cls)
@@ -172,7 +156,6 @@ class TestTypeField:
 			'foo': 'ValueRating'
 		}, [str], ValueRating),
 	])
-	@restore_type_mapping
 	def test_load_whitelist_raises(self, value, whitelist, cls):
 		if cls is not None:
 			TypeField.register(cls)

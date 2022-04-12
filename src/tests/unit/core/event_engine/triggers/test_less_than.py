@@ -43,8 +43,7 @@ class TestLessThan:
 		(LessThanTrigger(2, [], field='foo'), {
 			'type': 'LessThanTrigger',
 			'value': {
-				'value': 2,
-				'type': 'int'
+				'int': 2,
 			},
 			'actions': [],
 			'field': 'foo'
@@ -52,8 +51,7 @@ class TestLessThan:
 		(LessThanTrigger(2.4, [MagicMock(Action, action_id=-1)], field='foo'), {
 			'type': 'LessThanTrigger',
 			'value': {
-				'value': 2.4,
-				'type': 'float'
+				'float': 2.4,
 			},
 			'actions': [-1],
 			'field': 'foo'
@@ -62,8 +60,7 @@ class TestLessThan:
 			'type': 'LessThanTrigger',
 			'actions': [-1, -2],
 			'value': {
-				'value': 4,
-				'type': 'app.core.event_engine.post_process_functions.target_value_score.ValueRating'
+				'ValueRating': 'High',
 			},
 			'field': None
 		}),
@@ -76,8 +73,7 @@ class TestLessThan:
 		({
 			'type': 'LessThanTrigger',
 			'value': {
-				'value': 2.0,
-				'type': 'float'
+				'float': 2.0,
 			},
 			'actions': [],
 			'field': 'foo'
@@ -85,8 +81,7 @@ class TestLessThan:
 		({
 			'type': 'LessThanTrigger',
 			'value': {
-				'value': 2.4,
-				'type': 'float'
+				'float': 2.4,
 			},
 			'actions': [],
 			'field': 'foo'
@@ -96,8 +91,7 @@ class TestLessThan:
 			'actions': [],
 			'field': None,
 			'value': {
-				'value': -8,
-				'type': 'int'
+				'int': -8,
 			},
 		}, {'action_map': {} }, LessThanTrigger(-8, [])),
 		({
@@ -105,8 +99,7 @@ class TestLessThan:
 			'actions': [],
 			'field': 'foo',
 			'value': {
-				'value': 5,
-				'type': 'app.core.event_engine.post_process_functions.target_value_score.ValueRating'
+				'ValueRating': 'TooHigh',
 			},
 		}, {'action_map': {} }, LessThanTrigger(ValueRating.TooHigh, [], field='foo')),
 	])

@@ -14,8 +14,8 @@ from marshmallow import Schema, fields
 class ActionSchema(Schema):
 	action_id = fields.Int()
 	disabled = fields.Bool(required=True)
-	cooldown = fields.TimeDelta(required=True, allow_none=True)
-	last_executed = fields.DateTime(required=True, allow_none=True)
+	cooldown = fields.TimeDelta(required=False, allow_none=True)
+	last_executed = fields.DateTime(required=False, allow_none=True)
 #######################
 
 # TODO: seperate action metadata from implementation for storage

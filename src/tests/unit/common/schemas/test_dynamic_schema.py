@@ -46,20 +46,7 @@ class Aaa():
 	a: str
 	b: float
 
-def restore_schema(func):
-	"""Decorator to restore the PolymorphicSchema to previous state after test completes"""
-	@wraps(func)
-	def f(*args, **kwargs):
-		prev_schema = deepcopy(DynamicSchema.type_schemas)
-		try:
-			r = func(*args, **kwargs)
-		finally:
-			DynamicSchema.type_schemas = prev_schema
-		return r
-	return f
-
 class TestDynamicSchema:
-	@restore_schema
 	def test_register(self):
 		"""Ensure polymorphic schema is registering correctly"""
 		DynamicSchema.type_schemas = {}
@@ -76,20 +63,6 @@ class TestDynamicSchema:
 			'Aaa': AaaSchema
 		}
 
-	# def test_multiple_register(self):
-	# 	"""Ensure polymorphic schema throws an error when two classes with the same name have been registered"""
-	# 	PolymorphicSchema.type_schemas = {}
-
-	# 	PolymorphicSchema.register(Foo, Foo.__schema__)
-	# 	with pytest.raises(ValueError):
-	# 		PolymorphicSchema.register(Foo, Foo.__schema__)
-
-	# 	assert PolymorphicSchema.type_schemas == {
-	# 		'Foo': FooSchema
-	# 	}
-	# assert PolymorphicSchema.type_schemas == {}
-
-	@restore_schema
 	def test_serializable(self):
 		"""Ensure Serializable registration works correctly"""
 		DynamicSchema.type_schemas = {}
@@ -127,7 +100,6 @@ class TestDynamicSchema:
 			'Baz': BazSchema
 		}
 
-	@restore_schema
 	@pytest.mark.parametrize('cls, value, expected', [
 		(Foo, Foo(foo=True, bar=2), {
 			'type': 'Foo',
@@ -148,7 +120,6 @@ class TestDynamicSchema:
 		res = DynamicSchema().dump(value)
 		assert res == expected
 
-	@restore_schema
 	@pytest.mark.parametrize('cls, value, expected', [
 		(Foo, {
 			'type': 'Foo',

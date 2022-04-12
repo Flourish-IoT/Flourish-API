@@ -29,7 +29,7 @@ class TestSensorDataEventHandler:
 
 		handler.handle(event)
 
-		mock_field.get_value.assert_called_with(plant_id, mock_session)
+		mock_field.get_value.assert_called_with(plant_id, mock_session, event)
 		mock_trigger.execute.assert_called_with(return_value, event)
 		mock_trigger_2.execute.assert_called_with(return_value, event)
 

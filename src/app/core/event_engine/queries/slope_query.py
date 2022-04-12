@@ -37,7 +37,7 @@ class SlopeQuery(Query):
 		self.time_start = time_start
 		self.time_end = time_end
 
-	def execute(self, event: Event, id: int, column: Column | Any, session: ScopedSession) -> Any:
+	def execute(self, id: int, column: Column | Any, session: ScopedSession, event: Event) -> Any:
 		logging.info(f'Slope Query. table={self.table}, column={column}, id_column={self.id_column}, id={id}')
 		# TODO: manual timescaledb query to get slope over time range
 		query = select(column).where(self.id_column == id)

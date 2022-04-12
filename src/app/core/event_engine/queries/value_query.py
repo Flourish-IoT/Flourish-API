@@ -39,7 +39,7 @@ class ValueQuery(Query):
 		self.order_column = cast(Column | None, order_column)
 
 	"""Retrieves a single value from the database"""
-	def execute(self, event: Event, id: int, column: Column | Any, session: ScopedSession) -> Any:
+	def execute(self, id: int, column: Column | Any, session: ScopedSession, event: Event) -> Any:
 		logging.info(f'Value Query. table={self.table}, column={column}, order_column={self.order_column}, id_column={self.id_column}, id={id}')
 		query = select(column).where(self.id_column == id)
 

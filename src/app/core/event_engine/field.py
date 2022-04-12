@@ -28,11 +28,11 @@ class Field(SerializableClass):
 		self.field = field
 		self.queries = queries
 
-	def get_value(self, event: Event, id: int, session: ScopedSession):
+	def get_value(self, id: int, session: ScopedSession, event: Event):
 		logging.info(f'Getting value for field {self.field} and id {id}')
 		value = {}
 		for field, query in self.queries.items():
-			value[field] = query.execute(event, id, self.field, session)
+			value[field] = query.execute(id, self.field, session, event)
 
 		logging.info(f'Value={value}')
 		return value

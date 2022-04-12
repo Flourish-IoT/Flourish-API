@@ -1,8 +1,12 @@
 # hack to make pytest import correctly
+from copy import copy, deepcopy
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock
 import pytest
 from app import Environment, db, create_rest_app
+from app.common.schemas.dynamic_field import DynamicField
+from app.common.schemas.dynamic_schema import DynamicSchema
+from app.common.schemas.type_field import TypeField
 from app.core.event_engine import Field
 from app.core.event_engine.queries import ValueQuery, SlopeQuery
 from app.core.event_engine.post_process_functions import ValueRating, PlantValueScore
@@ -31,7 +35,7 @@ def default_plant():
 	))
 
 @pytest.fixture
-def default_handler(default_plant):
+def default_handler():
 	return SensorDataEventHandler(
 		Field(
 			SensorData.temperature, {
@@ -67,8 +71,20 @@ def default_handler(default_plant):
 		]
 	)
 
+# automatically restore schemas inbetween tests
+@pytest.fixture(autouse=True)
+def clean_schema():
+	dynamic_schema_prev_schemas = deepcopy(DynamicSchema.type_schemas)
+	type_field_prev_mapping = deepcopy(TypeField.type_name_mapping)
+	dynamic_field_prev_type = deepcopy(DynamicField.type_mapping)
+	dynamic_field_prev_name = deepcopy(DynamicField.type_name_mapping)
 
+	yield
 
+	DynamicSchema.type_schemas = dynamic_schema_prev_schemas
+	TypeField.type_name_mapping = type_field_prev_mapping
+	DynamicField.type_mapping = dynamic_field_prev_type
+	DynamicField.type_name_mapping = dynamic_field_prev_name
 
 
 def pytest_addoption(parser):

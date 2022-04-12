@@ -1,7 +1,7 @@
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import timedelta
-from app.common.schemas import DynamicSchema, Serializable
+from app.common.schemas import DynamicSchema, SerializableClass
 from marshmallow import fields, post_load, Schema, ValidationError
 import pytest
 from functools import wraps
@@ -84,13 +84,13 @@ class TestDynamicSchema:
 				return Baz(**data)
 
 		@dataclass
-		class Bar(Serializable):
+		class Bar(SerializableClass):
 			__schema__ = BarSchema
 			baz: str
 			aaa: float
 
 		@dataclass
-		class Baz(Serializable):
+		class Baz(SerializableClass):
 			__schema__ = BazSchema
 			foo: Foo
 			bar: Bar

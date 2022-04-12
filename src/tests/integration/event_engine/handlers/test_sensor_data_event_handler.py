@@ -15,10 +15,9 @@ from sqlalchemy import Column
 from sqlalchemy.orm.scoping import ScopedSession
 from freezegun import freeze_time
 
-# freeze time so we can compare timestamps
-freezer = freeze_time()
-freezer.start()
+cur_time = datetime.now()
 
+@freeze_time(cur_time)
 class TestSensorDataEventHandler:
 	def _handle(self, handler, session, plant, sensor_data):
 		event = SensorDataEvent(
@@ -33,17 +32,17 @@ class TestSensorDataEventHandler:
 	# TODO: remake these tests when plant rating is finished
 	@pytest.mark.parametrize('sensor_data, query_results, expected', [
 		(
-			SensorData(plant_id = -1, time = datetime.now(), temperature = 20, humidity = 23.4, soil_moisture = 20, light = 120_000),
+			SensorData(plant_id = -1, time = cur_time, temperature = 20, humidity = 23.4, soil_moisture = 20, light = 120_000),
 			[20, -2],
-			Alert(message='George is too cold! Turn up the heat', severity=SeverityLevelEnum.Critical, time=datetime.now(), plant_id=-1, user_id=-1)
+			Alert(message='George is too cold! Turn up the heat', severity=SeverityLevelEnum.Critical, time=cur_time, plant_id=-1, user_id=-1)
 		),
 		(
-			SensorData(plant_id = -1, time = datetime.now(), temperature = 90, humidity = 23.4, soil_moisture = 20, light = 120_000),
+			SensorData(plant_id = -1, time = cur_time, temperature = 90, humidity = 23.4, soil_moisture = 20, light = 120_000),
 			[90, 2],
-			Alert(message='George is too hot! Lower the heat', severity=SeverityLevelEnum.Critical, time=datetime.now(), plant_id=-1, user_id=-1)
+			Alert(message='George is too hot! Lower the heat', severity=SeverityLevelEnum.Critical, time=cur_time, plant_id=-1, user_id=-1)
 		),
 		(
-			SensorData(plant_id = -1, time = datetime.now(), temperature = 60, humidity = 23.4, soil_moisture = 20, light = 120_000),
+			SensorData(plant_id = -1, time = cur_time, temperature = 60, humidity = 23.4, soil_moisture = 20, light = 120_000),
 			[60, 2],
 			None
 		)

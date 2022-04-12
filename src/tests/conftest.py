@@ -79,7 +79,7 @@ def clean_schema():
 	dynamic_field_prev_type = deepcopy(DynamicField.type_mapping)
 	dynamic_field_prev_name = deepcopy(DynamicField.type_name_mapping)
 
-	yield
+	yield # test runs
 
 	DynamicSchema.type_schemas = dynamic_schema_prev_schemas
 	TypeField.type_name_mapping = type_field_prev_mapping

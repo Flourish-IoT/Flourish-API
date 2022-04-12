@@ -10,7 +10,7 @@ from marshmallow import post_load
 class ConcreteActionSchema(ActionSchema):
 	@post_load
 	def make(self, data, **kwargs):
-		return ConcreteAction(**data)
+		return ConcreteAction(**data, **self.context)
 
 class ConcreteAction(Action):
 	__schema__ = ConcreteActionSchema
@@ -21,22 +21,15 @@ class ConcreteAction(Action):
 
 class TestActionInformation:
 	@pytest.mark.parametrize('action, expected', [
-		(ConcreteAction(False, action_id=-1, cooldown=timedelta(days=3)), ActionInformation(action_id=-1, action={
+		(ConcreteAction(False, action_id=-1, cooldown=timedelta(days=3)), ActionInformation(action_id=-1, disabled = False, last_executed = None, action={
 			'type': 'ConcreteAction',
-			'action_id': -1,
-			'disabled': False,
 			'cooldown': 259200,
-			'last_executed': None
 		})),
-		(GenerateAlertAction('{foo} bar', SeverityLevelEnum.Critical, False, action_id=-1, cooldown=timedelta(days=3)), ActionInformation(action_id=-1, action={
+		(GenerateAlertAction('{foo} bar', SeverityLevelEnum.Critical, False, action_id=-1, cooldown=timedelta(days=3)), ActionInformation(action_id=-1, disabled = False, last_executed = None, action={
 			'type': 'GenerateAlertAction',
 			'message_template': '{foo} bar',
 			'severity': 'Critical',
-			'action_id': -1,
-			'disabled': False,
 			'cooldown': 259200,
-			'last_executed': None
-
 		}))
 	])
 	def test_from_action(self, action, expected):
@@ -47,23 +40,17 @@ class TestActionInformation:
 		assert action_info.action == expected.action
 
 	@pytest.mark.parametrize('action_info, expected, expected_type', [
-		(ActionInformation(action_id=-1, action={
+		(ActionInformation(action_id=-1, last_executed=None, disabled=False, action={
 			'type': 'ConcreteAction',
-			'action_id': -1,
-			'disabled': False,
 			'cooldown': 259200,
-			'last_executed': None
 		}), ConcreteAction(False, action_id=-1, cooldown=timedelta(days=3)), ConcreteAction),
-		(ActionInformation(action_id=-1, action={
+		(ActionInformation(action_id=-1, disabled=True, last_executed=None, action={
 			'type': 'GenerateAlertAction',
 			'message_template': '{foo} bar',
 			'severity': 'Critical',
-			'action_id': -1,
-			'disabled': False,
 			'cooldown': 259200,
-			'last_executed': None
 
-		}), GenerateAlertAction('{foo} bar', SeverityLevelEnum.Critical, False, action_id=-1, cooldown=timedelta(days=3)), GenerateAlertAction)
+		}), GenerateAlertAction('{foo} bar', SeverityLevelEnum.Critical, True, action_id=-1, cooldown=timedelta(days=3)), GenerateAlertAction)
 	])
 	def test_to_action(self, action_info: ActionInformation, expected, expected_type):
 		"""Ensure action is properly created from an Action instance"""

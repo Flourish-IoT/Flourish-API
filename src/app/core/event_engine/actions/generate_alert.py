@@ -20,7 +20,7 @@ class GenerateAlertActionSchema(ActionSchema):
 
 	@post_load
 	def make(self, data, **kwargs):
-		return GenerateAlertAction(**data)
+		return GenerateAlertAction(**data, **self.context)
 
 class GenerateDeviceAlertActionSchema(GenerateAlertActionSchema):
 	pass

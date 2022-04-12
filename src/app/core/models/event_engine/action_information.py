@@ -14,7 +14,7 @@ from sqlalchemy_json import mutable_json_type
 class ActionInformation(BaseModel):
 	__tablename__ = 'actions'
 
-	action_id = cast(int, Column(
+	action_id = cast(int | None, Column(
 		Integer,
 		primary_key = True
 	))
@@ -24,6 +24,14 @@ class ActionInformation(BaseModel):
 		ForeignKey('event_handlers.event_handler_id'),
 	))
 
+	disabled = cast(bool, Column(
+		Boolean
+	))
+
+	last_executed = cast(datetime | None, Column(
+		TIMESTAMP
+	))
+
 	action = cast(dict, Column(
 		mutable_json_type(dbtype=JSONB, nested=True),
 		nullable=False
@@ -31,7 +39,11 @@ class ActionInformation(BaseModel):
 
 	def to_action(self) -> actions.Action:
 		try:
-			action = DynamicSchema().load(self.action)
+			action = DynamicSchema(context={
+				'action_id': self.action_id,
+				'disabled': self.disabled,
+				'last_executed': self.last_executed
+			}).load(self.action)
 		except Exception as e:
 			logging.error(f"Failed to load action")
 			logging.exception(e)
@@ -44,7 +56,5 @@ class ActionInformation(BaseModel):
 
 	@staticmethod
 	def from_action(action: actions.Action):
-		a = ActionInformation(action_id=action.action_id)
 		action_json = DynamicSchema().dump(action)
-		a.action = action_json
-		return a
+		return ActionInformation(action_id=action.action_id, last_executed=action.last_executed, disabled=action.disabled, action=action_json)

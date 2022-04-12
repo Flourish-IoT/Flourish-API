@@ -1,10 +1,12 @@
 from datetime import datetime, tzinfo
+import imp
 import logging
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
 from app.core.models import User, UserPreferences
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc, update, select, exists
-from app.core.util import emailer
+from app.core.util import emailer, verification
+from app.common.utils import authentication
 
 def get_user(user_id: int, session: ScopedSession):
 	"""Gets a user by user ID
@@ -40,9 +42,9 @@ def create_user(email: str, name:str, password: str, session: ScopedSession):
 			int: Newly created user ID
 	"""
 
-	code = verify_code()
+	code = verification.verify_code()
 
-	user = User(email=email, password_hash=hash_password(password), username=name, verification_code=code)
+	user = User(email=email, password_hash=authentication.hash_password(password), username=name, verification_code=code)
 
 	emailer.send_email(code, "Verification Code for Flourish", email)
 
@@ -56,7 +58,7 @@ def create_user(email: str, name:str, password: str, session: ScopedSession):
 
 	return user.user_id
 
-	
+
 def login(email: str, password: str, session: ScopedSession) -> int | None :
 	"""
 	Args:
@@ -69,7 +71,7 @@ def login(email: str, password: str, session: ScopedSession) -> int | None :
 	try:
 		user: User | None = session.execute(query).scalars().one_or_none()
 		if user is not None:
-			if check_password(password, user.password_hash):
+			if authentication.check_password(password, user.password_hash):
 				return user.user_id
 		return None
 	except Exception as e:

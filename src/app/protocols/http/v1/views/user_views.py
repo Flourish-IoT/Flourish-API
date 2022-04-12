@@ -5,9 +5,9 @@ from flask import request, url_for
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError, Forbidden
 
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
-from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password, get_plants, create_plant
+from app.core.services import get_user, create_user, login, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password, get_plants, create_plant
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User, Plant
-from app.protocols.http.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema, ListPlantSchema, NewPlantSchema
+from app.protocols.http.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema, ListPlantSchema, NewPlantSchema, LoginSchema
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
@@ -38,6 +38,20 @@ class UserResource(Resource):
 			raise InternalServerError
 
 		return user
+
+@api.route('/login')
+class UserLogin(Resource):
+	@serialize_with(LoginSchema)
+	def post(self, body: dict):
+		try:
+			login(body['email'], body['password'], db.session)
+		except ForbiddenError as e:
+			raise Forbidden(str(e))
+		except NotFoundError as e:
+			raise NotFound(str(e))
+		except Exception as e:
+			raise InternalServerError
+		return None, 204
 
 @api.route('/<int:user_id>/plants')
 class UserPlants(Resource):

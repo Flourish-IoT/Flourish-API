@@ -39,6 +39,15 @@ class UnregisteredClass:
 class Bar:
 	a: Any
 
+# for testing context
+class ContextTestSchema(Schema):
+	func = fields.Function(lambda _, ctx: ctx, lambda _, ctx: ctx)
+
+@dataclass
+class ContextTest(SerializableClass):
+	__schema__ = ContextTestSchema
+	func: Any
+
 class TestDynamicField:
 	@pytest.mark.parametrize('value, expected', [
 		(Foo(foo=5), {
@@ -124,6 +133,19 @@ class TestDynamicField:
 		AllowNoneSchema().dump(Container(a=None))
 		with pytest.raises(ValidationError):
 			DontAllowNoneSchema().dump(Container(a=None))
+
+	def test_dump_context(self):
+		context = {'context_test': 3}
+		res = FooSchema(context=context).dump(Foo(ContextTest('GETS OVERRIDEN')))
+		assert res == {
+			'foo': {
+				'ContextTest': {
+					'func': {
+						'context_test': 3
+					}
+				}
+			}
+		}
 
 	@pytest.mark.parametrize('value, expected', [
 		({
@@ -266,3 +288,20 @@ class TestDynamicField:
 		AllowNoneSchema().load({'a': None})
 		with pytest.raises(ValidationError):
 			DontAllowNoneSchema().dump({'a': None})
+
+	def test_load_context(self):
+		context = {'context_test': 3}
+
+		res = FooSchema(context=context).load({
+			'foo': {
+				'ContextTest': {
+					'func': 'GETS OVERRIDEN'
+				}
+			}
+		})
+
+		assert res == Foo({
+			'func': {
+				'context_test': 3
+			}
+		})

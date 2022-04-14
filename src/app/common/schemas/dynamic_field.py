@@ -53,10 +53,13 @@ class DynamicField(Field):
 		if type(value) not in self.type_mapping:
 			raise ValidationError(f'No Field registered for type {type(value)}')
 
-		field, field_kwargs = self.type_mapping[type(value)]
+		FieldType, field_kwargs = self.type_mapping[type(value)]
+		field = FieldType(*self.field_args, **field_kwargs, **self.field_kwargs)
+		# needed for transferring context
+		field.parent = self
 
 		return {
-			type(value).__qualname__: field(*self.field_args, **field_kwargs, **self.field_kwargs)._serialize(value, attr, obj, **kwargs),
+			type(value).__qualname__: field._serialize(value, attr, obj, **kwargs),
 		}
 
 	def _deserialize(self, value, attr, data, **kwargs):
@@ -85,10 +88,13 @@ class DynamicField(Field):
 			raise ValidationError(f'Type {_type} is not allowed')
 
 		# use type to lookup field
-		field, field_kwargs = self.type_mapping[_type]
+		FieldType, field_kwargs = self.type_mapping[_type]
+		field = FieldType(*self.field_args, **field_kwargs, **self.field_kwargs)
+		# needed for transferring context
+		field.parent = self
 
 		# use field to deserialize value
-		return field(*self.field_args, **field_kwargs, **self.field_kwargs).deserialize(value[val_type], val_type, value, **kwargs)
+		return field.deserialize(value[val_type], val_type, value, **kwargs)
 
 	@classmethod
 	def register(cls, _type: Type, field: Type[Field], field_kwargs: Dict[str, Any] = {}):

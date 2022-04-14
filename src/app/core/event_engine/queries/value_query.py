@@ -9,13 +9,17 @@ from sqlalchemy import select, Column, TIMESTAMP, exc, Integer
 from app.core.event_engine.events import Event
 from datetime import datetime
 
-from marshmallow import fields
+from marshmallow import fields, post_load
 
 #######################
 # Schemas
 #######################
 class ValueQuerySchema(QuerySchema):
 	order_column = SQLAlchemyColumnField()
+
+	@post_load
+	def make(self, data, **kwargs):
+		return ValueQuery(**data)
 #######################
 
 class ValueQuery(Query):

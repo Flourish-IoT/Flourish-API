@@ -7,15 +7,19 @@ from app.core.event_engine.actions import Action
 from app.core.event_engine.events import Event
 from app.core.event_engine.triggers import Trigger, TriggerSchema
 
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, EXCLUDE
 
 #######################
 # Schemas
 #######################
 class EventHandlerSchema(Schema):
-	event_handler_id = fields.Int()
+	event_handler_id = fields.Int(dump_only=True)
 	field = DynamicField([Field])
 	triggers = fields.List(DynamicField([Trigger]))
+
+	class Meta:
+		# prevents issues loading event_handler_id
+		exclude = ['event_handler_id']
 #######################
 
 class EventHandler(SerializableClass, ABC):

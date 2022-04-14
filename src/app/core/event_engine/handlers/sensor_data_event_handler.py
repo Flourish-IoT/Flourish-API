@@ -3,9 +3,12 @@ from app.core.event_engine import Field
 from app.core.event_engine.handlers import EventHandler, EventHandlerSchema
 from app.core.event_engine.events import SensorDataEvent, Event
 from app.core.event_engine.triggers import Trigger
+from marshmallow import post_load
 
 class SensorDataEventHandlerSchema(EventHandlerSchema):
-	pass
+	@post_load
+	def make(self, data, **kwargs):
+		return SensorDataEventHandler(**data)
 
 class SensorDataEventHandler(EventHandler):
 	"""An EventHandler to handle SensorDataEvents"""

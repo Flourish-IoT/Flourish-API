@@ -8,14 +8,18 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, Column, TIMESTAMP, exc, Integer
 from datetime import datetime, timedelta
 
-from marshmallow import fields
+from marshmallow import fields, post_load
 
 #######################
 # Schemas
 #######################
 class SlopeQuerySchema(QuerySchema):
 	time_start = fields.TimeDelta()
-	time_end = fields.TimeDelta(required=False, default=None)
+	time_end = fields.TimeDelta(required=False, allow_none=True, default=None)
+
+	@post_load
+	def make(self, data, **kwargs):
+		return SlopeQuery(**data)
 #######################
 
 class SlopeQuery(Query):

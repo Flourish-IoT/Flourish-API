@@ -16,6 +16,9 @@ from marshmallow import post_load, fields
 class AndTriggerSchema(TriggerSchema):
 	triggers = fields.List(DynamicField([Trigger]))
 
+	class Meta():
+		exclude = ['field']
+
 	@post_load
 	def make(self, data, **kwargs):
 		return AndTrigger(**data)
@@ -49,4 +52,4 @@ class AndTrigger(Trigger, Generic[T]):
 
 	def get_actions(self) -> List[Action]:
 		# get actions from sub triggers and flatten it
-		return list(itertools.chain.from_iterable([trigger.get_actions() for trigger in self.triggers]))
+		return [*self.actions, *itertools.chain.from_iterable([trigger.get_actions() for trigger in self.triggers]) ]

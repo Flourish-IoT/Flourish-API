@@ -37,6 +37,8 @@ class ActionInformation(BaseModel):
 		nullable=False
 	))
 
+	_action: actions.Action
+
 	def to_action(self) -> actions.Action:
 		try:
 			action = DynamicSchema(context={
@@ -52,9 +54,13 @@ class ActionInformation(BaseModel):
 		if not isinstance(action, actions.Action):
 			raise ValueError("Failed to decode action: ", action)
 
+		self._action = action
 		return action
 
 	@staticmethod
 	def from_action(action: actions.Action):
 		action_json = DynamicSchema().dump(action)
-		return ActionInformation(action_id=action.action_id, last_executed=action.last_executed, disabled=action.disabled, action=action_json)
+		action_info = ActionInformation(action_id=action.action_id, last_executed=action.last_executed, disabled=action.disabled, action=action_json)
+		# use this to tie together the action information with the action that created it. Useful when initially creating the action and backfilling the IDs
+		action_info._action = action
+		return action_info

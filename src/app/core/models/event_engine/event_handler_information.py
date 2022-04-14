@@ -1,17 +1,17 @@
 from datetime import datetime
 import logging
-from typing import Dict, cast
-from app.common.schemas.dynamic_schema import DynamicSchema
+from typing import Dict, List, cast
+from app.common.schemas import DynamicSchema
 
 import app.core.event_engine.actions as actions
 import app.core.event_engine.handlers as handlers
-# from app.core.services.event_handler_service import get_event_handler_actions
+from app.core.models.event_engine.action_information import ActionInformation
 
 from ..base_model import BaseModel
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy_json import mutable_json_type
-from sqlalchemy.orm.scoping import ScopedSession
+from sqlalchemy.orm import relationship
 
 class EventHandlerInformation(BaseModel):
 	__tablename__ = 'event_handlers'
@@ -36,28 +36,28 @@ class EventHandlerInformation(BaseModel):
 		nullable=False
 	)
 
-	# def to_event_handler(self, session: ScopedSession):
-	# 	actions = get_event_handler_actions(self.event_handler_id, session)
-	# 	action_map = {action.action_id: action.to_action() for action in actions}
+	action_information = cast(List[ActionInformation] | None , relationship("ActionInformation") )
 
-	# 	schema = PolymorphicSchema()
-	# 	schema.context = {'action_map': action_map}
-	# 	try:
-	# 		event_handler = PolymorphicSchema().load(self.config)
-	# 	except Exception as e:
-	# 		logging.error(f"Failed to load event handler")
-	# 		logging.exception(e)
-	# 		raise e
+	def to_event_handler(self, action_map: Dict[int | None, actions.Action]):
+		try:
+			event_handler = DynamicSchema(context={'action_map': action_map}).load(self.config)
+		except Exception as e:
+			logging.error(f"Failed to load event handler")
+			logging.exception(e)
+			raise e
 
-	# 	if not isinstance(event_handler, handlers.EventHandler):
-	# 		raise ValueError("Failed to decode event handler: ", event_handler)
+		if not isinstance(event_handler, handlers.EventHandler):
+			raise ValueError("Failed to decode event handler: ", event_handler)
 
-	# 	return event_handler
+		return event_handler
 
-	@staticmethod
-	def from_event_handler(event_handler: handlers.EventHandler):
-		event_handler_information = EventHandlerInformation()
-		# event_handler_information = EventHandlerInformation(event_handler_id=event_handler.)
+	# @staticmethod
+	# def from_event_handler(event_handler: handlers.EventHandler):
+	# 	event_handler_information = EventHandlerInformation(event_handler.event_handler_id)
+	# 	config = DynamicSchema().dump(event_handler)
+	# 	event_handler_information.config = config
+	# 	return event_handler_information
+
+	def update_config(self, event_handler: handlers.EventHandler):
 		config = DynamicSchema().dump(event_handler)
-		event_handler_information.config = config
-		return event_handler_information
+		self.config = config

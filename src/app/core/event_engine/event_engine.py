@@ -38,17 +38,7 @@ def load_event_handlers(event: Event) -> List[EventHandler]:
 			raise ValueError('Invalid event')
 
 	# get event handler configs from db
-	event_handlers = []
-	event_handler_information = services.get_event_handler_information(id, id_column, event.session)
-	# for event_handler_info in event_handler_information:
-	# 	# event_handler = event_handler_info.to_event_handler(event.session)
-	# 	# actions = services.get_event_handler_actions(event_handler_info.event_handler_id, event.session)
-	# 	# event_handler = hydrate_event_handler(event_handler_info, actions)
-	# 	event_handlers.append(event_handler)
-
-	return event_handlers
-
-# def save_event_handlers(event: Event)
+	return services.get_event_handlers(id, id_column, event.session)
 
 def generate_default_plant_event_handlers(plant: models.Plant):
 	# TODO: batch queries?

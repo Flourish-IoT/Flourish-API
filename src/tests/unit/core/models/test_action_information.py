@@ -35,6 +35,7 @@ class TestActionInformation:
 	def test_from_action(self, action, expected):
 		"""Ensure action is properly created from an Action instance"""
 		action_info = ActionInformation.from_action(action)
+		expected._action = action
 
 		assert action_info == expected
 		assert action_info.action == expected.action

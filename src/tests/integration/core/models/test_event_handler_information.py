@@ -19,9 +19,10 @@ from freezegun import freeze_time
 
 class TestSensorDataEventHandler:
 	def test_from_event_handler(self, default_handler):
-		res = EventHandlerInformation.from_event_handler(default_handler)
+		handler_info = EventHandlerInformation()
+		handler_info.update_config(default_handler)
 
-		assert res.config == {
+		assert handler_info.config == {
 			"triggers": [
 				{
 					"AndTrigger": {
@@ -45,7 +46,6 @@ class TestSensorDataEventHandler:
 								}
 							}
 						],
-						"field": None,
 						"actions": [
 							1
 						]
@@ -64,7 +64,6 @@ class TestSensorDataEventHandler:
 								}
 							}
 						],
-						"field": None,
 						"actions": [
 							2
 						]
@@ -83,7 +82,6 @@ class TestSensorDataEventHandler:
 								}
 							}
 						],
-						"field": None,
 						"actions": [
 							3
 						]
@@ -102,7 +100,6 @@ class TestSensorDataEventHandler:
 								}
 							}
 						],
-						"field": None,
 						"actions": [
 							4
 						]

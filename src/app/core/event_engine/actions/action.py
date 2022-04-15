@@ -52,8 +52,9 @@ class Action(SerializableClass, ABC):
 			return False
 
 		if self.cooldown is not None:
-			logging.info(f'Cooldown is {self.cooldown}, checking if action still on cooldown')
-			# TODO: check if on cooldown
+			logging.info(f'Cooldown is {self.cooldown}, last executed {self.last_executed}, checking if action still on cooldown')
+			# if the action has been executed before, and the time between when it was last ran is longer than the cooldown, action can run
+			return self.last_executed is None or datetime.now() - self.last_executed > self.cooldown
 
 		logging.info('Action can execute')
 		return True

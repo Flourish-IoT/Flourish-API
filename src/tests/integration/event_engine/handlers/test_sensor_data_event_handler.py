@@ -34,12 +34,12 @@ class TestSensorDataEventHandler:
 		(
 			SensorData(plant_id = -1, time = cur_time, temperature = 20, humidity = 23.4, soil_moisture = 20, light = 120_000),
 			[20, -2],
-			Alert(message='George is too cold! Turn up the heat', severity=SeverityLevelEnum.Critical, time=cur_time, plant_id=-1, user_id=-1)
+			Alert(message='George is too cold! Turn up the heat', severity=SeverityLevelEnum.Critical, time=cur_time, plant_id=-1, user_id=-1, action_id=1)
 		),
 		(
 			SensorData(plant_id = -1, time = cur_time, temperature = 90, humidity = 23.4, soil_moisture = 20, light = 120_000),
 			[90, 2],
-			Alert(message='George is too hot! Lower the heat', severity=SeverityLevelEnum.Critical, time=cur_time, plant_id=-1, user_id=-1)
+			Alert(message='George is too hot! Lower the heat', severity=SeverityLevelEnum.Critical, time=cur_time, plant_id=-1, user_id=-1, action_id=4)
 		),
 		(
 			SensorData(plant_id = -1, time = cur_time, temperature = 60, humidity = 23.4, soil_moisture = 20, light = 120_000),

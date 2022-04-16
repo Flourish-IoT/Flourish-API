@@ -18,20 +18,28 @@ class GenerateAlertActionSchema(ActionSchema):
 	message_template = fields.Str()
 	severity = EnumField(models.SeverityLevelEnum)
 
+	class Meta:
+		unknown = INCLUDE
+
 	@post_load
 	def make(self, data, **kwargs):
 		return GenerateAlertAction(**data)
-
-	class Meta:
-		unknown = INCLUDE
 
 class GenerateDeviceAlertActionSchema(GenerateAlertActionSchema):
 	class Meta:
 		unknown = INCLUDE
 
+	@post_load
+	def make(self, data, **kwargs):
+		return GenerateDeviceAlertAction(**data)
+
 class GeneratePlantAlertActionSchema(GenerateAlertActionSchema):
 	class Meta:
 		unknown = INCLUDE
+
+	@post_load
+	def make(self, data, **kwargs):
+		return GeneratePlantAlertAction(**data)
 #######################
 
 class GenerateAlertAction(Action):

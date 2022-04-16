@@ -36,7 +36,7 @@ class EventHandlerInformation(BaseModel):
 		nullable=False
 	)
 
-	action_information = cast(List[ActionInformation] | None , relationship("ActionInformation") )
+	action_information = cast(List[ActionInformation] | None , relationship("ActionInformation", cascade='all, delete-orphan') )
 
 	def to_event_handler(self, action_map: Dict[int | None, actions.Action]):
 		try:

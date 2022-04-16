@@ -30,6 +30,11 @@ class Alert(BaseModel):
 		ForeignKey('users.user_id'),
 	))
 
+	action_id = cast(int, Column(
+		Integer,
+		ForeignKey('actions.action_id'),
+	))
+
 	severity = cast(SeverityLevelEnum, Column(
 		'severity_id',
 		IntEnumField(SeverityLevelEnum),

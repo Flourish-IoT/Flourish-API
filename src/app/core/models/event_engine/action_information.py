@@ -9,6 +9,7 @@ from ..base_model import BaseModel
 from sqlalchemy import Column, Integer, TIMESTAMP, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy_json import mutable_json_type
+from marshmallow import INCLUDE
 
 # rename to ActionMetadata and create new class ActionDefinition to store actual action
 class ActionInformation(BaseModel):
@@ -21,7 +22,7 @@ class ActionInformation(BaseModel):
 
 	event_handler_id = cast(int, Column(
 		Integer,
-		ForeignKey('event_handlers.event_handler_id'),
+		ForeignKey('event_handlers.event_handler_id', ondelete='CASCADE'),
 	))
 
 	disabled = cast(bool, Column(
@@ -41,11 +42,16 @@ class ActionInformation(BaseModel):
 
 	def to_action(self) -> actions.Action:
 		try:
-			action = DynamicSchema(context={
-				'action_id': self.action_id,
-				'disabled': self.disabled,
-				'last_executed': self.last_executed
-			}).load(self.action)
+			action = DynamicSchema().load({
+				**{
+					'action_id': self.action_id,
+					'disabled': self.disabled,
+					'last_executed': self.last_executed
+				},
+				**self.action
+			},
+			# HACK: nested meta classes are currently ignored and will fail to deserialize if this is not specified at load level https://github.com/marshmallow-code/marshmallow/issues/1490
+			unknown=INCLUDE)
 		except Exception as e:
 			logging.error(f"Failed to load action")
 			logging.exception(e)

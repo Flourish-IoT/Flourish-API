@@ -83,10 +83,10 @@ def create_alert(user_id: int, alert: Alert, session: ScopedSession):
 	try:
 		session.add(alert)
 		session.commit()
-	except exc.IntegrityError as e:
-		logging.error('Failed to create user')
+	except exc.DatabaseError as e:
+		logging.error('Failed to create alert')
 		logging.exception(e)
-		raise ConflictError('User with email already exists')
+		raise e
 
 	# TODO: push notifications
 

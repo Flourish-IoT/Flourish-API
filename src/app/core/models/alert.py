@@ -51,4 +51,5 @@ class Alert(BaseModel):
 
 	viewed = cast(bool, Column(
 		Boolean,
+		default=False
 	))

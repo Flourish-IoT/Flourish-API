@@ -8,7 +8,7 @@ from .queries import Query
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import Column
 
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, post_load
 
 #######################
 # Schemas
@@ -16,8 +16,13 @@ from marshmallow import Schema, fields
 class FieldSchema(Schema):
 	field = SQLAlchemyColumnField()
 	queries = fields.Dict(keys=fields.String(), values=DynamicField([Query]))
+
+	@post_load
+	def make(self, data, **kwargs):
+		return Field(**data)
 #######################
 
+# TODO: this probably doesn't even need to exist, can be replaced by passing col into Query
 class Field(SerializableClass):
 	__schema__ = FieldSchema
 

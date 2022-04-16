@@ -13,6 +13,7 @@ from sqlalchemy import Column
 from functools import partial
 
 from marshmallow_enum import EnumField
+from marshmallow import post_load
 
 class ValueRating(Serializable, IntEnum):
 	__field__ = EnumField
@@ -63,6 +64,10 @@ def _get_plant_min_max(plant: models.Plant, min_col: Column | Any, max_col: Colu
 class PlantValueScoreSchema(PostProcessorSchema):
 	min_col = SQLAlchemyColumnField()
 	max_col = SQLAlchemyColumnField()
+
+	@post_load
+	def make(self, data, **kwargs):
+		return PlantValueScore(**data)
 
 @dataclass
 class PlantValueScore(PostProcessor):

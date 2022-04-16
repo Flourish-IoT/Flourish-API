@@ -1,18 +1,23 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-import logging
 from typing import Optional
 
 from app.core.event_engine.events import Event
 from app.common.schemas import SerializableClass
 
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, INCLUDE
+
+import logging
+logger = logging.getLogger(__name__)
 
 #######################
 # Schemas
 #######################
 class ActionSchema(Schema):
 	cooldown = fields.TimeDelta(required=False, allow_none=True)
+
+	class Meta:
+		unknown = INCLUDE
 
 	# DONT INCLUDE THESE FIELDS, they are stored in the database instead
 	# action_id = fields.Int()
@@ -26,8 +31,11 @@ class Action(SerializableClass, ABC):
 
 	action_id: int | None
 	disabled: bool
-	cooldown: timedelta | None
 	last_executed: datetime | None
+
+	cooldown: timedelta | None
+
+	# information: models.
 
 	def __init__(self, disabled: bool, action_id: Optional[ int ] = None, cooldown: timedelta | None = None, last_executed: datetime | None = None):
 		"""
@@ -46,22 +54,26 @@ class Action(SerializableClass, ABC):
 		Returns:
 				bool: Action can execute
 		"""
-		logging.info('Checking if action can execute')
+		logger.info('Checking if action can execute')
 		if self.disabled:
-			logging.info('Action disabled, not executing')
+			logger.info('Action disabled, not executing')
 			return False
 
 		if self.cooldown is not None:
-			logging.info(f'Cooldown is {self.cooldown}, last executed {self.last_executed}, checking if action still on cooldown')
+			logger.info(f'Cooldown is {self.cooldown}, last executed {self.last_executed}, checking if action still on cooldown')
 			# if the action has been executed before, and the time between when it was last ran is longer than the cooldown, action can run
 			return self.last_executed is None or datetime.now() - self.last_executed > self.cooldown
 
-		logging.info('Action can execute')
+		logger.info('Action can execute')
 		return True
 
-	def update_last_executed(self):
-		# TODO
-		pass
+	def update_last_executed(self, event: Event):
+		# defer import becuase this is a dumb language and will cause circular dependencies
+		import app.core.services.event_handler_service as services
+
+		self.last_executed = datetime.now()
+		if self.action_id is not None:
+			services.update_action_last_executed(self.action_id, self.last_executed, event.session)
 
 	@abstractmethod
 	def execute(self, event: Event) -> bool:

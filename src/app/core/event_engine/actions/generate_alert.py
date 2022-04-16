@@ -8,7 +8,7 @@ from app.core.event_engine.events import Event, DeviceEventType, PlantEventType
 import app.core.models as models
 import app.core.services as services
 
-from marshmallow import fields, validate, post_load, validates_schema, ValidationError
+from marshmallow import fields, post_load, INCLUDE
 from marshmallow_enum import EnumField
 
 #######################
@@ -20,13 +20,18 @@ class GenerateAlertActionSchema(ActionSchema):
 
 	@post_load
 	def make(self, data, **kwargs):
-		return GenerateAlertAction(**data, **self.context)
+		return GenerateAlertAction(**data)
+
+	class Meta:
+		unknown = INCLUDE
 
 class GenerateDeviceAlertActionSchema(GenerateAlertActionSchema):
-	pass
+	class Meta:
+		unknown = INCLUDE
 
 class GeneratePlantAlertActionSchema(GenerateAlertActionSchema):
-	pass
+	class Meta:
+		unknown = INCLUDE
 #######################
 
 class GenerateAlertAction(Action):
@@ -73,7 +78,8 @@ class GenerateAlertAction(Action):
 				Alert: Generated Alert object
 		"""
 		message = self.generate_message(event)
-		alert = models.Alert(message=message, severity=self.severity, time=datetime.now())
+		# TODO: add col for action id
+		alert = models.Alert(message=message, severity=self.severity, action_id=self.action_id, time=datetime.now())
 		return alert
 
 	def execute(self, event: Event) -> bool:
@@ -96,6 +102,10 @@ class GenerateAlertAction(Action):
 		services.create_alert(event.user_id, alert, event.session)
 
 		# TODO: push notification
+
+		# update last executed time
+		self.update_last_executed(event)
+
 		return True
 
 class GeneratePlantAlertAction(GenerateAlertAction):

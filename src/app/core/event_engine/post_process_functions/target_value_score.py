@@ -15,6 +15,8 @@ from functools import partial
 from marshmallow_enum import EnumField
 from marshmallow import post_load
 
+# TODO: combine this file with whatever serb and akshiv are working on
+
 class ValueRating(Serializable, IntEnum):
 	__field__ = EnumField
 

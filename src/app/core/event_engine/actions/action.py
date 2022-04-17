@@ -4,6 +4,7 @@ from typing import Optional
 
 from app.core.event_engine.events import Event
 from app.common.schemas import SerializableClass
+import app.core.services.event_handler_service as services
 
 from marshmallow import Schema, fields, INCLUDE
 
@@ -68,9 +69,6 @@ class Action(SerializableClass, ABC):
 		return True
 
 	def update_last_executed(self, event: Event):
-		# defer import becuase this is a dumb language and will cause circular dependencies
-		import app.core.services.event_handler_service as services
-
 		self.last_executed = datetime.now()
 		if self.action_id is not None:
 			services.update_action_last_executed(self.action_id, self.last_executed, event.session)

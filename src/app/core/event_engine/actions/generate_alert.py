@@ -99,9 +99,6 @@ class GenerateAlertAction(Action):
 		Returns:
 				bool: Whether or not action executed succesfully
 		"""
-		# this needs to be here because it will cause
-		# import app.core.services as services
-
 		logging.info('Executing GenerateAlertAction')
 		if not self.can_execute():
 			return False

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import IntEnum
@@ -7,7 +8,7 @@ from app.common.schemas import Serializable, SQLAlchemyColumnField
 from app.core.util import Comparable
 from app.core.event_engine.events import Event, PlantEventType
 from . import PostProcessor, PostProcessorSchema
-import app.core.models as models
+from app.core.models import Plant
 
 from sqlalchemy import Column
 from functools import partial
@@ -52,7 +53,7 @@ def score(value: Comparable, min: Comparable | None, max: Comparable | None) -> 
 
 	return score
 
-def _get_plant_min_max(plant: models.Plant, min_col: Column | Any, max_col: Column | Any) -> Tuple[Comparable | None, Comparable | None]:
+def _get_plant_min_max(plant: Plant, min_col: Column | Any, max_col: Column | Any) -> Tuple[Comparable | None, Comparable | None]:
 	plant_type = plant.plant_type
 	if plant_type is None:
 		logging.info('Plant has no plant type associated with it, cannot get min/max')

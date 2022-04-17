@@ -1,9 +1,10 @@
+from __future__ import annotations
 from datetime import datetime
 import json
 import logging
 from typing import cast
 
-import app.core.event_engine.actions as actions
+from app.core.event_engine.actions import Action
 from app.common.schemas import DynamicSchema
 from ..base_model import BaseModel
 from sqlalchemy import Column, Integer, TIMESTAMP, Boolean, ForeignKey
@@ -38,9 +39,9 @@ class ActionInformation(BaseModel):
 		nullable=False
 	))
 
-	_action: actions.Action
+	_action: Action
 
-	def to_action(self) -> actions.Action:
+	def to_action(self) -> Action:
 		try:
 			action = DynamicSchema().load({
 				**{
@@ -57,14 +58,14 @@ class ActionInformation(BaseModel):
 			logging.exception(e)
 			raise e
 
-		if not isinstance(action, actions.Action):
+		if not isinstance(action, Action):
 			raise ValueError("Failed to decode action: ", action)
 
 		self._action = action
 		return action
 
 	@staticmethod
-	def from_action(action: actions.Action):
+	def from_action(action: Action):
 		action_json = DynamicSchema().dump(action)
 		action_info = ActionInformation(action_id=action.action_id, last_executed=action.last_executed, disabled=action.disabled, action=action_json)
 		# use this to tie together the action information with the action that created it. Useful when initially creating the action and backfilling the IDs

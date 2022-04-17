@@ -1,4 +1,7 @@
-Note: When importing from models/services, import the module only to avoid cyclic imports
+Note: When importing from models/services, import future annotations for postponed evaluation of type checks, or import the module only to avoid cyclic imports
+```
+from __future__ import annotations
+```
 Ex.
 # models/foo.py
 ```

@@ -22,10 +22,10 @@ class FieldSchema(Schema):
 		return Field(**data)
 #######################
 
-# TODO: this probably doesn't even need to exist, can be replaced by passing col into Query
 class Field(SerializableClass):
 	__schema__ = FieldSchema
 
+	# TODO: this probably doesn't even need to exist, can be replaced by passing col into Query
 	field: Column
 	queries: Dict[str, Query]
 

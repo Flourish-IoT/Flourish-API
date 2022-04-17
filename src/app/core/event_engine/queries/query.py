@@ -1,3 +1,4 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 import logging
 from typing import Any, Callable, Optional, Type, cast
@@ -6,7 +7,7 @@ from sqlalchemy import Column, Integer
 from app.common.schemas import SQLAlchemyColumnField, SerializableClass, TypeField, DynamicField
 from app.core.event_engine.events import Event
 from app.core.event_engine.post_process_functions import PostProcessor
-import app.core.models as models
+from app.core.models import SensorData, Device
 
 from marshmallow import Schema, fields
 
@@ -14,13 +15,13 @@ from marshmallow import Schema, fields
 # Schemas
 #######################
 class QuerySchema(Schema):
-	table = TypeField([models.SensorData, models.Device])
+	table = TypeField([SensorData, Device])
 	id_column = SQLAlchemyColumnField()
 	post_processor = DynamicField([PostProcessor], allow_none = True)
 #######################
 
-whitelisted_tables = [models.SensorData, models.Device]
-WhitelistedTable = Type[models.SensorData] | Type[models.Device]
+whitelisted_tables = [SensorData, Device]
+WhitelistedTable = Type[SensorData] | Type[Device]
 
 class Query(SerializableClass, ABC):
 	__schema__ = QuerySchema

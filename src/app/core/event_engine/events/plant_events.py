@@ -1,11 +1,12 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from . import Event
-import app.core.models as models
+from app.core.models import Plant, SensorData
 
 @dataclass
 class PlantEventType(Event):
-	plant: models.Plant
+	plant: Plant
 
 @dataclass
 class SensorDataEvent(PlantEventType):
-	data: models.SensorData
+	data: SensorData

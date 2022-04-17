@@ -10,7 +10,7 @@ from typing import List
 from datetime import datetime
 import logging
 import app.core.event_engine as event_engine
-from app.core.services.event_handler_service import create_event_handler
+import app.core.services.event_handler_service as event_handler_service
 
 def get_plants(user_id: int, session: ScopedSession):
 	query = select(Plant).where(Plant.user_id == user_id)
@@ -42,7 +42,7 @@ def create_plant(user_id: int, plant: Plant, session: ScopedSession):
 
 	try:
 		for event_handler in event_handlers:
-			create_event_handler(event_handler, session, plant_id=plant.plant_id, auto_commit=False)
+			event_handler_service.create_event_handler(event_handler, session, plant_id=plant.plant_id, auto_commit=False)
 		session.commit()
 	except exc.DatabaseError as e:
 		logging.error('Failed to create plant event handlers')

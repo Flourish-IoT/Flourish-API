@@ -200,11 +200,9 @@ def handle(event: Event):
 	Args:
 			event (Event): Event to handle
 	"""
-	# TODO: get handlers from config
-	# handlers = load_event_handlers(event)
 	if isinstance(event, PlantEventType):
 		handlers = load_event_handlers(event)
-		logger.info(f'Found {len(handlers)} for event {event}')
+		logger.info(f'Found {len(handlers)} handlers for event {event}')
 	else:
 		raise ValueError("Only plant event types are implemented")
 

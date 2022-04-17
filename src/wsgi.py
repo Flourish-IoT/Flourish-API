@@ -12,6 +12,8 @@ def configure_app():
 
 	env = Environment[ args.config ]
 	app = create_rest_app(env)
+	# will get overwritten by gunicorn logging level if behind gunicorn
+	app.logger.setLevel(logging.DEBUG)
 
 	return app, args
 

@@ -79,7 +79,7 @@ class TestEventHandlerService:
 		assert handler_id is not None
 
 		# ensure 1 handler is returned
-		handlers = get_event_handlers(1, cast( Column[Integer], EventHandlerInformation ).plant_id, session)
+		handlers = get_event_handlers(1, cast(Column[Integer], EventHandlerInformation).plant_id, session)
 		assert len(handlers) == 1
 
 		handler = handlers[0]
@@ -105,7 +105,7 @@ class TestEventHandlerService:
 		# make sure cooldown works
 		handler.handle(event)
 
-		# make sure action only ran once
+		# make sure action only runs once
 		actions = handler.get_actions()
 		actions_ran = [action for action in actions if action.last_executed is not None]
 		assert len(actions_ran) == 1

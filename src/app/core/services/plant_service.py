@@ -9,6 +9,8 @@ from sqlalchemy import exc, select, update
 from typing import List
 from datetime import datetime
 import logging
+import app.core.event_engine as event_engine
+from app.core.services.event_handler_service import create_event_handler
 
 def get_plants(user_id: int, session: ScopedSession):
 	query = select(Plant).where(Plant.user_id == user_id)
@@ -30,24 +32,31 @@ def create_plant(user_id: int, plant: Plant, session: ScopedSession):
 
 	try:
 		session.add(plant)
-		session.commit()
+		session.flush()
 	except exc.DatabaseError as e:
 		logging.error('Failed to create plant')
+		logging.exception(e)
+		raise e
+
+	event_handlers = event_engine.generate_default_plant_event_handlers()
+
+	try:
+		for event_handler in event_handlers:
+			create_event_handler(event_handler, session, plant_id=plant.plant_id, auto_commit=False)
+		session.commit()
+	except exc.DatabaseError as e:
+		logging.error('Failed to create plant event handlers')
 		logging.exception(e)
 		raise e
 
 	return plant.plant_id
 
 def get_plant_info(plant_id: int, session: ScopedSession):
-	query = select(Plant).where(Plant.plant_id == plant_id)
+	logging.info(f'Getting plant information for plant {plant_id}')
+	plant = session.get(Plant, plant_id)
 
-	try:
-		plant = session.get(Plant, plant_id)
-	except Exception as e:
-		logging.error(f'Failed to get plant info')
-		logging.exception(e)
-		raise e
-	get_plant_target_value_ratings(plant)
+	if plant is None:
+		raise NotFoundError(f'Could not find plant with id: {plant_id}')
 
 	return plant
 

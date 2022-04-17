@@ -6,8 +6,10 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc, update
 from datetime import datetime
 
+import logging
+logger = logging.getLogger(__name__)
 
-def get_alerts(user_id: int, session: ScopedSession, *, viewed: bool | None = None, plant_id: int | None = None, device_id: int | None = None):
+def get_alerts(user_id: int, session: ScopedSession, *, viewed: bool | None = None, plant_id: int | None = None, device_id: int | None = None) -> List[Alert]:
 	"""Gets all alerts for a user
 
 	Args:
@@ -22,8 +24,9 @@ def get_alerts(user_id: int, session: ScopedSession, *, viewed: bool | None = No
 			Exception: Failed to get alerts
 
 	Returns:
-			[type]: [description]
+			List[Alert]: Alerts
 	"""
+	logger.info(f'Getting alerts for user {user_id} with filters (viewed={viewed}, plant_id={plant_id}, device_id={device_id}')
 	if plant_id is not None and device_id is not None:
 		raise ValueError('Cannot pass both plant_id and device_id')
 
@@ -45,6 +48,7 @@ def get_alerts(user_id: int, session: ScopedSession, *, viewed: bool | None = No
 		logging.exception(e)
 		raise e
 
+	logger.debug(f'Found {len(alerts)} alerts')
 	return alerts
 
 def get_alert(alert_id: int, session: ScopedSession):
@@ -59,6 +63,7 @@ def get_alert(alert_id: int, session: ScopedSession):
 	Returns:
 			Alert
 	"""
+	logger.debug(f'Getting alert {alert_id}')
 	alert = session.get(Alert, alert_id)
 
 	if alert is None:
@@ -67,7 +72,7 @@ def get_alert(alert_id: int, session: ScopedSession):
 	return alert
 
 
-def create_alert(user_id: int, alert: Alert, session: ScopedSession):
+def create_alert(user_id: int, alert: Alert, session: ScopedSession) -> int:
 	"""Creates alert
 
 	Args:
@@ -77,7 +82,12 @@ def create_alert(user_id: int, alert: Alert, session: ScopedSession):
 
 	Raises:
 			ConflictError: _description_
+
+	Returns:
+			int: Alert ID
 	"""
+	logger.info(f'Creating new alert for user {user_id}')
+	logger.debug(f'Alert: {alert}')
 	alert.user_id = user_id
 
 	try:
@@ -89,6 +99,8 @@ def create_alert(user_id: int, alert: Alert, session: ScopedSession):
 		raise e
 
 	# TODO: push notifications
+	logger.info(f'Alert {alert.alert_id} created')
+	return alert.alert_id
 
 def delete_alert(alert_id: int, session: ScopedSession):
 	"""Deletes alert
@@ -101,6 +113,7 @@ def delete_alert(alert_id: int, session: ScopedSession):
 			NotFoundError: Device not found
 			Exception: Database error
 	"""
+	logger.info(f'Deleting alert {alert_id}')
 	alert = get_alert(alert_id, session)
 
 	try:
@@ -122,6 +135,7 @@ def set_viewed_state(alert_ids: List[int], viewed: bool, session: ScopedSession)
 	Raises:
 			Exception: Database error
 	"""
+	logger.info(f'Setting viewed state for alerts {alert_ids} to {viewed}')
 	try:
 		session.execute(
 			update(Alert)

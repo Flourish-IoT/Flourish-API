@@ -1,7 +1,6 @@
 
 from abc import ABC, abstractmethod
 from datetime import timedelta
-import logging
 from typing import List, cast
 from sqlalchemy import Column, Integer
 from app.core.event_engine import Field
@@ -17,12 +16,11 @@ import app.core.models.event_engine as event_engine_models
 from app.core.models.event_engine.event_handler_information import EventHandlerInformation
 import app.core.services.event_handler_service as services
 
-# def hydrate_event_handler(event_info: event_engine_models.EventHandlerInformation, actions: List[event_engine_models.ActionInformation]):
-# 	action_map = {action.action_id: action.to_action() for action in actions}
-# 	return event_info.to_event_handler(action_map)
+import logging
+logger = logging.getLogger(__name__)
 
 def load_event_handlers(event: Event) -> List[EventHandler]:
-	logging.info(f'Loading event handlers for event: {event}')
+	logger.info(f'Loading event handlers for event: {event}')
 
 	# use event type to determine id and column to find event handlers
 	id: int
@@ -40,7 +38,7 @@ def load_event_handlers(event: Event) -> List[EventHandler]:
 	# get event handler configs from db
 	return services.get_event_handlers(id, id_column, event.session)
 
-def generate_default_plant_event_handlers(plant: models.Plant):
+def generate_default_plant_event_handlers():
 	# TODO: batch queries?
 	return [
 		SensorDataEventHandler(
@@ -50,13 +48,13 @@ def generate_default_plant_event_handlers(plant: models.Plant):
 			}),
 			[
 				AndTrigger([
-						EqualsTrigger(field='value', value=models.ValueRating.TooLow),
+						EqualsTrigger(field='value', value=ValueRating.TooLow),
 						# LessThanTrigger(field='slope', value=0),
 					],
 					[GeneratePlantAlertAction('{event.plant.name} is too cold! Turn up the heat', models.SeverityLevelEnum.Critical, False, cooldown=timedelta(days=1))]
 				),
 				AndTrigger([
-						EqualsTrigger(field='value', value=models.ValueRating.Low),
+						EqualsTrigger(field='value', value=ValueRating.Low),
 						# LessThanTrigger(field='slope', value=0),
 					],
 					[GeneratePlantAlertAction('{event.plant.name} is feeling cold. You should consider increasing the temperature', models.SeverityLevelEnum.Warning, False, cooldown=timedelta(days=1))]
@@ -65,124 +63,124 @@ def generate_default_plant_event_handlers(plant: models.Plant):
 				# 	[]
 				# ),
 				AndTrigger([
-						EqualsTrigger(field='value', value=models.ValueRating.High),
+						EqualsTrigger(field='value', value=ValueRating.High),
 						# GreaterThanTrigger(field='slope', value=0),
 					],
 					[GeneratePlantAlertAction('{event.plant.name} is feeling hot. You should consider decreasing the temperature', models.SeverityLevelEnum.Warning, False, cooldown=timedelta(days=1))]
 				),
 				AndTrigger([
-						EqualsTrigger(field='value', value=models.ValueRating.TooHigh),
+						EqualsTrigger(field='value', value=ValueRating.TooHigh),
 						# GreaterThanTrigger(field='slope', value=0),
 					],
 					[GeneratePlantAlertAction('{event.plant.name} is too hot! Lower the heat', models.SeverityLevelEnum.Critical, False, cooldown=timedelta(days=1))]
 				),
 			]
 		),
-		# SensorDataEventHandler(
-		# 	Field(models.SensorData.humidity, {
-		# 		'value': ValueQuery(models.SensorData, models.SensorData.plant_id, models.SensorData.time, plant_value_score(plant, models.PlantType.minimum_temperature, models.PlantType.maximum_temperature)),
-		# 		# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
-		# 	}),
-		# 	[
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.TooLow),
-		# 				# LessThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('The air around {event.plant.name} is too dry! Try spraying it with water', models.SeverityLevelEnum.Critical, False, timedelta(days=1))]
-		# 		),
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.Low),
-		# 				# LessThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('The air around {event.plant.name} is getting dry. You should consider spraying it with water', models.SeverityLevelEnum.Warning, False, timedelta(days=1))]
-		# 		),
-		# 		# EqualsTrigger(ValueRating.Nominal,
-		# 		# 	[]
-		# 		# ),
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.High),
-		# 				# GreaterThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('The air around {event.plant.name} is getting humid. You should consider moving it to a dryer location', models.SeverityLevelEnum.Warning, False, timedelta(days=1))]
-		# 		),
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.TooHigh),
-		# 				# GreaterThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('The air around {event.plant.name} is too humid! Move them to a dryer location', models.SeverityLevelEnum.Critical, False, timedelta(days=1))]
-		# 		),
-		# 	]
-		# ),
-		# SensorDataEventHandler(
-		# 	Field(SensorData.soil_moisture, {
-		# 		'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, plant_value_score(plant, PlantType.minimum_temperature, PlantType.maximum_temperature)),
-		# 		# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
-		# 	}),
-		# 	[
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.TooLow),
-		# 				# LessThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('{event.plant.name} needs water', SeverityLevelEnum.Critical, False, timedelta(days=1))]
-		# 		),
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.Low),
-		# 				# LessThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('{event.plant.name} needs water soon', SeverityLevelEnum.Warning, False, timedelta(days=1))]
-		# 		),
-		# 		# EqualsTrigger(ValueRating.Nominal,
-		# 		# 	[]
-		# 		# ),
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.High),
-		# 				# GreaterThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('{event.plant.name} has too much water. Try watering less next time', SeverityLevelEnum.Warning, False, timedelta(days=1))]
-		# 		),
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.TooHigh),
-		# 				# GreaterThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('{event.plant.name} has been overwatered! Move them to a drier pot', SeverityLevelEnum.Critical, False, timedelta(days=1))]
-		# 		),
-		# 	]
-		# ),
-		# SensorDataEventHandler(
-		# 	Field(SensorData.light, {
-		# 		'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, plant_value_score(plant, PlantType.minimum_temperature, PlantType.maximum_temperature)),
-		# 		# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
-		# 	}),
-		# 	[
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.TooLow),
-		# 				# LessThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('{event.plant.name} needs more light! Move them to a sunnier location', SeverityLevelEnum.Critical, False, timedelta(days=1))]
-		# 		),
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.Low),
-		# 				# LessThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('{event.plant.name} is not getting enough light. Try moving them to a sunnier location', SeverityLevelEnum.Warning, False, timedelta(days=1))]
-		# 		),
-		# 		# EqualsTrigger(ValueRating.Nominal,
-		# 		# 	[]
-		# 		# ),
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.High),
-		# 				# GreaterThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('{event.plant.name} is getting a lot of light. Try moving them to a shadier location', SeverityLevelEnum.Warning, False, timedelta(days=1))]
-		# 		),
-		# 		AndTrigger([
-		# 				EqualsTrigger(field='value', value=ValueRating.TooHigh),
-		# 				# GreaterThanTrigger(field='slope', value=0),
-		# 			],
-		# 			[GeneratePlantAlertAction('{event.plant.name} is getting too much light! Move them to a shadier location', SeverityLevelEnum.Critical, False, timedelta(days=1))]
-		# 		),
-		# 	]
-		# ),
+		SensorDataEventHandler(
+			Field(models.SensorData.humidity, {
+				'value': ValueQuery(models.SensorData, models.SensorData.plant_id, models.SensorData.time, PlantValueScore(models.PlantType.minimum_temperature, models.PlantType.maximum_temperature)),
+				# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
+			}),
+			[
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.TooLow),
+						# LessThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('The air around {event.plant.name} is too dry! Try spraying it with water', models.SeverityLevelEnum.Critical, False, cooldown=timedelta(days=1))]
+				),
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.Low),
+						# LessThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('The air around {event.plant.name} is getting dry. You should consider spraying it with water', models.SeverityLevelEnum.Warning, False, cooldown=timedelta(days=1))]
+				),
+				# EqualsTrigger(ValueRating.Nominal,
+				# 	[]
+				# ),
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.High),
+						# GreaterThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('The air around {event.plant.name} is getting humid. You should consider moving it to a dryer location', models.SeverityLevelEnum.Warning, False, cooldown=timedelta(days=1))]
+				),
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.TooHigh),
+						# GreaterThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('The air around {event.plant.name} is too humid! Move them to a dryer location', models.SeverityLevelEnum.Critical, False, cooldown=timedelta(days=1))]
+				),
+			]
+		),
+		SensorDataEventHandler(
+			Field(models.SensorData.soil_moisture, {
+				'value': ValueQuery(models.SensorData, models.SensorData.plant_id, models.SensorData.time, PlantValueScore(models.PlantType.minimum_temperature, models.PlantType.maximum_temperature)),
+				# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
+			}),
+			[
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.TooLow),
+						# LessThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('{event.plant.name} needs water', models.SeverityLevelEnum.Critical, False, cooldown=timedelta(days=1))]
+				),
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.Low),
+						# LessThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('{event.plant.name} needs water soon', models.SeverityLevelEnum.Warning, False, cooldown=timedelta(days=1))]
+				),
+				# EqualsTrigger(ValueRating.Nominal,
+				# 	[]
+				# ),
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.High),
+						# GreaterThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('{event.plant.name} has too much water. Try watering less next time', models.SeverityLevelEnum.Warning, False, cooldown=timedelta(days=1))]
+				),
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.TooHigh),
+						# GreaterThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('{event.plant.name} has been overwatered! Move them to a drier pot', models.SeverityLevelEnum.Critical, False, cooldown=timedelta(days=1))]
+				),
+			]
+		),
+		SensorDataEventHandler(
+			Field(models.SensorData.light, {
+				'value': ValueQuery(models.SensorData, models.SensorData.plant_id, models.SensorData.time, PlantValueScore(models.PlantType.minimum_temperature, models.PlantType.maximum_temperature)),
+				# 'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
+			}),
+			[
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.TooLow),
+						# LessThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('{event.plant.name} needs more light! Move them to a sunnier location', models.SeverityLevelEnum.Critical, False, cooldown=timedelta(days=1))]
+				),
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.Low),
+						# LessThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('{event.plant.name} is not getting enough light. Try moving them to a sunnier location', models.SeverityLevelEnum.Warning, False, cooldown=timedelta(days=1))]
+				),
+				# EqualsTrigger(ValueRating.Nominal,
+				# 	[]
+				# ),
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.High),
+						# GreaterThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('{event.plant.name} is getting a lot of light. Try moving them to a shadier location', models.SeverityLevelEnum.Warning, False, cooldown=timedelta(days=1))]
+				),
+				AndTrigger([
+						EqualsTrigger(field='value', value=ValueRating.TooHigh),
+						# GreaterThanTrigger(field='slope', value=0),
+					],
+					[GeneratePlantAlertAction('{event.plant.name} is getting too much light! Move them to a shadier location', models.SeverityLevelEnum.Critical, False, cooldown=timedelta(days=1))]
+				),
+			]
+		),
 	]
 
 def generate_default_device_event_handlers(device: models.Device):
@@ -205,7 +203,8 @@ def handle(event: Event):
 	# TODO: get handlers from config
 	# handlers = load_event_handlers(event)
 	if isinstance(event, PlantEventType):
-		handlers = generate_default_plant_event_handlers(event.plant)
+		handlers = load_event_handlers(event)
+		logger.info(f'Found {len(handlers)} for event {event}')
 	else:
 		raise ValueError("Only plant event types are implemented")
 

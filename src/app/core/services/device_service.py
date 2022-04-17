@@ -176,14 +176,9 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
+	# run event handlers for each plant
 	for plant, sensor_data in zip(plants, sensor_data):
 		event_engine.handle(events.SensorDataEvent(user_id=plant.user_id, plant=plant, data=sensor_data, session=session))
-
-	# perform checks for each plant and generate alerts
-	# alerts = []
-	# for plant in plants:
-	# 	update_plant_target_value_ratings(plant)
-	# 	alerts.append(generate_alerts(plant))
 
 	# return state
 

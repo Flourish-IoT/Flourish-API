@@ -51,13 +51,6 @@ class EventHandlerInformation(BaseModel):
 
 		return event_handler
 
-	# @staticmethod
-	# def from_event_handler(event_handler: handlers.EventHandler):
-	# 	event_handler_information = EventHandlerInformation(event_handler.event_handler_id)
-	# 	config = DynamicSchema().dump(event_handler)
-	# 	event_handler_information.config = config
-	# 	return event_handler_information
-
 	def update_config(self, event_handler: handlers.EventHandler):
 		config = DynamicSchema().dump(event_handler)
 		self.config = config

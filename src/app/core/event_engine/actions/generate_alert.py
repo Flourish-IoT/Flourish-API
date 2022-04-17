@@ -6,7 +6,7 @@ from . import ActionSchema, Action
 from app.core.event_engine.events import Event, DeviceEventType, PlantEventType
 
 import app.core.models as models
-import app.core.services as services
+from app.core.services.alert_service import create_alert
 
 from marshmallow import fields, post_load, INCLUDE
 from marshmallow_enum import EnumField
@@ -99,6 +99,9 @@ class GenerateAlertAction(Action):
 		Returns:
 				bool: Whether or not action executed succesfully
 		"""
+		# this needs to be here because it will cause
+		# import app.core.services as services
+
 		logging.info('Executing GenerateAlertAction')
 		if not self.can_execute():
 			return False
@@ -107,7 +110,7 @@ class GenerateAlertAction(Action):
 		logging.info(f'Persisting alert: {alert}')
 
 		# persist alert
-		services.create_alert(event.user_id, alert, event.session)
+		create_alert(event.user_id, alert, event.session)
 
 		# TODO: push notification
 

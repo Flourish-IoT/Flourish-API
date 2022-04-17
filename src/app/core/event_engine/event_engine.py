@@ -1,8 +1,9 @@
-
-from abc import ABC, abstractmethod
 from datetime import timedelta
 from typing import List, cast
 from sqlalchemy import Column, Integer
+import app.core.models as models
+import app.core.models.event_engine as event_engine_models
+import app.core.services.event_handler_service as services
 from app.core.event_engine import Field
 from app.core.event_engine.handlers import EventHandler
 from app.core.event_engine.events import Event, PlantEventType, DeviceEventType
@@ -11,10 +12,6 @@ from app.core.event_engine.post_process_functions import ValueRating, target_val
 from app.core.event_engine.handlers import SensorDataEventHandler
 from app.core.event_engine.actions import GeneratePlantAlertAction
 from app.core.event_engine.triggers import EqualsTrigger, AndTrigger, LessThanTrigger, GreaterThanTrigger
-import app.core.models as models
-import app.core.models.event_engine as event_engine_models
-from app.core.models.event_engine.event_handler_information import EventHandlerInformation
-import app.core.services.event_handler_service as services
 
 import logging
 logger = logging.getLogger(__name__)
@@ -40,6 +37,7 @@ def load_event_handlers(event: Event) -> List[EventHandler]:
 
 def generate_default_plant_event_handlers():
 	# TODO: batch queries?
+	# TODO: once the plant value rating is part of the plant table, get directly from the event instead of DB
 	return [
 		SensorDataEventHandler(
 			Field(models.SensorData.temperature, {

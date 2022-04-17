@@ -69,6 +69,6 @@ class Plant(BaseModel):
 	# 		InRangeRule(self.plant_type.minimum_humidity, self.plant_type.maximum_humidity, "Humidity"),
 	# 		InRangeRule(self.plant_type.minimum_soil_moisture, self.plant_type.maximum_soil_moisture, "Soil Moisture"),
 	# 	]
-	# target_value_ratings: Dict[str, int] = {'temperature': None , 'light': None, 'humidity': None, 'soil_moisture': None}
+	target_value_ratings: Dict[str, int] = {'temperature': None , 'light': None, 'humidity': None, 'soil_moisture': None}
 
 

@@ -23,6 +23,13 @@ Running just the database:
 docker-compose --env-file ./.env up -d flourish-db
 ```
 
+Updating the server:
+```
+docker-compose rm -s flourish
+docker-compose --env-file ./.env up -d --build flourish
+```
+
+
 # Testing
 To run all tests
 ```

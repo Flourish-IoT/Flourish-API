@@ -1,13 +1,34 @@
 from abc import ABC, abstractmethod
+import itertools
 from typing import List, Type
-from app.core.event_engine import Field
+from app.common.schemas import DynamicField, SerializableClass, DynamicSchema
+from app.core.event_engine import Field, FieldSchema
+from app.core.event_engine.actions import Action
 from app.core.event_engine.events import Event
-from app.core.event_engine.triggers import Trigger
+from app.core.event_engine.triggers import Trigger, TriggerSchema
 
-class EventHandler(ABC):
+from marshmallow import Schema, fields, EXCLUDE
+
+#######################
+# Schemas
+#######################
+class EventHandlerSchema(Schema):
+	event_handler_id = fields.Int(dump_only=True)
+	field = DynamicField([Field])
+	triggers = fields.List(DynamicField([Trigger]))
+
+	class Meta:
+		# prevents issues loading event_handler_id
+		exclude = ['event_handler_id']
+#######################
+
+class EventHandler(SerializableClass, ABC):
+	__schema__ = EventHandlerSchema
+
+	event_handler_id: int
 	field: Field
 	triggers: List[Trigger]
-	events: List[Type[Event]]
+	supported_events: List[Type[Event]]
 
 	def __init__(self, field: Field, triggers: List[Trigger]) -> None:
 		"""
@@ -27,9 +48,14 @@ class EventHandler(ABC):
 		Returns:
 				bool: Indicates whether or not EventHandler can handle event
 		"""
-		return type(event) in self.events
+		return type(event) in self.supported_events
+
+	def get_actions(self) -> List[Action]:
+		# get actions from triggers and flatten it
+		return list(itertools.chain.from_iterable([trigger.get_actions() for trigger in self.triggers]))
 
 	@abstractmethod
+	# TODO: add new param for info to be returned to device
 	def handle(self, event: Event):
 		"""Handles an event. Retrieves Field value and executes all triggers
 
@@ -37,3 +63,6 @@ class EventHandler(ABC):
 				event (Event): Event being handled
 		"""
 		raise NotImplementedError
+
+	def dump(self):
+		actions = self.get_actions()

@@ -1,5 +1,6 @@
+from __future__ import annotations
 from dataclasses import dataclass
-from app.core.event_engine.events import Event
+from . import Event
 from app.core.models import Plant, SensorData
 
 @dataclass

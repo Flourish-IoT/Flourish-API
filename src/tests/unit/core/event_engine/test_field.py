@@ -1,5 +1,6 @@
 from app.core.event_engine import Field
 from app.core.event_engine.queries import Query
+from app.core.event_engine.events import Event
 from unittest.mock import MagicMock
 import pytest
 from sqlalchemy import Column
@@ -22,11 +23,12 @@ class TestField:
 
 		field = Field(mock_col, queries)
 		mock_session = MagicMock(Session)
-		value = field.get_value(1, mock_session)
+		mock_event = MagicMock(Event)
+		value = field.get_value(1, mock_session, mock_event)
 
 		# make sure queries are called with correct values
 		for query in queries.values():
-			query.execute.assert_called_once_with(1, mock_col, mock_session)
+			query.execute.assert_called_once_with(1, mock_col, mock_session, mock_event)
 
 		# make sure returned value is correct
 		assert value == expected

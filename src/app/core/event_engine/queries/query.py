@@ -1,19 +1,36 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 import logging
-from typing import Any, Callable, Type, cast
-from app.core.models import Device, SensorData
+from typing import Any, Callable, Optional, Type, cast
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import Column, Integer
+from app.common.schemas import SQLAlchemyColumnField, SerializableClass, TypeField, DynamicField
+from app.core.event_engine.events import Event
+from app.core.event_engine.post_process_functions import PostProcessor
+from app.core.models import SensorData, Device
+
+from marshmallow import Schema, fields
+
+#######################
+# Schemas
+#######################
+class QuerySchema(Schema):
+	table = TypeField([SensorData, Device])
+	id_column = SQLAlchemyColumnField()
+	post_processor = DynamicField([PostProcessor], allow_none = True)
+#######################
 
 whitelisted_tables = [SensorData, Device]
 WhitelistedTable = Type[SensorData] | Type[Device]
 
-class Query(ABC):
+class Query(SerializableClass, ABC):
+	__schema__ = QuerySchema
+
 	table: WhitelistedTable
 	id_column: Column[Integer]
-	post_process_function: Callable[[Any], Any] | None
+	post_processor: PostProcessor | None
 
-	def __init__(self, table: WhitelistedTable, id_column: Column[Integer] | int , post_process_function: Callable[[Any], Any] | None = None):
+	def __init__(self, table: WhitelistedTable, id_column: Column[Integer] | int , post_processor: Optional[PostProcessor] = None):
 		"""Retrieves a value from a table
 
 		Args:
@@ -29,9 +46,9 @@ class Query(ABC):
 
 		self.table = table
 		self.id_column = cast(Column[Integer], id_column)
-		self.post_process_function = post_process_function
+		self.post_processor = post_processor
 
-	def post_process(self, value: Any) -> Any:
+	def post_process(self, event: Event, value: Any) -> Any:
 		"""If post_process function is defined, call it
 
 		Args:
@@ -41,15 +58,15 @@ class Query(ABC):
 				Any: Processed value
 		"""
 		logging.info('Running post_process')
-		if self.post_process_function is not None:
+		if self.post_processor is not None:
 			logging.info('post_process_function is defined, processing')
-			return self.post_process_function(value)
+			return self.post_processor.process(value, event)
 
 		logging.info('post_process_function is None, not processing')
 		return value
 
 	@abstractmethod
-	def execute(self, id: int, column: Column | Any, session: ScopedSession) -> Any:
+	def execute(self, id: int, column: Column | Any, session: ScopedSession, event: Event) -> Any:
 		"""Executes query
 
 		Args:

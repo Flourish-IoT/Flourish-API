@@ -17,4 +17,4 @@ pwd
 
 WORKERS=2
 ADDRESS='0.0.0.0:5000'
-gunicorn --workers $WORKERS --bind=$ADDRESS --name=FlourishAPI 'wsgi:create_gunicorn(c="dev")'
+gunicorn --workers $WORKERS --bind=$ADDRESS --name=FlourishAPI --log-level=debug 'wsgi:create_gunicorn(c="dev")'

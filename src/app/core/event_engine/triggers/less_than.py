@@ -1,13 +1,26 @@
 import logging
 from typing import List, TypeVar, Generic
+from app.common.schemas.dynamic_schema import DynamicSchema
 from app.core.util import Comparable
+from . import Trigger
 from app.core.event_engine.events import Event
-from app.core.event_engine.triggers import Trigger
+from app.core.event_engine.triggers import Trigger, ValueTriggerSchema
 from app.core.event_engine.actions import Action
+from marshmallow import Schema, fields, post_load
+
+#######################
+# Schemas
+#######################
+class LessThanTriggerSchema(ValueTriggerSchema):
+	@post_load
+	def make(self, data, **kwargs):
+		return LessThanTrigger(**data)
+#######################
 
 T = TypeVar('T', bound=Comparable)
-
 class LessThanTrigger(Trigger, Generic[T]):
+	__schema__ = LessThanTriggerSchema
+
 	"""Executes if value is less than trigger value"""
 	def __init__(self, value: T, actions: List[Action] = [], *, field: str | None = None) -> None:
 		"""

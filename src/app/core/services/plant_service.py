@@ -139,13 +139,23 @@ def get_plant_target_value_ratings(plant: Plant):
 	plant.target_value_ratings['humidity'] = check_rating(humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
 
 def check_rating(val, min_value, max_value):
-	match val:
-		case n if n > min_value and n < max_value:
-			return 3
-		case n if n > max_value:
-			return 5
-		case n if n > min_value:
-			return 1
+	#If its is below the min value, return 1 and above max value, return 5
+	#Split the range into 3 and return 2,3,4 appropriately 
+	range = max_value - min_value
+	rating = val-min_value
+
+	if (rating <= 0):
+		return 1
+	elif (rating >= range):
+		return 5
+	
+	
+	if(rating <= range/3):
+		return 2
+	elif(rating >= range * 2 / 3):
+		return 4
+	else:
+		return 3
 
 
 

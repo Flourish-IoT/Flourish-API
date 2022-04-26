@@ -3,7 +3,7 @@ import string
 
 from flask import session
 from app.core.errors import NotFoundError, ConflictError
-from app.core.models import Plant, SeverityLevelEnum, Alert, ValueRating, SensorData, sensor_data
+from app.core.models import Plant, SeverityLevelEnum, Alert, ValueRating, SensorData
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc, select, update
 from typing import List

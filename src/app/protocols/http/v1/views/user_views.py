@@ -5,11 +5,13 @@ from flask import request, url_for
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError, Forbidden
 
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
-from app.core.services import get_user, create_user, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password, get_plants, create_plant
+from app.core.services import get_user, create_user, login, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password, get_plants, create_plant
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User, Plant
-from app.protocols.http.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema, ListPlantSchema, NewPlantSchema
+from app.protocols.http.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema, ListPlantSchema, NewPlantSchema, LoginSchema
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
+
+from app.protocols.http.utils.authentication import authenticator
 
 api = Namespace('users', description='User related operations', path='/users')
 
@@ -18,7 +20,7 @@ class UserList(Resource):
 	@serialize_with(NewUserSchema, strict=False)
 	def post(self, body: dict):
 		try:
-			user_id = create_user(body['email'], db.session)
+			user_id = create_user(body['email'], body['username'], body['password'], db.session)
 		except ConflictError as e:
 			raise Conflict(str(e))
 		except Exception as e:
@@ -39,8 +41,23 @@ class UserResource(Resource):
 
 		return user
 
+@api.route('/login')
+class UserLogin(Resource):
+	@serialize_with(LoginSchema)
+	def post(self, body: dict):
+		try:
+			login(body['email'], body['password'], db.session)
+		except ForbiddenError as e:
+			raise Forbidden(str(e))
+		except NotFoundError as e:
+			raise NotFound(str(e))
+		except Exception as e:
+			raise InternalServerError
+		return None, 204
+
 @api.route('/<int:user_id>/plants')
 class UserPlants(Resource):
+	@authenticator.login_required
 	@marshal_list_with(ListPlantSchema)
 	def get(self, user_id: int):
 		try:
@@ -53,6 +70,7 @@ class UserPlants(Resource):
 		return plants
 
 	@serialize_with(NewPlantSchema)
+	@authenticator.login_required
 	def post(self, user_id: int, body: Plant):
 		try:
 			plant_id = create_plant(user_id, body, db.session)
@@ -62,6 +80,7 @@ class UserPlants(Resource):
 		return None, 201, {'Location': url_for('v1.plants_plant', plant_id=plant_id)}
 
 	@serialize_with(UserUpdateSchema)
+	@authenticator.login_required
 	def put(self, user_id: int, body: dict):
 		try:
 			edit_user(user_id, body, db.session)
@@ -74,6 +93,7 @@ class UserPlants(Resource):
 
 		return None, 204
 
+	@authenticator.login_required
 	def delete(self, user_id: int):
 		try:
 			delete_user(user_id, db.session)
@@ -123,6 +143,7 @@ class UserPassword(Resource):
 @api.route('/<int:user_id>/preferences')
 class UserPreferences(Resource):
 	@serialize_with(UserPreferencesSchema)
+	@authenticator.login_required
 	def put(self, user_id: int, body: dict):
 		try:
 			edit_user_preferences(user_id, body, db.session)
@@ -137,6 +158,7 @@ class UserPreferences(Resource):
 class UserDevices(Resource):
 	@serialize_with(DeviceRequestQueryParamSchema, location=Location.QUERY_PARAMETER)
 	@marshal_list_with(DeviceSummarySchema)
+	@authenticator.login_required
 	def get(self, user_id: int, query: dict):
 		try:
 			devices = get_devices(user_id, db.session, device_type=query['device_type'], device_state=query['device_state'])
@@ -146,6 +168,7 @@ class UserDevices(Resource):
 		return devices
 
 	@serialize_with(NewDeviceSchema)
+	@authenticator.login_required
 	def post(self, user_id: int, body: Device):
 		try:
 			device_id = create_device(user_id, body, db.session)
@@ -159,6 +182,7 @@ class UserDevices(Resource):
 class UserAlerts(Resource):
 	@serialize_with(AlertRequestQueryParamSchema, location=Location.QUERY_PARAMETER)
 	@marshal_list_with(AlertSchema)
+	@authenticator.login_required
 	def get(self, user_id: int, query: dict):
 		try:
 			alerts = get_alerts(user_id, db.session, viewed=query['viewed'], plant_id=query['plant_id'], device_id=query['device_id'])

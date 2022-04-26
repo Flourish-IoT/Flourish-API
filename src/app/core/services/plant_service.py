@@ -3,7 +3,7 @@ import string
 
 from flask import session
 from app.core.errors import NotFoundError, ConflictError
-from app.core.models import Plant, SeverityLevelEnum, Alert, ValueRating
+from app.core.models import Plant, SeverityLevelEnum, Alert, ValueRating, SensorData
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc, select, update
 from typing import List
@@ -52,12 +52,23 @@ def create_plant(user_id: int, plant: Plant, session: ScopedSession):
 	return plant.plant_id
 
 def get_plant_info(plant_id: int, session: ScopedSession):
-	logging.info(f'Getting plant information for plant {plant_id}')
 	plant = session.get(Plant, plant_id)
 
 	if plant is None:
-		raise NotFoundError(f'Could not find plant with id: {plant_id}')
+		raise NotFoundError(f'Could not find plant with ID: {plant_id}')
 
+	sensor_query = select(SensorData).where(SensorData.plant_id == plant_id).order_by(SensorData.time.desc()).limit(1) # type: ignore
+
+	try: 
+		value: SensorData | None = session.execute(sensor_query).scalar_one_or_none()
+	except exc.DatabaseError as e:
+		logging.error('Failed to create plant')
+		logging.exception(e)
+		raise e
+
+	plant.sensor_data = value
+	get_plant_target_value_ratings(plant)
+	
 	return plant
 
 def edit_plant_info(plant_id: int, plant_update: dict, session: ScopedSession):
@@ -90,71 +101,36 @@ def delete_plant(plant_id: int, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
-# def get_plant_sensor_data(plant_id: int, start_date: string, end_date: string, session: ScopedSession):
-# 	pass
-
-# def get_plant_target_value_ratings(plant: Plant):
-# 	# TODO: make this right
-# 	if (plant.plant_type.maximum_temperature != None or plant.plant_type.minimum_temperature != None):
-# 		#insert moks logic
-# 		temp = 20 #replace hard coded value with actual
-# 		soil = 20
-# 		light = 20
-# 		humidity = 20
-
-# 		plant.target_value_ratings['temparture'] = check_rating(temp, plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
-# 		plant.target_value_ratings['soil_humidity'] = check_rating(soil, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
-# 		plant.target_value_ratings['light'] = check_rating(light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
-# 		plant.target_value_ratings['humidity'] = check_rating(humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
-
-# def get_rating(val, min_value, max_value):
-# 	match val:
-# 		case n if n > min_value and n < max_value:
-# 			return 3
-# 		case n if n > max_value:
-# 			return 5
-# 		case n if n > min_value:
-# 			return 0
-
-def get_rating(plant: Plant, field: str):
-	# match val:
-	# 	case n if n > min_value and n < max_value:
-	# 		return 3
-	# 	case n if n > max_value:
-	# 		return 5
-	# 	case n if n > min_value:
-	# 		return 0
+def get_plant_sensor_data(plant_id: int, start_date: str, end_date: str, session: ScopedSession):
 	pass
 
+def get_last_plant_sensor_data(plant: Plant, plant_id: int, session: ScopedSession):
+	query = select(SensorData).where(SensorData.plant_id == plant_id)
+	query = query.limit(1)
 
-# def update_plant_target_value_ratings(plant: Plant):
-# 	for field in plant.target_value_scores:
-# 		plant.target_value_scores[field] = get_rating()
-# def get_plant_sensor_data(plant_id: int, start_date: string, end_date: string, session: ScopedSession):
-# 	pass
+	try:
+		value = session.execute(query).scalar_one()
+		print(value)
+	except exc.DatabaseError as e:
+		logging.error('Failed to execute query')
+		logging.exception(e)
+		return None
 
-# def get_plant_target_value_ratings(plant: Plant):
-# 	# TODO: make this right
-# 	# if (plant.plant_type.maximum_temperature != None or plant.plant_type.minimum_temperature != None):
-# 		#insert moks logic
-# 	temp = 15 #replace hard coded value with actual
-# 	soil = .2
-# 	light = 200
-# 	humidity = .4
+	logging.info(f'Latest value: {value}')
+
+	return value
 
 def get_plant_target_value_ratings(plant: Plant):
 	# TODO: make this right
 	# if (plant.plant_type.maximum_temperature != None or plant.plant_type.minimum_temperature != None):
 		#insert moks logic
-	temp = 15 #replace hard coded value with actual
-	soil = .2
-	light = 200
-	humidity = .4
-
-	plant.target_value_ratings['temperature'] = check_rating(temp, plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
-	plant.target_value_ratings['soil_moisture'] = check_rating(soil, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
-	plant.target_value_ratings['light'] = check_rating(light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
-	plant.target_value_ratings['humidity'] = check_rating(humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
+	if plant.plant_type is None or plant.sensor_data is None:
+		return
+		
+	plant.target_value_ratings['temperature'] = check_rating(plant.sensor_data.temperature, plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
+	plant.target_value_ratings['soil_moisture'] = check_rating(plant.sensor_data.soil_moisture, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
+	plant.target_value_ratings['light'] = check_rating(plant.sensor_data.light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
+	plant.target_value_ratings['humidity'] = check_rating(plant.sensor_data.humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
 
 def check_rating(val, min_value, max_value):
 	#If its is below the min value, return 1 and above max value, return 5

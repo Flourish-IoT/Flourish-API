@@ -27,7 +27,7 @@ def get_user(user_id: int, session: ScopedSession):
 
 	return user
 
-def create_user(email: str, name:str, password: str, session: ScopedSession):
+def create_user(email, username, password, session: ScopedSession):
 	"""Creates a new user
 
 	Args:
@@ -44,7 +44,7 @@ def create_user(email: str, name:str, password: str, session: ScopedSession):
 
 	code = verification.verify_code()
 
-	user = User(email=email, password_hash=authentication.hash_password(password), username=name, verification_code=code)
+	user = User(email=email, password_hash=authentication.hash_password(password), username=username, verification_code=code)
 
 	emailer.send_email(code, "Verification Code for Flourish", email)
 
@@ -59,7 +59,7 @@ def create_user(email: str, name:str, password: str, session: ScopedSession):
 	return user.user_id
 
 
-def login(email: str, password: str, session: ScopedSession) -> int | None :
+def login(email: str, password: str, session: ScopedSession) -> str | None :
 	"""
 	Args:
 			email (str): registered user's email ID

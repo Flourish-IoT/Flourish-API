@@ -17,8 +17,9 @@ class UserSchema(CamelCaseSchema):
         return User(**data)
 
 class NewUserSchema(DisablePostLoadMixin, UserSchema):
-    class Meta:
-        fields = ('email', 'username', 'password')
+		password = fields.Str()
+		class Meta:
+			fields = ('email', 'username', 'password')
 
 class UserUpdateSchema(DisablePostLoadMixin, UserSchema):
     class Meta:

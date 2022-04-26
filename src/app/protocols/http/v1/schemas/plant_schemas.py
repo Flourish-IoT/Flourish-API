@@ -1,10 +1,11 @@
 from typing_extensions import Required
 from marshmallow import Schema, fields, validate, post_load
 from marshmallow_enum import EnumField
-from app.core.models import Plant
+from app.core.models import Plant, sensor_data
 from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
 from app.protocols.http.v1.schemas.plant_type_schemas import PlantTypeSchema
 from app.protocols.http.v1.schemas.target_value_schemas import TargetValueSchema
+from app.protocols.http.v1.schemas.sensor_data_schemas import SensorDataSchema
 
 #######################
 # Schemas
@@ -32,9 +33,10 @@ class ListPlantSchema(PlantSchema):
 		fields = ('plant_id','name', 'image', 'target_value_ratings')
 
 class PlantDetailsSchema(PlantSchema):
+	sensor_data = fields.Nested(SensorDataSchema)
 	class Meta:
-		fields = ('plant_id','name', 'image', 'target_value_ratings', 'device_id', 'plant_type_id', 'plant_type')
-
+		fields = ('plant_id','name', 'image', 'target_value_ratings', 'device_id', 'plant_type_id', 'plant_type', 'sensor_data')
+		
 class PlantUpdateSchema(DisablePostLoadMixin, PlantSchema):
 	class Meta:
 		fields = ('plant_id', 'name', 'plant_type_id', 'device_id')

@@ -16,7 +16,7 @@ class TestGenerateAlertAction:
 	# TODO: Add DeviceUpdate event
 	def test_generate_message(self, template, plant, data, expected):
 		"""Test generate_message produces the correct message"""
-		action = GenerateAlertAction(template, SeverityLevelEnum.Info, False)
+		action = GenerateAlertAction(template, SeverityLevelEnum.Info, False, -1)
 		message = action.generate_message(SensorDataEvent(plant=plant, data=data, user_id = 1, session=MagicMock(ScopedSession)))
 		assert message == expected
 

@@ -1,6 +1,5 @@
 from app.core.event_engine.events import Event
-from app.core.event_engine.triggers import AndTrigger
-from app.core.event_engine.triggers import Trigger
+from app.core.event_engine.triggers import AndTrigger, Trigger
 from unittest.mock import MagicMock
 import pytest
 

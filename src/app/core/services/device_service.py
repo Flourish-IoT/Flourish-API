@@ -1,13 +1,11 @@
 import logging
 from typing import List
 from app.core.errors import NotFoundError, ConflictError
-from app.core.event_engine import event_engine
-from app.core.event_engine.events import SensorDataEvent
-from app.core.models import Device, Plant
+import app.core.event_engine as event_engine
+import app.core.event_engine.events as events
+from app.core.models import Device, Plant, DeviceTypeEnum, DeviceStateEnum, SensorData
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc, update, exists
-
-from app.core.models import DeviceTypeEnum, DeviceStateEnum, SensorData
 
 def get_devices(user_id: int, session: ScopedSession, *, device_type: DeviceTypeEnum | None = None, device_state: DeviceTypeEnum | None = None):
 	"""Gets all devices for a user
@@ -178,14 +176,9 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
+	# run event handlers for each plant
 	for plant, sensor_data in zip(plants, sensor_data):
-		event_engine.handle(SensorDataEvent(user_id=plant.user_id, plant=plant, data=sensor_data, session=session))
-
-	# perform checks for each plant and generate alerts
-	# alerts = []
-	# for plant in plants:
-	# 	update_plant_target_value_ratings(plant)
-	# 	alerts.append(generate_alerts(plant))
+		event_engine.handle(events.SensorDataEvent(user_id=plant.user_id, plant=plant, data=sensor_data, session=session))
 
 	# return state
 

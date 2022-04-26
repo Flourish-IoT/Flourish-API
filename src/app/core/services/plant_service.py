@@ -9,6 +9,8 @@ from sqlalchemy import exc, select, update
 from typing import List
 from datetime import datetime
 import logging
+import app.core.event_engine as event_engine
+import app.core.services.event_handler_service as event_handler_service
 
 def get_plants(user_id: int, session: ScopedSession):
 	query = select(Plant).where(Plant.user_id == user_id)
@@ -20,8 +22,8 @@ def get_plants(user_id: int, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
-	for plant in plants:
-		get_plant_target_value_ratings(plant)
+	# for plant in plants:
+	# 	get_plant_target_value_ratings(plant)
 
 	return plants
 
@@ -30,9 +32,20 @@ def create_plant(user_id: int, plant: Plant, session: ScopedSession):
 
 	try:
 		session.add(plant)
-		session.commit()
+		session.flush()
 	except exc.DatabaseError as e:
 		logging.error('Failed to create plant')
+		logging.exception(e)
+		raise e
+
+	event_handlers = event_engine.generate_default_plant_event_handlers()
+
+	try:
+		for event_handler in event_handlers:
+			event_handler_service.create_event_handler(event_handler, session, plant_id=plant.plant_id, auto_commit=False)
+		session.commit()
+	except exc.DatabaseError as e:
+		logging.error('Failed to create plant event handlers')
 		logging.exception(e)
 		raise e
 
@@ -121,7 +134,7 @@ def get_plant_target_value_ratings(plant: Plant):
 
 def check_rating(val, min_value, max_value):
 	#If its is below the min value, return 1 and above max value, return 5
-	#Split the range into 3 and return 2,3,4 appropriately 
+	#Split the range into 3 and return 2,3,4 appropriately
 	range = max_value - min_value
 	rating = val-min_value
 
@@ -129,8 +142,8 @@ def check_rating(val, min_value, max_value):
 		return 1
 	elif (rating >= range):
 		return 5
-	
-	
+
+
 	if(rating <= range/3):
 		return 2
 	elif(rating >= range * 2 / 3):

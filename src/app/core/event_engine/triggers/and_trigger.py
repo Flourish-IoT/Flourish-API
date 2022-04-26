@@ -1,14 +1,34 @@
+from functools import reduce
+import itertools
 import logging
 from typing import List, TypeVar, Generic
+from app.common.schemas import DynamicField
 from app.core.util import Comparable
 from app.core.event_engine.events import Event
-from app.core.event_engine.triggers import Trigger
+from app.core.event_engine.triggers import Trigger, TriggerSchema
 from app.core.event_engine.actions import Action
 
-T = TypeVar('T', bound=Comparable)
+from marshmallow import post_load, fields
 
+#######################
+# Schemas
+#######################
+class AndTriggerSchema(TriggerSchema):
+	triggers = fields.List(DynamicField([Trigger]))
+
+	class Meta():
+		exclude = ['field']
+
+	@post_load
+	def make(self, data, **kwargs):
+		return AndTrigger(**data)
+#######################
+
+T = TypeVar('T', bound=Comparable)
 class AndTrigger(Trigger, Generic[T]):
 	"""Executes if all nested triggers return True"""
+	__schema__ = AndTriggerSchema
+
 	def __init__(self, triggers: List[Trigger[T]], actions: List[Action] = []) -> None:
 		"""
 		Args:
@@ -29,3 +49,7 @@ class AndTrigger(Trigger, Generic[T]):
 		self.execute_actions(event)
 
 		return True
+
+	def get_actions(self) -> List[Action]:
+		# get actions from sub triggers and flatten it
+		return [*self.actions, *itertools.chain.from_iterable([trigger.get_actions() for trigger in self.triggers]) ]

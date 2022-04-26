@@ -25,6 +25,6 @@ class TestEventHandler:
 		"""Ensure can_handle returns the proper response"""
 		mock_field = MagicMock(Field)
 		handler = ConcreteEventHandler(mock_field, [])
-		handler.events = handled_events
+		handler.supported_events = handled_events
 
 		assert handler.can_handle(event) == expected

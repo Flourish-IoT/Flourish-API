@@ -4,7 +4,7 @@ from marshmallow_enum import EnumField
 from app.core.models import Plant, sensor_data
 from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
 from app.protocols.http.v1.schemas.plant_type_schemas import PlantTypeSchema
-from app.protocols.http.v1.schemas.target_value_schemas import TargetValueSchema
+from app.protocols.http.v1.schemas.gauge_ratings_schemas import GaugeRatingsSchema
 from app.protocols.http.v1.schemas.sensor_data_schemas import SensorDataSchema
 
 #######################
@@ -18,7 +18,7 @@ class PlantSchema(CamelCaseSchema):
 	name = fields.Str()
 	image = fields.Str()
 	plant_type = fields.Nested(PlantTypeSchema)
-	target_value_ratings = fields.Nested(TargetValueSchema)
+	gauge_ratings = fields.Nested(GaugeRatingsSchema)
 
 	@post_load
 	def make(self, data, **kwargs):
@@ -31,12 +31,12 @@ class NewPlantSchema(PlantSchema):
 class ListPlantSchema(PlantSchema):
 	sensor_data = fields.Nested(SensorDataSchema)
 	class Meta:
-		fields = ('plant_id','name', 'image', 'target_value_ratings', 'sensor_data')
+		fields = ('plant_id','name', 'image', 'gauge_ratings', 'sensor_data')
 
 class PlantDetailsSchema(PlantSchema):
 	sensor_data = fields.Nested(SensorDataSchema)
 	class Meta:
-		fields = ('plant_id','name', 'image', 'target_value_ratings', 'device_id', 'plant_type_id', 'plant_type', 'sensor_data')
+		fields = ('plant_id','name', 'image', 'gauge_ratings', 'device_id', 'plant_type_id', 'plant_type', 'sensor_data')
 		
 class PlantUpdateSchema(DisablePostLoadMixin, PlantSchema):
 	class Meta:

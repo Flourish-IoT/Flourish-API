@@ -22,8 +22,21 @@ def get_plants(user_id: int, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
-	# for plant in plants:
-	# 	get_plant_target_value_ratings(plant)
+	for plant in plants:
+		if plant is None:
+			raise NotFoundError(f'Could not find plant with ID: {plant.plant_id}')
+
+		sensor_query = select(SensorData).where(SensorData.plant_id == plant.plant_id).order_by(SensorData.time.desc()).limit(1) # type: ignore
+
+		try: 
+			value: SensorData | None = session.execute(sensor_query).scalar_one_or_none()
+		except exc.DatabaseError as e:
+			logging.error('Failed to create plant')
+			logging.exception(e)
+			raise e
+
+		plant.sensor_data = value
+		get_plant_gauge_ratings(plant)
 
 	return plants
 
@@ -67,7 +80,7 @@ def get_plant_info(plant_id: int, session: ScopedSession):
 		raise e
 
 	plant.sensor_data = value
-	get_plant_target_value_ratings(plant)
+	get_plant_gauge_ratings(plant)
 	
 	return plant
 
@@ -120,17 +133,17 @@ def get_last_plant_sensor_data(plant: Plant, plant_id: int, session: ScopedSessi
 
 	return value
 
-def get_plant_target_value_ratings(plant: Plant):
+def get_plant_gauge_ratings(plant: Plant):
 	# TODO: make this right
 	# if (plant.plant_type.maximum_temperature != None or plant.plant_type.minimum_temperature != None):
 		#insert moks logic
 	if plant.plant_type is None or plant.sensor_data is None:
 		return
 		
-	plant.target_value_ratings['temperature'] = check_rating(plant.sensor_data.temperature, plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
-	plant.target_value_ratings['soil_moisture'] = check_rating(plant.sensor_data.soil_moisture, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
-	plant.target_value_ratings['light'] = check_rating(plant.sensor_data.light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
-	plant.target_value_ratings['humidity'] = check_rating(plant.sensor_data.humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
+	plant.gauge_ratings['temperature'] = check_rating(plant.sensor_data.temperature, plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
+	plant.gauge_ratings['soil_moisture'] = check_rating(plant.sensor_data.soil_moisture, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
+	plant.gauge_ratings['light'] = check_rating(plant.sensor_data.light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
+	plant.gauge_ratings['humidity'] = check_rating(plant.sensor_data.humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
 
 def check_rating(val, min_value, max_value):
 	#If its is below the min value, return 1 and above max value, return 5

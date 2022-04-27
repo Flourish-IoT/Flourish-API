@@ -29,8 +29,9 @@ class NewPlantSchema(PlantSchema):
 		fields = ('plant_type_id', 'name', 'image', 'device_id')
 
 class ListPlantSchema(PlantSchema):
+	sensor_data = fields.Nested(SensorDataSchema)
 	class Meta:
-		fields = ('plant_id','name', 'image', 'target_value_ratings')
+		fields = ('plant_id','name', 'image', 'target_value_ratings', 'sensor_data')
 
 class PlantDetailsSchema(PlantSchema):
 	sensor_data = fields.Nested(SensorDataSchema)

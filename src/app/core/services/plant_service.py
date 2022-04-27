@@ -22,8 +22,21 @@ def get_plants(user_id: int, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
-	# for plant in plants:
-	# 	get_plant_target_value_ratings(plant)
+	for plant in plants:
+		if plant is None:
+			raise NotFoundError(f'Could not find plant with ID: {plant.plant_id}')
+
+		sensor_query = select(SensorData).where(SensorData.plant_id == plant.plant_id).order_by(SensorData.time.desc()).limit(1) # type: ignore
+
+		try: 
+			value: SensorData | None = session.execute(sensor_query).scalar_one_or_none()
+		except exc.DatabaseError as e:
+			logging.error('Failed to create plant')
+			logging.exception(e)
+			raise e
+
+		plant.sensor_data = value
+		get_plant_target_value_ratings(plant)
 
 	return plants
 

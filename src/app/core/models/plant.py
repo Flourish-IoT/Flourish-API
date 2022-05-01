@@ -10,10 +10,6 @@ from .gauge_rating import *
 class Plant(BaseModel):
 	__tablename__ = 'plants'
 
-	# def __init__(self, *args, **kwargs) -> None:
-	# 	super().__init__(*args, **kwargs)
-	# 	self.gauge_ratings = {'temperature': None , 'light': None, 'humidity': None, 'soil_moisture': None}
-
 	plant_id = cast(int, Column(
 		Integer,
 		primary_key = True

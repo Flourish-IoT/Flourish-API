@@ -36,7 +36,7 @@ def get_plants(user_id: int, session: ScopedSession):
 			raise e
 
 		plant.sensor_data = value
-		get_plant_gauge_ratings(plant)
+		# get_plant_gauge_ratings(plant)
 
 	return plants
 
@@ -137,13 +137,13 @@ def get_plant_gauge_ratings(plant: Plant):
 	# TODO: make this right
 	# if (plant.plant_type.maximum_temperature != None or plant.plant_type.minimum_temperature != None):
 		#insert moks logic
-	if plant.plant_type is None or plant.sensor_data is None:
+	if plant.plant_type is None or plant.sensor_data is None or plant.gauge_ratings is None:
 		return
 		
-	plant.gauge_ratings['temperature'] = check_rating(plant.sensor_data.temperature, plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
-	plant.gauge_ratings['soil_moisture'] = check_rating(plant.sensor_data.soil_moisture, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
-	plant.gauge_ratings['light'] = check_rating(plant.sensor_data.light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
-	plant.gauge_ratings['humidity'] = check_rating(plant.sensor_data.humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
+	plant.gauge_ratings.temperature = check_rating(plant.sensor_data.temperature, plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
+	plant.gauge_ratings.soil_moisture = check_rating(plant.sensor_data.soil_moisture, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
+	plant.gauge_ratings.light = check_rating(plant.sensor_data.light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
+	plant.gauge_ratings.humidity = check_rating(plant.sensor_data.humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
 
 def check_rating(val, min_value, max_value):
 	#If its is below the min value, return 1 and above max value, return 5

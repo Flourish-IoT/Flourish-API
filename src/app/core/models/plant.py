@@ -5,9 +5,14 @@ from sqlalchemy.dialects.postgresql import INET
 from sqlalchemy.orm import relationship
 from .plant_type import *
 from .sensor_data import *
+from .gauge_rating import *
 
 class Plant(BaseModel):
 	__tablename__ = 'plants'
+
+	# def __init__(self, *args, **kwargs) -> None:
+	# 	super().__init__(*args, **kwargs)
+	# 	self.gauge_ratings = {'temperature': None , 'light': None, 'humidity': None, 'soil_moisture': None}
 
 	plant_id = cast(int, Column(
 		Integer,
@@ -31,6 +36,8 @@ class Plant(BaseModel):
 	))
 
 	plant_type = cast(PlantType | None, relationship("PlantType", uselist=False))
+
+	gauge_ratings = cast(GaugeRating | None , relationship("GaugeRating", cascade='all, delete-orphan', uselist=False) )
 
 	name = cast(str, Column(
 		String,
@@ -71,7 +78,9 @@ class Plant(BaseModel):
 	# 		InRangeRule(self.plant_type.minimum_humidity, self.plant_type.maximum_humidity, "Humidity"),
 	# 		InRangeRule(self.plant_type.minimum_soil_moisture, self.plant_type.maximum_soil_moisture, "Soil Moisture"),
 	# 	]
-	gauge_ratings: Dict[str, int | None] = {'temperature': None , 'light': None, 'humidity': None, 'soil_moisture': None}
+	
+	# gauge_ratings: Dict[str, int | None] 
+	# gauge_ratings: GaugeRating | None
 
 	sensor_data: SensorData | None
 

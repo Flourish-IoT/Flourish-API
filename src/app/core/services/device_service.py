@@ -3,7 +3,7 @@ from typing import List
 from app.core.errors import NotFoundError, ConflictError
 import app.core.event_engine as event_engine
 import app.core.event_engine.events as events
-from app.core.models import Device, Plant, DeviceTypeEnum, DeviceStateEnum, SensorData
+from app.core.models import Device, Plant, DeviceTypeEnum, DeviceStateEnum, SensorData, GaugeRating
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import select, exc, update, exists
 
@@ -168,8 +168,15 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 	# record values in table for each plant
 	sensor_data = [data.with_value(SensorData.plant_id, plant.plant_id) for plant in plants]
 
+	for plant in plants:
+		if plant.gauge_ratings is None:
+			plant.gauge_ratings = GaugeRating()
+		get_plant_gauge_ratings(plant, data)
+	
+
 	try:
 		session.bulk_save_objects(sensor_data)
+		session.add_all(plants)
 		session.commit()
 	except exc.DatabaseError as e:
 		logging.error('Failed to insert data')
@@ -191,3 +198,34 @@ def device_exists(device_id: int, session: ScopedSession) -> bool:
 		bool: Represents whether device exists
 	"""
 	return session.query(exists(Device).where(Device.device_id == device_id)).scalar()
+
+def get_plant_gauge_ratings(plant: Plant, sensor_data: SensorData):
+	# TODO: make this right
+	# if (plant.plant_type.maximum_temperature != None or plant.plant_type.minimum_temperature != None):
+		#insert moks logic
+	if plant.plant_type is None or sensor_data is None or plant.gauge_ratings is None:
+		return
+		
+	plant.gauge_ratings.temperature = check_rating(sensor_data.temperature , plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
+	plant.gauge_ratings.soil_moisture = check_rating(sensor_data.soil_moisture, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
+	plant.gauge_ratings.light = check_rating(sensor_data.light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
+	plant.gauge_ratings.humidity = check_rating(sensor_data.humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
+
+def check_rating(val, min_value, max_value):
+	#If its is below the min value, return 1 and above max value, return 5
+	#Split the range into 3 and return 2,3,4 appropriately
+	range = max_value - min_value
+	rating = val-min_value
+
+	if (rating <= 0):
+		return 1
+	elif (rating >= range):
+		return 5
+
+
+	if(rating <= range/3):
+		return 2
+	elif(rating >= range * 2 / 3):
+		return 4
+	else:
+		return 3

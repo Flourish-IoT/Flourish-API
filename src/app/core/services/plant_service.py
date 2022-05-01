@@ -36,7 +36,6 @@ def get_plants(user_id: int, session: ScopedSession):
 			raise e
 
 		plant.sensor_data = value
-		# get_plant_gauge_ratings(plant)
 
 	return plants
 
@@ -80,7 +79,6 @@ def get_plant_info(plant_id: int, session: ScopedSession):
 		raise e
 
 	plant.sensor_data = value
-	get_plant_gauge_ratings(plant)
 	
 	return plant
 
@@ -132,38 +130,3 @@ def get_last_plant_sensor_data(plant: Plant, plant_id: int, session: ScopedSessi
 	logging.info(f'Latest value: {value}')
 
 	return value
-
-def get_plant_gauge_ratings(plant: Plant):
-	# TODO: make this right
-	# if (plant.plant_type.maximum_temperature != None or plant.plant_type.minimum_temperature != None):
-		#insert moks logic
-	if plant.plant_type is None or plant.sensor_data is None or plant.gauge_ratings is None:
-		return
-		
-	plant.gauge_ratings.temperature = check_rating(plant.sensor_data.temperature, plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
-	plant.gauge_ratings.soil_moisture = check_rating(plant.sensor_data.soil_moisture, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
-	plant.gauge_ratings.light = check_rating(plant.sensor_data.light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
-	plant.gauge_ratings.humidity = check_rating(plant.sensor_data.humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
-
-def check_rating(val, min_value, max_value):
-	#If its is below the min value, return 1 and above max value, return 5
-	#Split the range into 3 and return 2,3,4 appropriately
-	range = max_value - min_value
-	rating = val-min_value
-
-	if (rating <= 0):
-		return 1
-	elif (rating >= range):
-		return 5
-
-
-	if(rating <= range/3):
-		return 2
-	elif(rating >= range * 2 / 3):
-		return 4
-	else:
-		return 3
-
-
-
-

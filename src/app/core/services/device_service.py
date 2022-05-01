@@ -200,9 +200,6 @@ def device_exists(device_id: int, session: ScopedSession) -> bool:
 	return session.query(exists(Device).where(Device.device_id == device_id)).scalar()
 
 def get_plant_gauge_ratings(plant: Plant, sensor_data: SensorData):
-	# TODO: make this right
-	# if (plant.plant_type.maximum_temperature != None or plant.plant_type.minimum_temperature != None):
-		#insert moks logic
 	if plant.plant_type is None or sensor_data is None or plant.gauge_ratings is None:
 		return
 		

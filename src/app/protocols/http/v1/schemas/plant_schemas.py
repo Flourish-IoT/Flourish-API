@@ -31,13 +31,13 @@ class NewPlantSchema(PlantSchema):
 class ListPlantSchema(PlantSchema):
 	sensor_data = fields.Nested(SensorDataSchema)
 	class Meta:
-		fields = ('plant_id','name', 'image', 'gauge_ratings', 'sensor_data')
+		fields = ('plant_id','name', 'image', 'gauge_ratings', 'sensor_data', 'device_id')
 
 class PlantDetailsSchema(PlantSchema):
 	sensor_data = fields.Nested(SensorDataSchema)
 	class Meta:
 		fields = ('plant_id','name', 'image', 'gauge_ratings', 'device_id', 'plant_type_id', 'plant_type', 'sensor_data')
-		
+
 class PlantUpdateSchema(DisablePostLoadMixin, PlantSchema):
 	class Meta:
 		fields = ('plant_id', 'name', 'plant_type_id', 'device_id')

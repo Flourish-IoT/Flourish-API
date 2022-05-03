@@ -3,7 +3,7 @@ from marshmallow import Schema, fields, validate, post_load
 from marshmallow_enum import EnumField
 from app.core.models import Plant, sensor_data
 from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
-from app.protocols.http.v1.schemas.plant_type_schemas import PlantTypeSchema
+from app.protocols.http.v1.schemas.plant_type_schemas import PlantTypeSchema, PlantTypeSummarySchema
 from app.protocols.http.v1.schemas.gauge_ratings_schemas import GaugeRatingsSchema
 from app.protocols.http.v1.schemas.sensor_data_schemas import SensorDataSchema
 
@@ -30,8 +30,9 @@ class NewPlantSchema(PlantSchema):
 
 class ListPlantSchema(PlantSchema):
 	sensor_data = fields.Nested(SensorDataSchema)
+	plant_type = fields.Nested(PlantTypeSummarySchema)
 	class Meta:
-		fields = ('plant_id','name', 'image', 'gauge_ratings', 'sensor_data', 'device_id')
+		fields = ('plant_id','name', 'image', 'gauge_ratings', 'sensor_data', 'device_id', 'plant_type')
 
 class PlantDetailsSchema(PlantSchema):
 	sensor_data = fields.Nested(SensorDataSchema)

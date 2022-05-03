@@ -11,7 +11,10 @@ class SensorDataSchema(CamelCaseSchema):
 	humidity = fields.Float()
 	soil_moisture = fields.Float()
 	light = fields.Integer()
+	additional = fields.Dict()
 
 	@post_load
 	def make(self, data, **kwargs):
+		# TODO: implement additional
+		data.pop('additional')
 		return SensorData(**data)

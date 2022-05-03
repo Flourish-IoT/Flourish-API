@@ -153,7 +153,7 @@ class UserDevices(Resource):
 			raise InternalServerError
 
 		# TODO: return auth token for device
-		return None, 201, {'Location': url_for('v1.devices_device', device_id=device_id)}
+		return None, 201, {'Location': url_for('v1.devices_device_resource', device_id=device_id)}
 
 @api.route('/<int:user_id>/alerts')
 class UserAlerts(Resource):

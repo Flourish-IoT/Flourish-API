@@ -44,7 +44,9 @@ def create_user(email, username, password, session: ScopedSession):
 
 	code = verification.verify_code()
 
-	user = User(email=email, password_hash=authentication.hash_password(password), username=username, verification_code=code)
+# unicode string (password) has to be encoded before hash 
+	user = User(email=email, password_hash=authentication.hash_password(password.encode('utf-8')
+), username=username, verification_code=code)
 
 	emailer.send_email(code, "Verification Code for Flourish", email)
 

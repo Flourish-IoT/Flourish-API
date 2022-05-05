@@ -33,25 +33,38 @@ def verify_token(token: bytes):
 #     """
 #     return decode(token, KEY)
 
-def create_jwt(username):
+def belongs_to_user(request, user_id: int):
+
+    token = request.headers['Authorization'].split(' ')[1]
     
-    encoded_jwt = jwt.encode({"user": username, "expiryTime": datetime.now() + timedelta(days=3)}, KEY, algorithm="HS256")
+    decoded = decode_jwt(token)
+
+    return decoded['userId'] == user_id
+
+def create_jwt(username, userId):
+    
+    encoded_jwt = jwt.encode({"user": username, "userId": userId, "expiryTime": str(datetime.now() + timedelta(days=3))}, KEY, algorithm="HS256")
 
     print(encoded_jwt)
 
     return encoded_jwt
 
 
+def decode_jwt(enc_jwt):
+    return jwt.decode(enc_jwt, KEY, algorithms=["HS256"])
+
 def check_jwt_valid(enc_jwt):
 
     decoded_jwt = jwt.decode(enc_jwt, KEY, algorithms=["HS256"])
 
-    print(decoded_jwt)
+    #print(decoded_jwt)
 
-    if decoded_jwt.expiryTime == None or decoded_jwt.user == None:
+    if decoded_jwt['expiryTime'] == None or decoded_jwt['user'] == None:
         return False
 
-    if decoded_jwt.expiryTime > datetime.timenow():
+    format = "%Y-%m-%d %H:%M:%S.%f"
+
+    if datetime.strptime(decoded_jwt['expiryTime'], format) < datetime.now():
         return False
 
     return True
@@ -66,7 +79,7 @@ def hash_password(unhashed_password: str) -> str:
     """
     Transforms a plain-text password string into a hashed one
     """
-    return hashpw(unhashed_password, gensalt())
+    return hashpw(unhashed_password, gensalt()).decode('utf-8')
 
 def check_password(password: str, hashed_password: str) -> bool:
     """

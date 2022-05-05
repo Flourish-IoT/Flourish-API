@@ -48,7 +48,7 @@ def create_user(email, username, password, session: ScopedSession):
 	user = User(email=email, password_hash=authentication.hash_password(password.encode('utf-8')
 ), username=username, verification_code=code)
 
-	emailer.send_email(code, "Verification Code for Flourish", email)
+	#emailer.send_email(code, "Verification Code for Flourish", email)
 
 	try:
 		session.add(user)
@@ -67,20 +67,17 @@ def login(email: str, password: str, session: ScopedSession) -> str | None :
 			email (str): registered user's email ID
 			password (str): registered user's password
 	"""
-	query = select(User).where(User.email == email)
+	#query = select(User).where(User.email == email).execute()
+	
 	# user = session.query(exists(User).where(User.email == email)
 
-	jwt = {
-		'userId': 'test',
-		'expiresIn': 'Test'
-	}
-
 	try:
-		user: User | None = session.execute(query).scalars().one_or_none()
+		#user: User | None = session.execute(user).scalars().one_or_none()
+		user: User | None = session.query(User).filter(User.email == email).one_or_none()
 		if user is not None:
-			if authentication.check_password(password, user.password_hash):
+			if authentication.check_password(password.encode('utf-8'), user.password_hash.encode('utf-8')):
 				# Generate JWT
-				return authentication.create_jwt(user.username)
+				return authentication.create_jwt(user.username, user.user_id)
 				#return None
 				#return user.user_id
 		return None

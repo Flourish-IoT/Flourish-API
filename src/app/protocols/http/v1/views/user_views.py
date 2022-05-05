@@ -11,7 +11,7 @@ from app.protocols.http.v1.schemas import UserSchema, NewUserSchema, NewDeviceSc
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
-from app.protocols.http.utils.authentication import authenticator
+from app.protocols.http.utils.authentication import authenticator, belongs_to_user
 
 api = Namespace('users', description='User related operations', path='/users')
 
@@ -46,14 +46,14 @@ class UserLogin(Resource):
 	@serialize_with(LoginSchema)
 	def post(self, body: dict):
 		try:
-			login(body['email'], body['password'], db.session)
+			jwt = login(body['email'], body['password'], db.session)
 		except ForbiddenError as e:
 			raise Forbidden(str(e))
 		except NotFoundError as e:
 			raise NotFound(str(e))
 		except Exception as e:
 			raise InternalServerError
-		return None, 204
+		return jwt, 200
 
 @api.route('/<int:user_id>/plants')
 class UserPlants(Resource):
@@ -61,7 +61,10 @@ class UserPlants(Resource):
 	@marshal_list_with(ListPlantSchema)
 	def get(self, user_id: int):
 		try:
-			plants = get_plants(user_id, db.session)
+			if belongs_to_user(request, user_id):
+				plants = get_plants(user_id, db.session)
+			else:
+				plants = None, 401, {}
 		except Exception as e:
 			logging.error('failed to get plants')
 			logging.exception(e)

@@ -14,7 +14,7 @@ class SensorDataSchema(CamelCaseSchema):
 	additional = fields.Dict()
 
 	@post_load
-	def make(self, data, **kwargs):
+	def make(self, data: dict, **kwargs):
 		# TODO: implement additional
-		data.pop('additional')
+		data.pop('additional', None)
 		return SensorData(**data)

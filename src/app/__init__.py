@@ -1,6 +1,7 @@
 from enum import Enum
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 class Environment(Enum):
 	test = 'test', 'config.TestConfig'
@@ -27,6 +28,7 @@ def create_rest_app(env: Environment = Environment.local) -> Flask:
 	"""
 	print(f'Creating application with environment "{env.env}", config: "{env.config}"')
 	app = Flask(__name__, instance_relative_config=False)
+	CORS(app)
 	app.config.from_object(env.config)
 
 	db.init_app(app)

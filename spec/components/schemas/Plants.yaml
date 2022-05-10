@@ -9,11 +9,14 @@ Plant:
     image:
       type: string
       description: URL of the picture associated with the plant
-    targetValueRatings:
+    gaugeRatings:
       $ref: './index.yaml#/TargetValues'
     activeAlerts:
       type: boolean
       description: Whether or not plant has an active alert associated with it
+    deviceId:
+      type: integer
+      description: ID of the device associated with the plant
 
 Plants:
   type: array
@@ -26,9 +29,6 @@ PlantDetail:
     - $ref: "#/Plant"
     - type: object
       properties:
-        deviceId:
-          type: integer
-          description: ID of the device associated with the plant
         plantTypeId:
           type: integer
           description: ID of the plant type associated with the plant

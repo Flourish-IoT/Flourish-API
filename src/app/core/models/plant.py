@@ -5,6 +5,7 @@ from sqlalchemy.dialects.postgresql import INET
 from sqlalchemy.orm import relationship
 from .plant_type import *
 from .sensor_data import *
+from .gauge_rating import *
 
 class Plant(BaseModel):
 	__tablename__ = 'plants'
@@ -31,6 +32,8 @@ class Plant(BaseModel):
 	))
 
 	plant_type = cast(PlantType | None, relationship("PlantType", uselist=False))
+
+	gauge_ratings = cast(GaugeRating | None , relationship("GaugeRating", cascade='all, delete-orphan', uselist=False) )
 
 	name = cast(str, Column(
 		String,
@@ -59,19 +62,6 @@ class Plant(BaseModel):
 			case _:
 				raise ValueError(f'No default score function for field {field}')
 		pass
-
-	# def get_rules(self) -> List[BaseRule]:
-	# 	# cant generate rules if we don't know why kind of plant it is
-	# 	if self.plant_type is None:
-	# 		return []
-
-	# 	return [
-	# 		InRangeRule(self.plant_type.minimum_light, self.plant_type.maximum_light, "Light"),
-	# 		InRangeRule(self.plant_type.minimum_temperature, self.plant_type.maximum_temperature, "Temperature"),
-	# 		InRangeRule(self.plant_type.minimum_humidity, self.plant_type.maximum_humidity, "Humidity"),
-	# 		InRangeRule(self.plant_type.minimum_soil_moisture, self.plant_type.maximum_soil_moisture, "Soil Moisture"),
-	# 	]
-	target_value_ratings: Dict[str, int | None] = {'temperature': None , 'light': None, 'humidity': None, 'soil_moisture': None}
 
 	sensor_data: SensorData | None
 

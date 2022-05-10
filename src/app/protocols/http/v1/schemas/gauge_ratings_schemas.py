@@ -4,7 +4,7 @@ from app.protocols.http.utils import CamelCaseSchema
 #######################
 # Schemas
 #######################
-class TargetValueSchema(CamelCaseSchema):
+class GaugeRatingsSchema(CamelCaseSchema):
 	light = fields.Int()
 	temperature = fields.Int()
 	humidity = fields.Int()

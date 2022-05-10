@@ -24,3 +24,8 @@ class PlantTypeSchema(CamelCaseSchema):
 	def make(self, data, **kwargs):
 		return PlantType(**data)
 
+class PlantTypeSummarySchema(PlantTypeSchema):
+	class Meta:
+		fields = ('plant_type_id', 'scientific_name',)
+
+

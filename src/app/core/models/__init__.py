@@ -11,6 +11,7 @@ from .value_rating import ValueRating
 from .base_model import BaseModel
 from .temperature_units import TemperatureUnits, TemperatureUnitEnum
 from .user_preferences import UserPreferences
+from .gauge_rating import GaugeRating
 
 from .int_enum_field import IntEnumField
 

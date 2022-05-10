@@ -35,12 +35,12 @@ class Plant(BaseModel):
 
 	gauge_rating = cast(GaugeRating | None , relationship("GaugeRating", cascade='all, delete-orphan', uselist=False) )
 
-	name = cast(str, Column(
+	name = cast(str | None, Column(
 		String,
 		nullable=True
 	))
 
-	image = cast(str, Column(
+	image = cast(str | None, Column(
 		String,
 		nullable=True
 	))

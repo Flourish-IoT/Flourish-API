@@ -1,13 +1,21 @@
 from typing import Any
 from sqlalchemy import Column
 from sqlalchemy.orm import registry
+from sqlalchemy import MetaData
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 from copy import deepcopy
 from app.common.schemas import SerializableType
 
 from app.core.util import PrettyPrint
 
-mapper_registry = registry()
+meta = MetaData(naming_convention={
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s"
+})
+mapper_registry = registry(metadata=meta)
 
 class BaseModel(PrettyPrint, SerializableType, metaclass=DeclarativeMeta):
     __abstract__ = True

@@ -1,11 +1,16 @@
 from datetime import datetime
-from typing import cast, Protocol
+from typing import cast
 from .base_model import BaseModel
-from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Float, event, DDL
+from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Float
 from app.core.util import With
 
 class SensorData(BaseModel, With):
 	__tablename__ = 'sensor_data'
+
+	sensor_data_id = cast(int, Column(
+		Integer,
+		primary_key = True
+	))
 
 	plant_id = cast(int, Column(
 		Integer,
@@ -37,6 +42,3 @@ class SensorData(BaseModel, With):
 		Integer,
 		nullable=True
 	))
-
-# turn table into hypertable
-event.listen(SensorData, 'after_create', DDL(f"SELECT create_hypertable('{SensorData.__tablename__}', 'time')"))

@@ -28,5 +28,5 @@ class UserPreferences(BaseModel):
 
 	confidence_rating = cast(int, Column(
 		Integer,
-		CheckConstraint('confidence_rating BETWEEN 1 and 3')
+		CheckConstraint('confidence_rating BETWEEN 1 and 3', name='confidence_range')
 	))

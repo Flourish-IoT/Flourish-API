@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import cast
 from .base_model import BaseModel
-from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey
+from . import UserPreferences
+from sqlalchemy import Column, Integer, String, TIMESTAMP, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 class User(BaseModel):
@@ -13,7 +14,8 @@ class User(BaseModel):
 	))
 
 	email = cast(str, Column(
-		String()
+		String(),
+		UniqueConstraint()
 	))
 
 	username = cast(str, Column(
@@ -40,4 +42,4 @@ class User(BaseModel):
 		TIMESTAMP
 	))
 
-	preferences = relationship("UserPreferences", uselist=False, backref='users')
+	preferences = cast(UserPreferences, relationship("UserPreferences", uselist=False, cascade='all', backref='users'))

@@ -15,7 +15,7 @@ class GaugeRating(BaseModel, With):
 
 	plant_id = cast(int, Column(
 		Integer,
-		ForeignKey('plants.plant_id')
+		ForeignKey('plants.plant_id', ondelete='CASCADE')
 	))
 
 	temperature = cast(float, Column(

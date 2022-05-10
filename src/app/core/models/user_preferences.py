@@ -2,7 +2,7 @@ from typing import cast
 
 from .temperature_units import TemperatureUnitEnum
 from .base_model import BaseModel
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, CheckConstraint, event, DDL
 from sqlalchemy.dialects.postgresql import INET
 from .int_enum_field import IntEnumField
 
@@ -16,7 +16,7 @@ class UserPreferences(BaseModel):
 
 	user_id = cast(int, Column(
 		Integer,
-		ForeignKey('users.user_id'),
+		ForeignKey('users.user_id', ondelete='CASCADE'),
 	))
 
 	temperature_unit = cast(TemperatureUnitEnum, Column(
@@ -27,5 +27,6 @@ class UserPreferences(BaseModel):
 	))
 
 	confidence_rating = cast(int, Column(
-		Integer
+		Integer,
+		CheckConstraint('confidence_rating BETWEEN 1 and 3')
 	))

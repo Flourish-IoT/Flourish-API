@@ -34,21 +34,25 @@ class Device(BaseModel):
 
 	user_id = cast(int, Column(
 		Integer,
-		ForeignKey('users.user_id'),
+		ForeignKey('users.user_id', ondelete='CASCADE'),
+		index=True
 	))
 
 	ip = cast(str, Column(
 		INET,
 		nullable=True
 	))
+
 	api_version = cast(str, Column(
 		String,
 		nullable=True
 	))
+
 	software_version = cast(str, Column(
 		String,
 		nullable=True
 	))
+
 	name = cast(str, Column(
 		String,
 		nullable=True

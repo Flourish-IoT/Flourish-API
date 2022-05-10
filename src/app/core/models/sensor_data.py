@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import cast, Protocol
 from .base_model import BaseModel
-from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Float
-from sqlalchemy.dialects.postgresql import INET
+from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Float, event, DDL
 from app.core.util import With
 
 class SensorData(BaseModel, With):
@@ -10,29 +9,34 @@ class SensorData(BaseModel, With):
 
 	plant_id = cast(int, Column(
 		Integer,
-		primary_key = True
+		ForeignKey('plants.plant_id', ondelete='CASCADE'),
+		index=True
 	))
 
 	time = cast(datetime, Column(
-		TIMESTAMP
+		TIMESTAMP,
+		nullable=False
 	))
 
-	temperature = cast(float, Column(
+	temperature = cast(float | None, Column(
 		Float,
 		nullable=True
 	))
 
-	humidity = cast(float, Column(
+	humidity = cast(float | None, Column(
 		Float,
 		nullable=True
 	))
 
-	soil_moisture = cast(float, Column(
+	soil_moisture = cast(float | None, Column(
 		Float,
 		nullable=True
 	))
 
-	light = cast(int, Column(
+	light = cast(int | None, Column(
 		Integer,
 		nullable=True
 	))
+
+# turn table into hypertable
+event.listen(SensorData, 'after_create', DDL(f"SELECT create_hypertable('{SensorData.__tablename__}', 'time')"))

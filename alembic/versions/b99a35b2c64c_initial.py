@@ -135,12 +135,11 @@ def upgrade():
     sa.Column('soil_moisture', sa.Float(), nullable=True),
     sa.Column('light', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['plant_id'], ['plants.plant_id'], name=op.f('fk_sensor_data_plant_id_plants'), ondelete='CASCADE'),
-    # sa.PrimaryKeyConstraint('plant_id', 'time', name=op.f('pk_sensor_data'))
     )
     op.execute("select create_hypertable('sensor_data', 'time')")
-
     op.create_index(op.f('sensor_data_plant_id_idx'), 'sensor_data', ['plant_id'], unique=False)
-    # op.create_index(op.f('sensor_data_time_idx'), 'sensor_data', ['time'], unique=False)
+
+
     op.create_table('actions',
     sa.Column('action_id', sa.Integer(), sa.Identity(always=True), nullable=False),
     sa.Column('event_handler_id', sa.Integer(), nullable=True),

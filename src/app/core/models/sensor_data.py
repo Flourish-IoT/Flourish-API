@@ -7,21 +7,18 @@ from app.core.util import With
 class SensorData(BaseModel, With):
 	__tablename__ = 'sensor_data'
 
-	sensor_data_id = cast(int, Column(
-		Integer,
-		Identity(True),
-		primary_key = True
-	))
-
 	plant_id = cast(int, Column(
 		Integer,
 		ForeignKey('plants.plant_id', ondelete='CASCADE'),
-		index=True
+		index=True,
+		primary_key=True
 	))
 
 	time = cast(datetime, Column(
 		TIMESTAMP(True),
-		nullable=False
+		nullable=False,
+		primary_key=True,
+		index=True,
 	))
 
 	temperature = cast(float | None, Column(

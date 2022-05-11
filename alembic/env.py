@@ -28,6 +28,11 @@ target_metadata = models.BaseModel.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+# load database URI from cmdline param
+database_uri = context.get_x_argument(as_dictionary=True).get('database_uri', None)
+if database_uri is not None:
+    config.set_main_option('sqlalchemy.url', database_uri)
+
 def render_item(type_, obj, autogen_context):
     """Custom renderer for IntEnumField columns with params"""
     if type_ == 'type' and isinstance(obj, models.IntEnumField):

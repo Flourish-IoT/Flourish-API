@@ -1,6 +1,8 @@
 # import necessary packages
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from flask import current_app
+
 import smtplib
 import string
 
@@ -13,7 +15,7 @@ def msg_setup():
 
 def setup_mailer(msg):
     msg = msg_setup()
-    password = "Flourish2022"
+    password = current_app.config['EMAIL_PASS']
 
     #create server
     server = smtplib.SMTP('smtp.gmail.com: 587')

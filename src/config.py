@@ -5,6 +5,7 @@ class Config:
 	SQLALCHEMY_DATABASE_URI = ''
 	SQLALCHEMY_ECHO = False
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
+	EMAIL_PASS = os.environ.get('EMAIL_PASS')
 	SQLALCHEMY_ENGINE_OPTIONS = {
 		'pool_size': 5,
 		'future': True

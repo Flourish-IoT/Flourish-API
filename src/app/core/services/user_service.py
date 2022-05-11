@@ -6,6 +6,7 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc, update, select, exists
 from app.core.util import emailer, verification
 from app.protocols.http.utils import authentication
+from app.core.util import authorization
 
 def get_user(user_id: int, session: ScopedSession):
 	"""Gets a user by user ID
@@ -44,7 +45,7 @@ def create_user(email: str, username: str, password: str, session: ScopedSession
 	code = verification.verify_code()
 
 # unicode string (password) has to be encoded before hash 
-	user = User(email=email, password_hash=authentication.hash_password(password.encode('utf-8')
+	user = User(email=email, password_hash=authorization.hash_password(password.encode('utf-8')
 ), username=username, verification_code=code)
 
 	#emailer.send_email(code, "Verification Code for Flourish", email)
@@ -71,7 +72,7 @@ def login(email: str, password: str, session: ScopedSession) -> str | None :
 		#user: User | None = session.execute(user).scalars().one_or_none()
 		user: User | None = session.query(User).filter(User.email == email).one_or_none()
 		if user is not None:
-			if authentication.check_password(password.encode('utf-8'), user.password_hash):
+			if authorization.check_password(password.encode('utf-8'), user.password_hash.encode('utf-8')):
 				# Generate JWT
 				return authentication.create_jwt(user.username, user.user_id)
 		return None

@@ -7,8 +7,6 @@ from app.core.services import login
 from datetime import datetime, timedelta
 import jwt
 
-KEY: str = current_app.config['SECRET_KEY']
-
 authenticator: HTTPTokenAuth = HTTPTokenAuth(scheme="Bearer")
 
 def verify_user_credentials(username: str, password: str) -> bool:
@@ -33,8 +31,8 @@ def belongs_to_user(request, user_id: int):
     return decoded['userId'] == user_id
 
 def create_jwt(username, userId):
-    
-    encoded_jwt = jwt.encode({"user": username, "userId": userId, "expiryTime": str(datetime.now() + timedelta(days=3))}, KEY, algorithm="HS256")
+
+    encoded_jwt = jwt.encode({"user": username, "userId": userId, "expiryTime": str(datetime.now() + timedelta(days=3))}, current_app.config['SECRET_KEY'], algorithm="HS256")
 
     print(encoded_jwt)
 
@@ -42,11 +40,11 @@ def create_jwt(username, userId):
 
 
 def decode_jwt(enc_jwt):
-    return jwt.decode(enc_jwt, KEY, algorithms=["HS256"])
+    return jwt.decode(enc_jwt, current_app.config['SECRET_KEY'], algorithms=["HS256"])
 
 def check_jwt_valid(enc_jwt):
 
-    decoded_jwt = jwt.decode(enc_jwt, KEY, algorithms=["HS256"])
+    decoded_jwt = jwt.decode(enc_jwt, current_app.config['SECRET_KEY'], algorithms=["HS256"])
 
     if decoded_jwt['expiryTime'] == None or decoded_jwt['user'] == None:
         return False

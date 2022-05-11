@@ -26,12 +26,12 @@ class EventHandlerInformation(BaseModel):
 
 	plant_id = cast(int | None, Column(
 		Integer,
-		ForeignKey('plants.plant_id'),
+		ForeignKey('plants.plant_id', ondelete='CASCADE'),
 	))
 
 	device_id = cast(int | None, Column(
 		Integer,
-		ForeignKey('devices.device_id'),
+		ForeignKey('devices.device_id', ondelete='CASCADE'),
 	))
 
 	config = Column(

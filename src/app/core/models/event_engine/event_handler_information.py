@@ -10,7 +10,7 @@ from app.core.event_engine.handlers import EventHandler
 from app.core.models.event_engine.action_information import ActionInformation
 
 from ..base_model import BaseModel
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey, Identity
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy_json import mutable_json_type
 from sqlalchemy.orm import relationship
@@ -20,22 +20,22 @@ class EventHandlerInformation(BaseModel):
 
 	event_handler_id = cast(int, Column(
 		Integer,
+		Identity(True),
 		primary_key = True
 	))
 
 	plant_id = cast(int | None, Column(
 		Integer,
-		ForeignKey('plants.plant_id'),
+		ForeignKey('plants.plant_id', ondelete='CASCADE'),
 	))
 
 	device_id = cast(int | None, Column(
 		Integer,
-		ForeignKey('devices.device_id'),
+		ForeignKey('devices.device_id', ondelete='CASCADE'),
 	))
 
 	config = Column(
 		mutable_json_type(dbtype=JSONB, nested=True),
-		nullable=False
 	)
 
 	action_information = cast(List[ActionInformation] | None , relationship("ActionInformation", cascade='all, delete-orphan') )

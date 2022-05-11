@@ -1,8 +1,6 @@
-from datetime import datetime
 from typing import cast, Protocol
 from .base_model import BaseModel
-from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Float
-from sqlalchemy.dialects.postgresql import INET
+from sqlalchemy import Column, Integer, ForeignKey, Float, Identity
 from app.core.util import With
 
 class GaugeRating(BaseModel, With):
@@ -10,26 +8,27 @@ class GaugeRating(BaseModel, With):
 
 	gauge_id = cast(int, Column(
 		Integer,
+		Identity(True),
 		primary_key=True
 	))
 
 	plant_id = cast(int, Column(
 		Integer,
-		ForeignKey('plants.plant_id')
+		ForeignKey('plants.plant_id', ondelete='CASCADE')
 	))
 
-	temperature = cast(float, Column(
-		Float,
+	temperature = cast(int, Column(
+		Integer,
 		nullable=True
 	))
 
-	humidity = cast(float, Column(
-		Float,
+	humidity = cast(int, Column(
+		Integer,
 		nullable=True
 	))
 
-	soil_moisture = cast(float, Column(
-		Float,
+	soil_moisture = cast(int, Column(
+		Integer,
 		nullable=True
 	))
 

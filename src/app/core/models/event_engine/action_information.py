@@ -7,7 +7,7 @@ from typing import cast
 from app.core.event_engine.actions import Action
 from app.common.schemas import DynamicSchema
 from ..base_model import BaseModel
-from sqlalchemy import Column, Integer, TIMESTAMP, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, TIMESTAMP, Boolean, ForeignKey, Identity, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy_json import mutable_json_type
 from marshmallow import INCLUDE
@@ -18,6 +18,7 @@ class ActionInformation(BaseModel):
 
 	action_id = cast(int | None, Column(
 		Integer,
+		Identity(True),
 		primary_key = True
 	))
 
@@ -27,11 +28,13 @@ class ActionInformation(BaseModel):
 	))
 
 	disabled = cast(bool, Column(
-		Boolean
+		Boolean,
+		server_default=text('FALSE'),
+		nullable=False
 	))
 
 	last_executed = cast(datetime | None, Column(
-		TIMESTAMP
+		TIMESTAMP(True)
 	))
 
 	action = cast(dict, Column(

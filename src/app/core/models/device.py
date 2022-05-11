@@ -1,6 +1,6 @@
 from typing import cast
 from .base_model import BaseModel
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Identity
 from sqlalchemy.dialects.postgresql import INET
 from .int_enum_field import IntEnumField
 from .device_type import DeviceTypeEnum
@@ -11,6 +11,7 @@ class Device(BaseModel):
 
 	device_id = cast(int, Column(
 		Integer,
+		Identity(True),
 		primary_key = True
 	))
 
@@ -34,21 +35,25 @@ class Device(BaseModel):
 
 	user_id = cast(int, Column(
 		Integer,
-		ForeignKey('users.user_id'),
+		ForeignKey('users.user_id', ondelete='CASCADE'),
+		index=True
 	))
 
 	ip = cast(str, Column(
 		INET,
 		nullable=True
 	))
+
 	api_version = cast(str, Column(
 		String,
 		nullable=True
 	))
+
 	software_version = cast(str, Column(
 		String,
 		nullable=True
 	))
+
 	name = cast(str, Column(
 		String,
 		nullable=True

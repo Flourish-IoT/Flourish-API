@@ -3,8 +3,8 @@ from typing import cast
 
 from .base_model import BaseModel
 from .severity_level import SeverityLevelEnum
-from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Boolean
-from sqlalchemy.dialects.postgresql import INET
+from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Boolean, Identity, text
+from sqlalchemy.sql import func
 from .int_enum_field import IntEnumField
 
 class Alert(BaseModel):
@@ -12,27 +12,28 @@ class Alert(BaseModel):
 
 	alert_id = cast(int, Column(
 		Integer,
-		primary_key = True
+		Identity(True),
+		primary_key = True,
 	))
 
 	plant_id = cast(int, Column(
 		Integer,
-		ForeignKey('plants.plant_id'),
+		ForeignKey('plants.plant_id', ondelete='CASCADE'),
 	))
 
 	device_id = cast(int, Column(
 		Integer,
-		ForeignKey('devices.device_id'),
+		ForeignKey('devices.device_id', ondelete='CASCADE'),
 	))
 
 	user_id = cast(int, Column(
 		Integer,
-		ForeignKey('users.user_id'),
+		ForeignKey('users.user_id', ondelete='CASCADE'),
 	))
 
 	action_id = cast(int, Column(
 		Integer,
-		ForeignKey('actions.action_id'),
+		ForeignKey('actions.action_id', ondelete='SET NULL'),
 	))
 
 	severity = cast(SeverityLevelEnum, Column(
@@ -43,13 +44,16 @@ class Alert(BaseModel):
 
 	message = cast(str, Column(
 		String,
+		nullable=False
 	))
 
 	time = cast(datetime, Column(
-		TIMESTAMP,
+		TIMESTAMP(True),
+		server_default=func.now()
 	))
 
 	viewed = cast(bool, Column(
 		Boolean,
-		default=False
+		server_default=text('FALSE'),
+		nullable=False
 	))

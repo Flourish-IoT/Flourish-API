@@ -3,7 +3,7 @@ from typing import cast
 
 from .base_model import BaseModel
 from .severity_level import SeverityLevelEnum
-from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Boolean, Identity, text
 from sqlalchemy.sql import func
 from .int_enum_field import IntEnumField
 
@@ -12,6 +12,7 @@ class Alert(BaseModel):
 
 	alert_id = cast(int, Column(
 		Integer,
+		Identity(True),
 		primary_key = True,
 	))
 
@@ -43,15 +44,16 @@ class Alert(BaseModel):
 
 	message = cast(str, Column(
 		String,
+		nullable=False
 	))
 
 	time = cast(datetime, Column(
-		TIMESTAMP,
-		default=func.now()
+		TIMESTAMP(True),
+		server_default=func.now()
 	))
 
 	viewed = cast(bool, Column(
 		Boolean,
-		default=False,
+		server_default=text('FALSE'),
 		nullable=False
 	))

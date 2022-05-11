@@ -1,6 +1,6 @@
 from typing import Dict, cast
 from .base_model import BaseModel
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Identity
 from sqlalchemy.dialects.postgresql import INET
 from sqlalchemy.orm import relationship
 from .plant_type import *
@@ -12,12 +12,14 @@ class Plant(BaseModel):
 
 	plant_id = cast(int, Column(
 		Integer,
-		primary_key = True
+		Identity(True),
+		primary_key = True,
 	))
 
 	user_id = cast(int, Column(
 		Integer,
 		ForeignKey('users.user_id', ondelete='CASCADE'),
+		index=True
 	))
 
 	device_id = cast(int, Column(

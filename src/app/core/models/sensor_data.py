@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import cast
 from .base_model import BaseModel
-from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Float, Identity
 from app.core.util import With
 
 class SensorData(BaseModel, With):
@@ -9,6 +9,7 @@ class SensorData(BaseModel, With):
 
 	sensor_data_id = cast(int, Column(
 		Integer,
+		Identity(True),
 		primary_key = True
 	))
 
@@ -19,7 +20,7 @@ class SensorData(BaseModel, With):
 	))
 
 	time = cast(datetime, Column(
-		TIMESTAMP,
+		TIMESTAMP(True),
 		nullable=False
 	))
 

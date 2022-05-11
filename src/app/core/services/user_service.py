@@ -69,7 +69,6 @@ def login(email: str, password: str, session: ScopedSession) -> str | None :
 	"""
 
 	try:
-		#user: User | None = session.execute(user).scalars().one_or_none()
 		user: User | None = session.query(User).filter(User.email == email).one_or_none()
 		if user is not None:
 			if authorization.check_password(password.encode('utf-8'), user.password_hash.encode('utf-8')):

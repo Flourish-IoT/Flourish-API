@@ -25,7 +25,7 @@ def setup_mailer(msg):
 
     return server
 
-def send_email(message: string, subject: string, to: string):
+def send_email(message: str, subject: str, to: str):
     msg = msg_setup()
 
     msg['To'] = to

@@ -1,5 +1,4 @@
 from datetime import datetime, tzinfo
-import imp
 import logging
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
 from app.core.models import User, UserPreferences
@@ -27,7 +26,7 @@ def get_user(user_id: int, session: ScopedSession):
 
 	return user
 
-def create_user(email, username, password, session: ScopedSession):
+def create_user(email: str, username: str, password: str, session: ScopedSession):
 	"""Creates a new user
 
 	Args:
@@ -67,9 +66,6 @@ def login(email: str, password: str, session: ScopedSession) -> str | None :
 			email (str): registered user's email ID
 			password (str): registered user's password
 	"""
-	#query = select(User).where(User.email == email).execute()
-	
-	# user = session.query(exists(User).where(User.email == email)
 
 	try:
 		#user: User | None = session.execute(user).scalars().one_or_none()
@@ -78,8 +74,6 @@ def login(email: str, password: str, session: ScopedSession) -> str | None :
 			if authentication.check_password(password.encode('utf-8'), user.password_hash):
 				# Generate JWT
 				return authentication.create_jwt(user.username, user.user_id)
-				#return None
-				#return user.user_id
 		return None
 	except Exception as e:
 		logging.error(f'Login failed for user {email}')

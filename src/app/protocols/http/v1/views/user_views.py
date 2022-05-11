@@ -53,7 +53,7 @@ class UserLogin(Resource):
 			raise NotFound(str(e))
 		except Exception as e:
 			raise InternalServerError
-		return jwt, 200
+		return jwt
 
 @api.route('/<int:user_id>/plants')
 class UserPlants(Resource):

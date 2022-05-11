@@ -1,16 +1,13 @@
 from __future__ import annotations
 
 from app import db
-from bcrypt import checkpw, gensalt, hashpw
-# from jwt import decode, encode
+from flask import current_app
 from flask_httpauth import HTTPTokenAuth
 from app.core.services import login
 from datetime import datetime, timedelta
-from base64 import decode, encode
-from json import dumps, load
 import jwt
 
-KEY: str = "SECRET-KEY"  # TODO: Move to configuration
+KEY: str = current_app.config['SECRET_KEY']
 
 authenticator: HTTPTokenAuth = HTTPTokenAuth(scheme="Bearer")
 
@@ -26,12 +23,6 @@ def verify_token(token: bytes):
     Authentication function 
     """
     return check_jwt_valid(token)
-
-# def decrypt_jwt(token: bytes) -> dict:
-#     """
-#     Decrypts a JWT into a python dictionary object
-#     """
-#     return decode(token, KEY)
 
 def belongs_to_user(request, user_id: int):
 
@@ -57,8 +48,6 @@ def check_jwt_valid(enc_jwt):
 
     decoded_jwt = jwt.decode(enc_jwt, KEY, algorithms=["HS256"])
 
-    #print(decoded_jwt)
-
     if decoded_jwt['expiryTime'] == None or decoded_jwt['user'] == None:
         return False
 
@@ -68,21 +57,3 @@ def check_jwt_valid(enc_jwt):
         return False
 
     return True
-
-# def encrypt_jwt(data: dict) -> bytes:
-#     """
-#     Encrypts a python dictionary object into a JWT byte array
-#     """
-#     return encode(data, KEY)
-
-def hash_password(unhashed_password: str) -> str:
-    """
-    Transforms a plain-text password string into a hashed one
-    """
-    return hashpw(unhashed_password, gensalt()).decode('utf-8')
-
-def check_password(password: str, hashed_password: str) -> bool:
-    """
-    Checks if an unhashed password matches its hashed counterpart
-    """
-    return checkpw(password, hashed_password)

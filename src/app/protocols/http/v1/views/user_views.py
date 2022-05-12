@@ -117,7 +117,6 @@ class UserPasswordUpdate(Resource):
 				update_user_password(user_id, body['authentication'], body['new_password'], db.session)
 			else:
 				# password reset
-				# start_user_reset_password(body['email'], db.session)
 				reset_user_password(user_id, body['authentication'], body['new_password'], db.session)
 		except ForbiddenError as e:
 			raise Forbidden(str(e))

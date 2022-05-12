@@ -6,8 +6,9 @@ from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerEr
 
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
 from app.core.services import get_user, create_user, login, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password, get_plants, create_plant
+from app.core.services import user_service
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User, Plant
-from app.protocols.http.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema, ListPlantSchema, NewPlantSchema, LoginSchema
+from app.protocols.http.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema, ListPlantSchema, NewPlantSchema, LoginSchema, UserSummarySchema
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
@@ -27,6 +28,16 @@ class UserList(Resource):
 			raise InternalServerError
 
 		return None, 201, {'Location': f'{request.path}/{user_id}'}
+
+#  TODO: REMOVE THIS AFTER HUNTER IS DONE
+	@marshal_list_with(UserSummarySchema)
+	def get(self):
+		try:
+			users = user_service._get_users(db.session)
+		except Exception as e:
+			raise InternalServerError
+
+		return users
 
 @api.route('/<int:user_id>')
 class UserResource(Resource):
@@ -73,7 +84,7 @@ class UserPlants(Resource):
 		return plants
 
 	@serialize_with(NewPlantSchema)
-	@authenticator.login_required
+	# @authenticator.login_required
 	def post(self, user_id: int, body: Plant):
 		try:
 			plant_id = create_plant(user_id, body, db.session)

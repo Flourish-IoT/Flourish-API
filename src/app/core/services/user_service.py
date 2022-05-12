@@ -1,5 +1,6 @@
 from datetime import datetime, tzinfo
 import logging
+from typing import List
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
 from app.core.models import User, UserPreferences
 from sqlalchemy.orm.scoping import ScopedSession
@@ -44,7 +45,7 @@ def create_user(email: str, username: str, password: str, session: ScopedSession
 
 	code = verification.verify_code()
 
-# unicode string (password) has to be encoded before hash 
+# unicode string (password) has to be encoded before hash
 	user = User(email=email, password_hash=authorization.hash_password(password.encode('utf-8')
 ), username=username, verification_code=code)
 
@@ -367,7 +368,7 @@ def _cleanup_password_reset_code(user_id: int, session: ScopedSession):
 		logging.error('Failed to cleanup user password reset code')
 		logging.exception(e)
 		raise e
-	
+
 def _get_user_email(user_id:int, session: ScopedSession):
 	"""
 	## [DANGER] INTERNAL USE ONLY
@@ -387,5 +388,23 @@ def _get_user_email(user_id:int, session: ScopedSession):
 		logging.error(f'Failed to retrieve user')
 		logging.exception(e)
 		raise e
-	
+
 	return user
+
+# TODO: remove this after hunter is done
+def _get_users(session: ScopedSession):
+	"""Gets all users
+
+	Returns:
+			List[User]
+	"""
+	query = select(User)
+
+	try:
+		users: List[User] = session.execute(query).scalars().all()
+	except Exception as e:
+		logging.error(f'Failed to retrieve users')
+		logging.exception(e)
+		raise e
+
+	return users

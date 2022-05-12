@@ -55,3 +55,8 @@ class UserPasswordUpdateSchema(CamelCaseSchema):
 class LoginSchema(CamelCaseSchema):
     email = fields.Email(required=True)
     password = fields.Str(required=True)
+
+# TODO: REMOVE THIS WHEN HUNTER IS DONE
+class UserSummarySchema(UserSchema):
+    class Meta:
+        fields = ('email', 'username')

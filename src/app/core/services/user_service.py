@@ -49,7 +49,7 @@ def create_user(email: str, username: str, password: str, session: ScopedSession
 	user = User(email=email, password_hash=authorization.hash_password(password.encode('utf-8')
 ), username=username, verification_code=code)
 
-	#emailer.send_email(code, "Verification Code for Flourish", email)
+	emailer.send_email(code, "Verification Code for Flourish", email)
 
 	try:
 		session.add(user)

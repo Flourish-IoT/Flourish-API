@@ -9,7 +9,6 @@ from app.common.schemas.dynamic_schema import DynamicSchema
 from app.common.schemas.type_field import TypeField
 import app.core.models as models
 
-from app.core.event_engine import Field
 from app.core.event_engine.queries import ValueQuery, SlopeQuery
 from app.core.event_engine.post_process_functions import ValueRating, PlantValueScore
 from app.core.event_engine.handlers import SensorDataEventHandler
@@ -37,13 +36,10 @@ def default_plant():
 
 @pytest.fixture
 def default_handler():
-	return SensorDataEventHandler(
-		Field(
-			models.SensorData.temperature, {
-				'value': ValueQuery(models.SensorData, models.SensorData.plant_id, models.SensorData.time, PlantValueScore(models.PlantType.minimum_temperature, models.PlantType.maximum_temperature)),
-				'slope': SlopeQuery(models.SensorData, models.SensorData.plant_id, timedelta(hours=3))
-			}
-		),
+	return SensorDataEventHandler({
+			'value': ValueQuery(models.SensorData, models.SensorData.temperature, models.SensorData.plant_id, models.SensorData.time, PlantValueScore(models.PlantType.minimum_temperature, models.PlantType.maximum_temperature)),
+			'slope': SlopeQuery(models.SensorData, models.SensorData.temperature, models.SensorData.plant_id, timedelta(hours=3))
+		},
 		[
 			AndTrigger([
 					EqualsTrigger(field='value', value=ValueRating.TooLow),

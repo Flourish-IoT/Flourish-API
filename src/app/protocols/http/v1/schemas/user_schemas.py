@@ -1,4 +1,5 @@
 from enum import Enum
+from typing_extensions import Required
 from marshmallow import fields, post_load, validates_schema, ValidationError
 from marshmallow_enum import EnumField
 
@@ -55,3 +56,10 @@ class UserPasswordUpdateSchema(CamelCaseSchema):
 class LoginSchema(CamelCaseSchema):
     email = fields.Email(required=True)
     password = fields.Str(required=True)
+
+class VerifySchema(CamelCaseSchema):
+    email = fields.Email(required=True)
+    code = fields.Int(required=True)
+
+class VerifyResponseSchema(CamelCaseSchema):
+    user_id = fields.Int()

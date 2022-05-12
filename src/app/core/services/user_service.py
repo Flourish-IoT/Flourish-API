@@ -7,6 +7,7 @@ from sqlalchemy import exc, update, select, exists
 from app.core.util import emailer, verification
 from app.protocols.http.utils import authentication
 from app.core.util import authorization
+from datetime import datetime, timedelta
 
 def get_user(user_id: int, session: ScopedSession):
 	"""Gets a user by user ID
@@ -45,8 +46,7 @@ def create_user(email: str, username: str, password: str, session: ScopedSession
 	code = verification.verify_code()
 
 # unicode string (password) has to be encoded before hash 
-	user = User(email=email, password_hash=authorization.hash_password(password.encode('utf-8')
-), username=username, verification_code=code)
+	user = User(email=email, password_hash=authorization.hash_password(password.encode('utf-8')), username=username, verification_code=code)
 
 	emailer.send_email(code, "Verification Code for Flourish", email)
 
@@ -274,27 +274,38 @@ def user_exists(user_id: int, session: ScopedSession) -> bool:
 	"""
 	return session.query(exists(User).where(User.user_id == user_id)).scalar()
 
+def email_exists(email: str, session: ScopedSession) -> bool:
+	"""Checks if a user with given email exists
+
+	Args:
+			email (str): email to check for
+			session (ScopedSession): SQLAlchemy database session
+
+	Returns:
+		bool: Represents whether user exists
+	"""
+	return session.query(exists(User).where(User.email == email)).scalar()
+
 def start_user_reset_password(email: str, session: ScopedSession):
 	"""Sends user email with authentication code for password reset
 
 	Args:
-			user_id (int): User ID to check for
+			email (str): email to check for
 			session (ScopedSession): SQLAlchemy database session
 
 	"""
-	#TODO: we dont have the user id, user has to enter their email to get the code
-	# if user_exists(user_id, session):
-		# user = _get_user_email(user_id, session)
+	code = verification.verify_code()
+	user =  _get_user_id(email, session)
+	if email_exists(email, session):
+		emailer.send_email(code, "Flourish Password Reset Code", email)
+		_set_password_reset_code(user, int(code), session)
+	else:
+		logging.error(f'User does not exist')
+		raise NotFoundError(f'Could not find user with email: {email}')
 
-		#TODO: replace the messege with the authenticator code
-		# emailer.send_email("This is a place holder", "Flourish Authentication Code", email)
-	# else:
-	# 	logging.error(f'User does not exist')
-	# 	raise NotFoundError(f'Could not find user with ID: {user_id}')
-
-	emailer.send_email("This is a place holder", "Flourish Authentication Code", email)
-
-
+def verify_reset_create_code(user_id: int, code: int, session: ScopedSession):
+	# TODO: create a function to check the verify password reset code and create user code
+	pass
 
 
 
@@ -318,7 +329,7 @@ def _update_password(user_id: int, new_password: str, session: ScopedSession):
 			e: [description]
 	"""
 	# TODO: generate new password hash?
-	new_password_hash = new_password
+	new_password_hash = authorization.hash_password(new_password.encode('utf-8'))
 	try:
 		session.execute(
 			update(User)
@@ -367,6 +378,35 @@ def _cleanup_password_reset_code(user_id: int, session: ScopedSession):
 		logging.error('Failed to cleanup user password reset code')
 		logging.exception(e)
 		raise e
+
+def _set_password_reset_code(user_id: int, code: int, session: ScopedSession):
+	"""
+	## [DANGER] INTERNAL USE ONLY
+	Cleans up the password_reset_code and password_reset_code_expiration columns
+
+	Args:
+			user_id (int): User ID to cleanup
+			session (ScopedSession): SQLAlchemy database session
+
+	Raises:
+			NotFoundError: User not found
+			Exception: Database error
+	"""
+	try:
+		session.execute(
+			update(User)
+				.where(User.user_id == user_id)
+				.values(password_reset_code=code, password_reset_code_expiration=str(datetime.now() + timedelta(hours=1)))
+		)
+		session.commit()
+	except exc.NoResultFound as e:
+		logging.error('Failed to find user')
+		logging.exception(e)
+		raise NotFoundError(f'Could not find user with ID: {user_id}')
+	except exc.DatabaseError as e:
+		logging.error('Failed to cleanup user password reset code')
+		logging.exception(e)
+		raise e
 	
 def _get_user_email(user_id:int, session: ScopedSession):
 	"""
@@ -389,3 +429,21 @@ def _get_user_email(user_id:int, session: ScopedSession):
 		raise e
 	
 	return user
+
+def _get_user_id(email:str, session: ScopedSession):
+	query = select(User).where(User.email == email)
+
+	try:
+		user: User= session.execute(query).scalar_one()
+	except exc.NoResultFound as e:
+		logging.error('Failed to find user')
+		logging.exception(e)
+		raise NotFoundError(f'Could not find user with email: {email}')
+	except Exception as e:
+		logging.error(f'Failed to retrieve user')
+		logging.exception(e)
+		raise e
+
+	
+
+	return user.user_id

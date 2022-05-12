@@ -9,6 +9,7 @@ class Config:
 		'pool_size': 5,
 		'future': True
 	}
+	AUTH_ENABLED = True
 
 	RESTX_ERROR_404_HELP = False
 
@@ -33,6 +34,7 @@ class LocalConfig(Config):
 	DEBUG = True
 	TESTING = True
 	SECRET_KEY='skbGoMfmaQzJTM'
+	AUTH_ENABLED = False
 
 	SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:password@localhost/postgres'
 	SQLALCHEMY_ENGINE_OPTIONS = {
@@ -46,5 +48,6 @@ class TestConfig(Config):
 	DEBUG = True
 	TESTING = True
 	SECRET_KEY='skbGoMfmaQzJTM'
+	AUTH_ENABLED = False
 
 	SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'

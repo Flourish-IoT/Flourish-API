@@ -7,6 +7,7 @@ services:
     environment:
       DATABASE_URI: "postgresql+psycopg2://postgres:${POSTGRES_PASSWORD}@flourish-db:5432/postgres"
       SECRET_KEY: ${SECRET_KEY}
+      EMAIL_PASS: ${EMAIL_PASS}
     depends_on:
       - flourish-db
   flourish-db:

@@ -7,7 +7,7 @@ from app.core.models import User, UserPreferences
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc, update, select, exists
 from app.core.util import emailer
-from app.core.util.verification import verify_code
+from app.core.util.verification import generate_verification_code, prefix_verification_code
 
 def get_user(user_id: int, session: ScopedSession):
 	"""Gets a user by user ID
@@ -43,7 +43,7 @@ def create_user(email: str, name:str, password: str, session: ScopedSession):
 			int: Newly created user ID
 	"""
 
-	code = verify_code()
+	code = generate_verification_code()
 
 	user = User(email=email, password_hash=hash_password(password), username=name, verification_code=code)
 

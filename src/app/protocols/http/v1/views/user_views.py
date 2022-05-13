@@ -5,10 +5,10 @@ from flask import request, url_for
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError, Forbidden
 
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
-from app.core.services import get_user, create_user, login, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password, get_plants, create_plant, verify_reset_create_code
+from app.core.services import get_user, create_user, login, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password, get_plants, create_plant, verify_verification_code, verify_password_reset_code
 from app.core.services import user_service
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User, Plant
-from app.protocols.http.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema, ListPlantSchema, NewPlantSchema, LoginSchema, VerifySchema, VerifyResponseSchema, UserSummarySchema
+from app.protocols.http.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema, ListPlantSchema, NewPlantSchema, LoginSchema, VerifySchema, UserSummarySchema, VerifyQueryParameterSchema, VerificationCodeType
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
@@ -204,14 +204,18 @@ class UserAlerts(Resource):
 
 		return alerts
 
-@api.route('/<int:user_id>/verify')
+@api.route('/verify')
 class Verify(Resource):
-	@serialize_with(VerifySchema, location=Location.QUERY_PARAMETER)
-	@marshal_with(VerifyResponseSchema)
-	def post(self, user_id:int, code: int, query: dict):
+	@serialize_with(VerifyQueryParameterSchema, location=Location.QUERY_PARAMETER)
+	@serialize_with(VerifySchema)
+	def post(self, body: dict, query: dict):
 		try:
-			alerts = verify_reset_create_code(user_id, code, db.session)
+			code_type = query["code_type"]
+			if code_type == VerificationCodeType.password_reset:
+				user_id = verify_password_reset_code(body['email'], body['code'], db.session)
+			else:
+				user_id = verify_verification_code(body['email'], body['code'], db.session)
 		except Exception as e:
 			raise InternalServerError
 
-		return alerts
+		return user_id

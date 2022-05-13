@@ -304,7 +304,7 @@ def start_user_reset_password(email: str, session: ScopedSession):
 		logging.error(f'User does not exist')
 		raise NotFoundError(f'Could not find user with email: {email}')
 
-def verify_reset_create_code(user_id: int, code: int, session: ScopedSession) -> bool:
+def verify_password_reset_code(email: str, code: str, session: ScopedSession):
 	"""Verify if user-entered code is same as the code in the database
 
 	Args:
@@ -319,7 +319,7 @@ def verify_reset_create_code(user_id: int, code: int, session: ScopedSession) ->
 	Returns:
 			_type_: _description_
 	"""
-	query = select(User).where(User.user_id == user_id)
+	query = select(User).where(User.email == email)
 
 	try:
 		result: User = session.execute(query).scalar_one()
@@ -330,13 +330,45 @@ def verify_reset_create_code(user_id: int, code: int, session: ScopedSession) ->
 	except exc.NoResultFound as e:
 		logging.error('Failed to find user')
 		logging.exception(e)
-		raise NotFoundError(f'Could not find user with user id: {user_id}')
-	
-	if code == result.verification_code or code == result.password_reset_code:
-		return True
-	else:
-		return False
+		raise NotFoundError(f'Could not find user with the email: {email}')
 
+	if code == result.password_reset_code:
+		return result.user_id
+	else: 
+		return 0
+
+def verify_verification_code(email: str, code: str, session: ScopedSession):
+	"""Verify if user-entered code is same as the code in the database
+
+	Args:
+			user_id (int): User ID
+			code (int): Verification/Password Reset Code
+			session (ScopedSession): Database
+
+	Raises:
+			e: _description_
+			NotFoundError: _description_
+
+	Returns:
+			_type_: _description_
+	"""
+	query = select(User).where(User.email == email)
+
+	try:
+		result: User = session.execute(query).scalar_one()
+	except exc.DatabaseError as e:
+		logging.error('Failed to get user password reset code')
+		logging.exception(e)
+		raise e
+	except exc.NoResultFound as e:
+		logging.error('Failed to find user')
+		logging.exception(e)
+		raise NotFoundError(f'Could not find user with the email: {email}')
+
+	if code == result.verification_code:
+		return result.user_id
+	else:
+		return 0
 
 
 ########################################

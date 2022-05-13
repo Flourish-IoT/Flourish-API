@@ -1,9 +1,10 @@
 from enum import Enum
 from typing_extensions import Required
-from marshmallow import fields, post_load, validates_schema, ValidationError
+from marshmallow import Schema, fields, post_load, validates_schema, ValidationError
 from marshmallow_enum import EnumField
 
 from app.core.models import User
+from app.core.util import verification
 from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
 from .user_preferences_schema import UserPreferencesSchema
 
@@ -57,12 +58,17 @@ class LoginSchema(CamelCaseSchema):
     email = fields.Email(required=True)
     password = fields.Str(required=True)
 
+class VerificationCodeType(Enum):   
+    verification = 1,
+    password_reset = 2
+
+class VerifyQueryParameterSchema(Schema):
+    code_type = EnumField(VerificationCodeType, required=True)
+
 class VerifySchema(CamelCaseSchema):
     email = fields.Email(required=True)
-    code = fields.Int(required=True)
+    code = fields.Str(required=True)
 
-class VerifyResponseSchema(CamelCaseSchema):
-    user_id = fields.Int()
 # TODO: REMOVE THIS WHEN HUNTER IS DONE
 class UserSummarySchema(UserSchema):
     class Meta:

@@ -35,11 +35,11 @@ class User(BaseModel):
 	))
 
 	verification_code = cast(int, Column(
-		Integer
+		String()
 	))
 
 	password_reset_code = cast(int, Column(
-		Integer
+		String()
 	))
 
 	password_reset_code_expiration = cast(datetime, Column(

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import cast
 from .base_model import BaseModel
 from . import UserPreferences
-from sqlalchemy import Column, Integer, String, TIMESTAMP, Identity, TIME
+from sqlalchemy import Column, Integer, String, TIMESTAMP, Identity, TIME, VARCHAR
 from sqlalchemy.orm import relationship
 
 class User(BaseModel):
@@ -35,11 +35,11 @@ class User(BaseModel):
 	))
 
 	verification_code = cast(int, Column(
-		Integer
+		VARCHAR(4)
 	))
 
 	password_reset_code = cast(int, Column(
-		Integer
+		VARCHAR(4)
 	))
 
 	password_reset_code_expiration = cast(datetime, Column(

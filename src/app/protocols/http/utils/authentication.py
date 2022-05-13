@@ -18,14 +18,17 @@ def verify_user_credentials(username: str, password: str) -> bool:
 @authenticator.verify_token
 def verify_token(token: bytes):
     """
-    Authentication function 
+    Authentication function
     """
+    if not current_app.config['AUTH_ENABLED']:
+        return True
+
     return check_jwt_valid(token)
 
 def belongs_to_user(request, user_id: int):
 
     token = request.headers['Authorization'].split(' ')[1]
-    
+
     decoded = decode_jwt(token)
 
     return decoded['userId'] == user_id

@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import cast
+from xmlrpc.client import boolean
 from .base_model import BaseModel
 from . import UserPreferences
-from sqlalchemy import Column, Integer, String, TIMESTAMP, Identity, TIME, VARCHAR
+from sqlalchemy import Column, Integer, String, TIMESTAMP, Identity, TIME, VARCHAR, Boolean
 from sqlalchemy.orm import relationship
 
 class User(BaseModel):
@@ -44,6 +45,10 @@ class User(BaseModel):
 
 	password_reset_code_expiration = cast(datetime, Column(
 		TIMESTAMP(True)
+	))
+
+	user_verified = cast(bool, Column(
+		Boolean(),
 	))
 
 	preferences = cast(UserPreferences, relationship("UserPreferences", uselist=False, cascade='all', backref='users'))

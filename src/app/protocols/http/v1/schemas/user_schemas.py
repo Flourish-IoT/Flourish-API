@@ -63,3 +63,7 @@ class VerifySchema(CamelCaseSchema):
 
 class VerifyResponseSchema(CamelCaseSchema):
     user_id = fields.Int()
+# TODO: REMOVE THIS WHEN HUNTER IS DONE
+class UserSummarySchema(UserSchema):
+    class Meta:
+        fields = ('email', 'username')

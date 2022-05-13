@@ -1,5 +1,6 @@
 from datetime import datetime, tzinfo
 import logging
+from typing import List
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
 from app.core.models import User, UserPreferences
 from sqlalchemy.orm.scoping import ScopedSession
@@ -447,3 +448,21 @@ def _get_user_id(email:str, session: ScopedSession):
 	
 
 	return user.user_id
+	
+# TODO: remove this after hunter is done
+def _get_users(session: ScopedSession):
+	"""Gets all users
+
+	Returns:
+			List[User]
+	"""
+	query = select(User)
+
+	try:
+		users: List[User] = session.execute(query).scalars().all()
+	except Exception as e:
+		logging.error(f'Failed to retrieve users')
+		logging.exception(e)
+		raise e
+
+	return users

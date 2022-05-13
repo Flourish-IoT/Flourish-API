@@ -304,8 +304,21 @@ def start_user_reset_password(email: str, session: ScopedSession):
 		logging.error(f'User does not exist')
 		raise NotFoundError(f'Could not find user with email: {email}')
 
-def verify_reset_create_code(user_id: int, code: int, session: ScopedSession):
-	# TODO: create a function to check the verify password reset code and create user code
+def verify_reset_create_code(user_id: int, code: int, session: ScopedSession) -> bool:
+	"""Verify if user-entered code is same as the code in the database
+
+	Args:
+			user_id (int): User ID
+			code (int): Verification/Password Reset Code
+			session (ScopedSession): Database
+
+	Raises:
+			e: _description_
+			NotFoundError: _description_
+
+	Returns:
+			_type_: _description_
+	"""
 	query = select(User).where(User.user_id == user_id)
 
 	try:
@@ -318,12 +331,11 @@ def verify_reset_create_code(user_id: int, code: int, session: ScopedSession):
 		logging.error('Failed to find user')
 		logging.exception(e)
 		raise NotFoundError(f'Could not find user with user id: {user_id}')
-
-	# TODO: create a function to figure out if it is a verification code or password reset code, might need to take in a parmeter
-
-	# TODO: check code
 	
-	pass
+	if code == result.verification_code or code == result.password_reset_code:
+		return True
+	else:
+		return False
 
 
 

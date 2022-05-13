@@ -34,11 +34,11 @@ class User(BaseModel):
 		String()
 	))
 
-	verification_code = cast(int, Column(
+	verification_code = cast(str, Column(
 		VARCHAR(4)
 	))
 
-	password_reset_code = cast(int, Column(
+	password_reset_code = cast(str, Column(
 		VARCHAR(4)
 	))
 

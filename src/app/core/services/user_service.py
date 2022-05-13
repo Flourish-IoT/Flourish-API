@@ -306,6 +306,23 @@ def start_user_reset_password(email: str, session: ScopedSession):
 
 def verify_reset_create_code(user_id: int, code: int, session: ScopedSession):
 	# TODO: create a function to check the verify password reset code and create user code
+	query = select(User).where(User.user_id == user_id)
+
+	try:
+		result: User = session.execute(query).scalar_one()
+	except exc.DatabaseError as e:
+		logging.error('Failed to get user password reset code')
+		logging.exception(e)
+		raise e
+	except exc.NoResultFound as e:
+		logging.error('Failed to find user')
+		logging.exception(e)
+		raise NotFoundError(f'Could not find user with user id: {user_id}')
+
+	# TODO: create a function to figure out if it is a verification code or password reset code, might need to take in a parmeter
+
+	# TODO: check code
+	
 	pass
 
 

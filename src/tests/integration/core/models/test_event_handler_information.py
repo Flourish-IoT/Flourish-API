@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from unittest import mock
 from app.common.schemas.dynamic_schema import DynamicSchema
-from app.core.event_engine import Field
 from app.core.event_engine.events import SensorDataEvent
 from app.core.event_engine.queries import ValueQuery, SlopeQuery
 from app.core.event_engine.post_process_functions import ValueRating
@@ -23,135 +22,64 @@ class TestSensorDataEventHandler:
 		handler_info.update_config(default_handler)
 
 		assert handler_info.config == {
-			"triggers": [
-				{
-					"AndTrigger": {
-						"triggers": [
-							{
-								"EqualsTrigger": {
-									"value": {
-										"ValueRating": "TooLow"
-									},
-									"field": "value",
-									"actions": []
-								}
-							},
-							{
-								"LessThanTrigger": {
-									"value": {
-										"int": 0
-									},
-									"field": "slope",
-									"actions": []
-								}
-							}
-						],
-						"actions": [
-							1
-						]
+			'queries': {'value': {'ValueQuery': {'order_column': {'column': 'time', 'table': 'app.core.models.sensor_data.SensorData'
+				}, 'table': 'SensorData', 'column': {'column': 'temperature', 'table': 'app.core.models.sensor_data.SensorData'
+				}, 'post_processor': {'PlantValueScore': {'min_col': {'column': 'minimum_temperature', 'table': 'app.core.models.plant_type.PlantType'
+						}, 'max_col': {'column': 'maximum_temperature', 'table': 'app.core.models.plant_type.PlantType'
+						}
 					}
-				},
-				{
-					"AndTrigger": {
-						"triggers": [
-							{
-								"EqualsTrigger": {
-									"value": {
-										"ValueRating": "Low"
-									},
-									"field": "value",
-									"actions": []
-								}
-							}
-						],
-						"actions": [
-							2
-						]
-					}
-				},
-				{
-					"AndTrigger": {
-						"triggers": [
-							{
-								"EqualsTrigger": {
-									"value": {
-										"ValueRating": "High"
-									},
-									"field": "value",
-									"actions": []
-								}
-							}
-						],
-						"actions": [
-							3
-						]
-					}
-				},
-				{
-					"AndTrigger": {
-						"triggers": [
-							{
-								"EqualsTrigger": {
-									"value": {
-										"ValueRating": "TooHigh"
-									},
-									"field": "value",
-									"actions": []
-								}
-							}
-						],
-						"actions": [
-							4
-						]
-					}
+				}, 'id_column': {'column': 'plant_id', 'table': 'app.core.models.sensor_data.SensorData'
 				}
-			],
-			"field": {
-				"Field": {
-					"queries": {
-						"value": {
-							"ValueQuery": {
-								"post_processor": {
-									"PlantValueScore": {
-										"max_col": {
-											"column": "maximum_temperature",
-											"table": "app.core.models.plant_type.PlantType"
-										},
-										"min_col": {
-											"column": "minimum_temperature",
-											"table": "app.core.models.plant_type.PlantType"
-										}
-									}
-								},
-								"order_column": {
-									"column": "time",
-									"table": "app.core.models.sensor_data.SensorData"
-								},
-								"id_column": {
-									"column": "plant_id",
-									"table": "app.core.models.sensor_data.SensorData"
-								},
-								"table": "SensorData"
-							}
-						},
-						"slope": {
-							"SlopeQuery": {
-								"time_start": 10800,
-								"post_processor": None,
-								"time_end": None,
-								"id_column": {
-									"column": "plant_id",
-									"table": "app.core.models.sensor_data.SensorData"
-								},
-								"table": "SensorData"
+			}
+		}, 'slope': {'SlopeQuery': {'table': 'SensorData', 'column': {'column': 'temperature', 'table': 'app.core.models.sensor_data.SensorData'
+				}, 'post_processor': None, 'time_end': None, 'time_start': 10800, 'id_column': {'column': 'plant_id', 'table': 'app.core.models.sensor_data.SensorData'
+				}
+			}
+		}
+	}, 'triggers': [
+		{'AndTrigger': {'triggers': [
+					{'EqualsTrigger': {'actions': [], 'field': 'value', 'value': {'ValueRating': 'TooLow'
 							}
 						}
 					},
-					"field": {
-						"column": "temperature",
-						"table": "app.core.models.sensor_data.SensorData"
+					{'LessThanTrigger': {'actions': [], 'field': 'slope', 'value': {'int': 0
+							}
+						}
 					}
-				}
-			},
-			"type": "SensorDataEventHandler"
+				], 'actions': [
+					1
+				]
+			}
+		},
+		{'AndTrigger': {'triggers': [
+					{'EqualsTrigger': {'actions': [], 'field': 'value', 'value': {'ValueRating': 'Low'
+							}
+						}
+					}
+				], 'actions': [
+					2
+				]
+			}
+		},
+		{'AndTrigger': {'triggers': [
+					{'EqualsTrigger': {'actions': [], 'field': 'value', 'value': {'ValueRating': 'High'
+							}
+						}
+					}
+				], 'actions': [
+					3
+				]
+			}
+		},
+		{'AndTrigger': {'triggers': [
+					{'EqualsTrigger': {'actions': [], 'field': 'value', 'value': {'ValueRating': 'TooHigh'
+							}
+						}
+					}
+				], 'actions': [
+					4
+				]
+			}
 		}
+	], 'type': 'SensorDataEventHandler'
+}

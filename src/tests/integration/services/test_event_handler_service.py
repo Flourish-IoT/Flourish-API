@@ -23,7 +23,6 @@ from app.common.schemas.dynamic_field import DynamicField
 from app.common.schemas.dynamic_schema import DynamicSchema
 from app.common.schemas.type_field import TypeField
 from app.core.event_engine.events import SensorDataEvent
-from app.core.event_engine import Field
 from app.core.event_engine.queries import ValueQuery, SlopeQuery
 from app.core.event_engine.post_process_functions import ValueRating, PlantValueScore
 from app.core.event_engine.handlers import SensorDataEventHandler
@@ -35,14 +34,11 @@ from app.core.models import Plant, SensorData, SeverityLevelEnum, PlantType
 class TestEventHandlerService:
 	@pytest.fixture
 	def unregistered_handler(self):
-		return SensorDataEventHandler(
-			Field(
-				SensorData.temperature, {
-					'value': ValueQuery(SensorData, SensorData.plant_id, SensorData.time, PlantValueScore(PlantType.minimum_temperature, PlantType.maximum_temperature)),
-					# TODO: this needs to be implemented
-					'slope': SlopeQuery(SensorData, SensorData.plant_id, timedelta(hours=3))
-				}
-			),
+		return SensorDataEventHandler({
+				'value': ValueQuery(SensorData, SensorData.temperature, SensorData.plant_id, SensorData.time, PlantValueScore(PlantType.minimum_temperature, PlantType.maximum_temperature)),
+				# TODO: this needs to be implemented
+				'slope': SlopeQuery(SensorData, SensorData.temperature, SensorData.plant_id, timedelta(hours=3))
+			},
 			[
 				AndTrigger([
 						EqualsTrigger(field='value', value=ValueRating.TooLow),
@@ -73,13 +69,13 @@ class TestEventHandlerService:
 
 	@pytest.mark.db
 	def test_get_event_handlers(self, session, unregistered_handler):
-		plant_id = 1
+		plant_id = 4
 		# create new event handler
 		handler_id = create_event_handler(unregistered_handler, session, plant_id=plant_id)
 		assert handler_id is not None
 
 		# ensure 1 handler is returned
-		handlers = get_event_handlers(1, cast(Column[Integer], EventHandlerInformation).plant_id, session)
+		handlers = get_event_handlers(plant_id, cast(Column[Integer], EventHandlerInformation.plant_id), session)
 		assert len(handlers) == 1
 
 		handler = handlers[0]

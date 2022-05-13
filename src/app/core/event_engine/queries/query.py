@@ -1,13 +1,13 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 import logging
-from typing import Any, Callable, Optional, Type, cast
+from typing import Any, Callable, List, Optional, Type, cast
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import Column, Integer
 from app.common.schemas import SQLAlchemyColumnField, SerializableClass, TypeField, DynamicField
 from app.core.event_engine.events import Event
 from app.core.event_engine.post_process_functions import PostProcessor
-from app.core.models import SensorData, Device
+from app.core.models import SensorData, Device, GaugeRating
 
 from marshmallow import Schema, fields
 
@@ -15,22 +15,24 @@ from marshmallow import Schema, fields
 # Schemas
 #######################
 class QuerySchema(Schema):
-	table = TypeField([SensorData, Device])
+	table = TypeField([SensorData, Device, GaugeRating])
+	column = SQLAlchemyColumnField()
 	id_column = SQLAlchemyColumnField()
 	post_processor = DynamicField([PostProcessor], allow_none = True)
 #######################
 
-whitelisted_tables = [SensorData, Device]
-WhitelistedTable = Type[SensorData] | Type[Device]
+whitelisted_tables = [SensorData, Device, GaugeRating]
+WhitelistedTable = Type[SensorData] | Type[Device] | Type[GaugeRating]
 
 class Query(SerializableClass, ABC):
 	__schema__ = QuerySchema
 
 	table: WhitelistedTable
+	column: Column | Any
 	id_column: Column[Integer]
 	post_processor: PostProcessor | None
 
-	def __init__(self, table: WhitelistedTable, id_column: Column[Integer] | int , post_processor: Optional[PostProcessor] = None):
+	def __init__(self, table: WhitelistedTable, column: Column | Any, id_column: Column[Integer] | int , post_processor: Optional[PostProcessor] = None):
 		"""Retrieves a value from a table
 
 		Args:
@@ -44,7 +46,10 @@ class Query(SerializableClass, ABC):
 		if table not in whitelisted_tables:
 			raise ValueError(f'Table {table} is restricted')
 
+		# TODO: check if columns are whitelisted
+
 		self.table = table
+		self.column = column
 		self.id_column = cast(Column[Integer], id_column)
 		self.post_processor = post_processor
 
@@ -66,7 +71,7 @@ class Query(SerializableClass, ABC):
 		return value
 
 	@abstractmethod
-	def execute(self, id: int, column: Column | Any, session: ScopedSession, event: Event) -> Any:
+	def execute(self, id: int, session: ScopedSession, event: Event) -> Any:
 		"""Executes query
 
 		Args:

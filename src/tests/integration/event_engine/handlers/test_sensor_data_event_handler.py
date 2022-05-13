@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from unittest import mock
 from app.common.schemas.dynamic_schema import DynamicSchema
-from app.core.event_engine import Field
 from app.core.event_engine.events import SensorDataEvent
 from app.core.event_engine.queries import ValueQuery, SlopeQuery
 from app.core.event_engine.post_process_functions import ValueRating
@@ -49,7 +48,7 @@ class TestSensorDataEventHandler:
 	])
 	def test_handle_no_db(self, default_handler, default_plant, sensor_data, query_results, expected):
 		mock_session = MagicMock(ScopedSession)
-		mock_session.execute.return_value.scalar_one.side_effect = query_results
+		mock_session.execute.return_value.scalar_one_or_none.side_effect = query_results
 
 		self._handle(default_handler, mock_session, default_plant, sensor_data)
 

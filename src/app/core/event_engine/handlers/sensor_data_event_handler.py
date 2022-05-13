@@ -1,7 +1,7 @@
-from typing import List, cast
-from app.core.event_engine import Field
+from typing import Dict, List, cast
 from app.core.event_engine.handlers import EventHandler, EventHandlerSchema
 from app.core.event_engine.events import SensorDataEvent, Event
+from app.core.event_engine.queries import Query
 from app.core.event_engine.triggers import Trigger
 from marshmallow import post_load
 
@@ -15,8 +15,8 @@ class SensorDataEventHandler(EventHandler):
 	__schema__ = SensorDataEventHandlerSchema
 
 	supported_events = [SensorDataEvent]
-	def __init__(self, field: Field, triggers: List[Trigger]) -> None:
-		super().__init__(field, triggers)
+	def __init__(self, queries: Dict[str, Query], triggers: List[Trigger]) -> None:
+		super().__init__(queries, triggers)
 
 	def handle(self, event: Event):
 		if not self.can_handle(event):
@@ -26,7 +26,7 @@ class SensorDataEventHandler(EventHandler):
 		event = cast(SensorDataEvent, event)
 
 		# get field value
-		value = self.field.get_value(event.plant.plant_id, event.session, event)
+		value = self.get_values(event.plant.plant_id, event.session, event)
 
 		# execute triggers
 		for trigger in self.triggers:

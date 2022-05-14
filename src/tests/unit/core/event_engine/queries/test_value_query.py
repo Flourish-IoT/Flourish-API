@@ -24,7 +24,7 @@ class TestValueQuery:
 	])
 	def test_query(self, session, table, id_col, order_col, col, expected):
 		"""Assert query properly returns latest value"""
-		query = ValueQuery(table, id_col, order_col)
+		query = ValueQuery(table, col, id_col, order_col)
 
-		value = query.execute(1, col, session)
+		value = query.execute(1, session, None)
 		assert math.isclose(value, expected, rel_tol=1e-2)

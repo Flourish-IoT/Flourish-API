@@ -12,7 +12,7 @@ from app.protocols.http.v1.schemas import UserSchema, NewUserSchema, NewDeviceSc
 from app.common.utils import marshal_with, serialize_with, marshal_list_with, Location
 from app import db
 
-from app.protocols.http.utils.authentication import authenticator, belongs_to_user
+from app.protocols.http.utils.authentication import authenticator, belongs_to_user, create_device_jwt
 
 api = Namespace('users', description='User related operations', path='/users')
 
@@ -185,11 +185,12 @@ class UserDevices(Resource):
 	def post(self, user_id: int, body: Device):
 		try:
 			device_id = create_device(user_id, body, db.session)
+			jwt = create_device_jwt(device_id, user_id)
 		except Exception as e:
 			raise InternalServerError
 
 		# TODO: return auth token for device
-		return None, 201, {'Location': url_for('v1.devices_device_resource', device_id=device_id)}
+		return jwt, 201, {'Location': url_for('v1.devices_device_resource', device_id=device_id)}
 
 @api.route('/<int:user_id>/alerts')
 class UserAlerts(Resource):

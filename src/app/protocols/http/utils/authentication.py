@@ -7,7 +7,16 @@ from app.core.services import login
 from datetime import datetime, timedelta
 import jwt
 
+# User authentication
 authenticator: HTTPTokenAuth = HTTPTokenAuth(scheme="Bearer")
+# Device Authentication
+deviceAuthenticator: HTTPTokenAuth = HTTPTokenAuth(scheme="Bearer")
+
+'''''''''''''''''''''''''''
+    
+    User Authentication
+
+'''''''''''''''''''''''''''
 
 def verify_user_credentials(username: str, password: str) -> bool:
     """
@@ -58,3 +67,31 @@ def check_jwt_valid(enc_jwt):
         return False
 
     return True
+
+
+'''''''''''''''''''''''''''
+    
+    Device Authentication
+
+'''''''''''''''''''''''''''
+
+@deviceAuthenticator.verify_token
+def check_device_token_valid(token):
+
+    if not current_app.config['AUTH_ENABLED']:
+        return True
+
+    try:
+        decoded_jwt = jwt.decode(token, current_app.config['SECRET-KEY'], algorithms=['HS256'])
+        if decoded_jwt['deviceId'] is None or decoded_jwt['deviceId'] == None:
+            return False
+    except:
+        return False
+    return True
+
+def create_device_jwt(deviceId, userId):
+    encoded_jwt = jwt.encode({ "deviceId": deviceId, "userId": userId }, current_app.config['SECRET-KEY'], algorithm="HS256")
+    return encoded_jwt
+
+def decode_device_jwt(enc_jwt):
+    return jwt.decode(enc_jwt, current_app.config['SECRET-KEY'], algorithms=['HS256'])

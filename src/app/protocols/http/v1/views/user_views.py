@@ -5,7 +5,7 @@ from flask import request, url_for
 from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError, Forbidden
 
 from app.core.errors import NotFoundError, ConflictError, ForbiddenError
-from app.core.services import get_user, create_user, login, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password, get_plants, create_plant, verify_verification_code, start_verify_password_reset_code
+from app.core.services import get_user, create_user, login, get_devices, create_device, get_alerts, edit_user, delete_user, reset_user_password, update_user_password, edit_user_preferences, start_user_reset_password, get_plants, create_plant, verify_verification_code, verify_email_password_reset_code
 from app.core.services import user_service
 from app.core.models import DeviceStateEnum, DeviceTypeEnum, Device, User, Plant
 from app.protocols.http.v1.schemas import UserSchema, NewUserSchema, NewDeviceSchema, DeviceSummarySchema, DeviceRequestQueryParamSchema, AlertSchema, AlertRequestQueryParamSchema, UserUpdateSchema, UserPasswordUpdateSchema, AuthenticationType, UserPreferencesSchema, ResetUserPasswordSchema, ListPlantSchema, NewPlantSchema, LoginSchema, VerifySchema, UserSummarySchema, VerifyQueryParameterSchema, VerificationCodeType
@@ -212,7 +212,7 @@ class Verify(Resource):
 		try:
 			code_type = query["code_type"]
 			if code_type == VerificationCodeType.password_reset:
-				user_id = start_verify_password_reset_code(body['email'], body['code'], db.session)
+				user_id = verify_email_password_reset_code(body['email'], body['code'], db.session)
 			else:
 				user_id = verify_verification_code(body['email'], body['code'], db.session)
 		except Exception as e:

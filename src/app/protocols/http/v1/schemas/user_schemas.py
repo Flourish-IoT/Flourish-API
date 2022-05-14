@@ -1,10 +1,8 @@
 from enum import Enum
-from typing_extensions import Required
 from marshmallow import Schema, fields, post_load, validates_schema, ValidationError
 from marshmallow_enum import EnumField
 
 from app.core.models import User
-from app.core.util import verification
 from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
 from .user_preferences_schema import UserPreferencesSchema
 
@@ -38,21 +36,8 @@ class AuthenticationType(Enum):
 
 class UserPasswordUpdateSchema(CamelCaseSchema):
     authentication_type = EnumField(AuthenticationType, required = True)
-    authentication = fields.Raw(required=True)
+    authentication = fields.Str(required=True)
     new_password = fields.Str(required=True)
-
-    @validates_schema
-    def validate_authentication(self, data, **kwargs):
-        auth = data['authentication']
-
-        # if using password authentication, authentication field must be a string
-        if data['authentication_type'] == AuthenticationType.password:
-            if type(auth) != str:
-                raise ValidationError('Not a valid string', field_name='authentication')
-        else:
-        # if using password reset code authentication, authentication field must be an int
-            if type(auth) != str:
-                raise ValidationError('Not a valid string', field_name='authentication')
 
 class LoginSchema(CamelCaseSchema):
     email = fields.Email(required=True)

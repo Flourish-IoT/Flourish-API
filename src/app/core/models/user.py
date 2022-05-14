@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import cast
 from .base_model import BaseModel
 from . import UserPreferences
-from sqlalchemy import Column, Integer, String, TIMESTAMP, Identity, TIME, VARCHAR, Boolean
+from sqlalchemy import Column, Integer, String, TIMESTAMP, Identity, TIME, VARCHAR, Boolean, text
 from sqlalchemy.orm import relationship
 
 class User(BaseModel):
@@ -49,7 +49,7 @@ class User(BaseModel):
 	user_verified = cast(bool, Column(
 		Boolean(False),
 		nullable=False,
-		default=False
+		server_default=text('FALSE')
 	))
 
 	preferences = cast(UserPreferences, relationship("UserPreferences", uselist=False, cascade='all', backref='users'))

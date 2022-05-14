@@ -46,7 +46,7 @@ def create_user(email: str, username: str, password: str, session: ScopedSession
 	"""
 	if email_exists(email, session):
 		user_id = _get_user_id(email, session)
-		if _is_user_verified(email, session) == False:
+		if _is_user_verified(email, session) is False:
 			delete_user(user_id, session)
 		else:
 			return
@@ -237,7 +237,7 @@ def update_user_password(user_id: int, password: str, new_password: str, session
 	logging.info(f'Updating password for user {user_id}')
 	_update_password(user_id, new_password, session)
 	email = _get_user_email(user_id, session)
-	login(email, new_password, session)
+	# login(email, new_password, session)
 
 	logging.info(f'Password updated for user {user_id}')
 
@@ -311,7 +311,7 @@ def start_user_reset_password(email: str, session: ScopedSession):
 		logging.error(f'User does not exist')
 		raise NotFoundError(f'Could not find user with email: {email}')
 
-def start_verify_password_reset_code(email: str, code: str, session: ScopedSession):
+def verify_email_password_reset_code(email: str, code: str, session: ScopedSession):
 	"""Verify if user-entered code is same as the code in the database
 
 	Args:
@@ -330,7 +330,7 @@ def start_verify_password_reset_code(email: str, code: str, session: ScopedSessi
 	user_id = _get_user_id(email, session)
 	exists = verify_password_reset_code(user_id, code, session)
 
-	if exists == True:
+	if exists is True:
 		return user_id
 	else:
 		return 0 
@@ -354,15 +354,14 @@ def verify_verification_code(email: str, code: str, session: ScopedSession):
 
 	try:
 		result: User = session.execute(query).scalar_one()
-	except exc.DatabaseError as e:
-		logging.error('Failed to get user password reset code')
-		logging.exception(e)
-		raise e
 	except exc.NoResultFound as e:
 		logging.error('Failed to find user')
 		logging.exception(e)
 		raise NotFoundError(f'Could not find user with the email: {email}')
-
+	except exc.DatabaseError as e:
+		logging.error('Failed to get user password reset code')
+		logging.exception(e)
+		raise e
 
 	if code == result.verification_code:
 		_update_user_verification(result.user_id, session)

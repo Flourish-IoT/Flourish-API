@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import cast
-from xmlrpc.client import boolean
 from .base_model import BaseModel
 from . import UserPreferences
 from sqlalchemy import Column, Integer, String, TIMESTAMP, Identity, TIME, VARCHAR, Boolean

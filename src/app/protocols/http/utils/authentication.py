@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from werkzeug.exceptions import Unauthorized
+
 from app import db
 from flask import current_app
 from flask_httpauth import HTTPTokenAuth
@@ -32,7 +34,15 @@ def verify_token(token: bytes):
     if not current_app.config['AUTH_ENABLED']:
         return True
 
-    return check_jwt_valid(token)
+    valid = check_jwt_valid(token)
+    if not valid:
+        raise Unauthorized
+
+    return valid
+
+    
+
+    
 
 def belongs_to_user(request, user_id: int):
 
@@ -45,8 +55,6 @@ def belongs_to_user(request, user_id: int):
 def create_jwt(username, userId):
 
     encoded_jwt = jwt.encode({"user": username, "userId": userId, "expiryTime": str(datetime.now() + timedelta(days=3))}, current_app.config['SECRET_KEY'], algorithm="HS256")
-
-    print(encoded_jwt)
 
     return encoded_jwt
 
@@ -84,9 +92,10 @@ def check_device_token_valid(token):
     try:
         decoded_jwt = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
         if decoded_jwt['deviceId'] is None or decoded_jwt['deviceId'] == None:
-            return False
+            raise Unauthorized
     except:
-        return False
+        raise Unauthorized
+        
     return True
 
 def create_device_jwt(deviceId, userId):

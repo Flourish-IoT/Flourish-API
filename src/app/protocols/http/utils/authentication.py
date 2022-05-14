@@ -94,4 +94,4 @@ def create_device_jwt(deviceId, userId):
     return encoded_jwt
 
 def decode_device_jwt(enc_jwt):
-    return jwt.decode(enc_jwt, current_app.config['SECRET-KEY'], algorithms=['HS256'])
+    return jwt.decode(enc_jwt, current_app.config['SECRET_KEY'], algorithms=['HS256'])

@@ -8,14 +8,16 @@ from app.protocols.http.v1.schemas import DeviceSchema, DeviceUpdateSchema, Sens
 from flask_restx import Resource, Namespace
 from app import db
 
+from app.protocols.http.utils.authentication import deviceAuthenticator
+
 
 api = Namespace('devices', description='Device related operations', path='/devices')
 
 @api.route('/<int:device_id>')
 class DeviceResource(Resource):
 	@marshal_with(DeviceSchema)
+	@deviceAuthenticator.login_required
 	def get(self, device_id: int):
-		# TODO: authentication
 		try:
 			device = get_device(device_id, db.session)
 		except NotFoundError as e:
@@ -26,6 +28,7 @@ class DeviceResource(Resource):
 		return device
 
 	@serialize_with(DeviceUpdateSchema)
+	@deviceAuthenticator.login_required
 	def put(self, device_id: int, body: dict):
 		try:
 			edit_device(device_id, body, db.session)
@@ -36,6 +39,7 @@ class DeviceResource(Resource):
 
 		return None, 204
 
+	@deviceAuthenticator.login_required
 	def delete(self, device_id: int):
 		try:
 			delete_device(device_id, db.session)
@@ -49,6 +53,7 @@ class DeviceResource(Resource):
 @api.route('/<int:device_id>/data')
 class DeviceData(Resource):
 	@serialize_with(SensorDataSchema)
+	@deviceAuthenticator.login_required
 	def post(self, device_id: int, body: SensorData):
 		try:
 			state = record_data(device_id, body, db.session)

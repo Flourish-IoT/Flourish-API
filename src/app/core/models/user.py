@@ -48,7 +48,9 @@ class User(BaseModel):
 	))
 
 	user_verified = cast(bool, Column(
-		Boolean(),
+		Boolean(False),
+		nullable=False,
+		default=False
 	))
 
 	preferences = cast(UserPreferences, relationship("UserPreferences", uselist=False, cascade='all', backref='users'))

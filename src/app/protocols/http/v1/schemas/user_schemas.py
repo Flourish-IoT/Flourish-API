@@ -51,8 +51,8 @@ class UserPasswordUpdateSchema(CamelCaseSchema):
                 raise ValidationError('Not a valid string', field_name='authentication')
         else:
         # if using password reset code authentication, authentication field must be an int
-            if type(auth) != int:
-                raise ValidationError('Not a valid integer', field_name='authentication')
+            if type(auth) != str:
+                raise ValidationError('Not a valid string', field_name='authentication')
 
 class LoginSchema(CamelCaseSchema):
     email = fields.Email(required=True)

@@ -82,7 +82,7 @@ def check_device_token_valid(token):
         return True
 
     try:
-        decoded_jwt = jwt.decode(token, current_app.config['SECRET-KEY'], algorithms=['HS256'])
+        decoded_jwt = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
         if decoded_jwt['deviceId'] is None or decoded_jwt['deviceId'] == None:
             return False
     except:
@@ -90,7 +90,7 @@ def check_device_token_valid(token):
     return True
 
 def create_device_jwt(deviceId, userId):
-    encoded_jwt = jwt.encode({ "deviceId": deviceId, "userId": userId }, current_app.config['SECRET-KEY'], algorithm="HS256")
+    encoded_jwt = jwt.encode({ "deviceId": deviceId, "userId": userId }, current_app.config['SECRET_KEY'], algorithm="HS256")
     return encoded_jwt
 
 def decode_device_jwt(enc_jwt):

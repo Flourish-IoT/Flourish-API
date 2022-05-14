@@ -16,7 +16,6 @@ api = Namespace('devices', description='Device related operations', path='/devic
 @api.route('/<int:device_id>')
 class DeviceResource(Resource):
 	@marshal_with(DeviceSchema)
-	@deviceAuthenticator.login_required
 	def get(self, device_id: int):
 		try:
 			device = get_device(device_id, db.session)
@@ -28,7 +27,6 @@ class DeviceResource(Resource):
 		return device
 
 	@serialize_with(DeviceUpdateSchema)
-	@deviceAuthenticator.login_required
 	def put(self, device_id: int, body: dict):
 		try:
 			edit_device(device_id, body, db.session)
@@ -39,7 +37,6 @@ class DeviceResource(Resource):
 
 		return None, 204
 
-	@deviceAuthenticator.login_required
 	def delete(self, device_id: int):
 		try:
 			delete_device(device_id, db.session)

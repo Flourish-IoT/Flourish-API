@@ -1,9 +1,6 @@
 from datetime import datetime
-from email.policy import default
-from typing_extensions import Required
-from marshmallow import Schema, fields, validate, post_load
-from marshmallow_enum import EnumField
-from app.core.models import Plant, sensor_data
+from marshmallow import fields, post_load
+from app.core.models import Plant
 from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
 from app.protocols.http.v1.schemas.plant_type_schemas import PlantTypeSchema, PlantTypeSummarySchema
 from app.protocols.http.v1.schemas.gauge_ratings_schemas import GaugeRatingsSchema

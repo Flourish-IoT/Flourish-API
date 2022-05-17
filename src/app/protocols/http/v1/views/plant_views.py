@@ -1,13 +1,8 @@
 import logging
-from msilib.schema import Class
-from flask import current_app as app
 from flask_restx import Resource, Namespace
-from psycopg2 import Timestamp
-from requests import session
-from sqlalchemy import delete
 from datetime import datetime
 from app import db
-from werkzeug.exceptions import NotFound, BadRequest, Conflict, InternalServerError
+from werkzeug.exceptions import NotFound, InternalServerError
 from app.common.utils.marshal import marshal_list_with
 from app.core.errors import NotFoundError
 from app.protocols.http.v1.schemas import PlantDetailsSchema, PlantUpdateSchema, SensorDataSchema, DataQuerySchema

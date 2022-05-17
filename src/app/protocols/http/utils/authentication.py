@@ -26,7 +26,10 @@ def verify_token(token: bytes):
     return check_jwt_valid(token)
 
 def belongs_to_user(request, user_id: int):
+    if not current_app.config['AUTH_ENABLED']:
+        return True
 
+    # TODO: throws errors if auth header is not passed
     token = request.headers['Authorization'].split(' ')[1]
 
     decoded = decode_jwt(token)

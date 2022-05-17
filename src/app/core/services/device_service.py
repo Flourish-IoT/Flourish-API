@@ -169,8 +169,8 @@ def record_data(device_id: int, data: SensorData, session: ScopedSession):
 	sensor_data = [data.with_value(SensorData.plant_id, plant.plant_id) for plant in plants]
 
 	for plant in plants:
-		if plant.gauge_rating is None:
-			plant.gauge_rating = GaugeRating()
+		if plant.gauge_ratings is None:
+			plant.gauge_ratings = GaugeRating()
 		get_plant_gauge_ratings(plant, data)
 
 
@@ -200,13 +200,13 @@ def device_exists(device_id: int, session: ScopedSession) -> bool:
 	return session.query(exists(Device).where(Device.device_id == device_id)).scalar()
 
 def get_plant_gauge_ratings(plant: Plant, sensor_data: SensorData):
-	if plant.plant_type is None or sensor_data is None or plant.gauge_rating is None:
+	if plant.plant_type is None or sensor_data is None or plant.gauge_ratings is None:
 		return
 
-	plant.gauge_rating.temperature = check_rating(sensor_data.temperature , plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
-	plant.gauge_rating.soil_moisture = check_rating(sensor_data.soil_moisture, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
-	plant.gauge_rating.light = check_rating(sensor_data.light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
-	plant.gauge_rating.humidity = check_rating(sensor_data.humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
+	plant.gauge_ratings.temperature = check_rating(sensor_data.temperature , plant.plant_type.minimum_temperature, plant.plant_type.maximum_temperature)
+	plant.gauge_ratings.soil_moisture = check_rating(sensor_data.soil_moisture, plant.plant_type.minimum_soil_moisture,plant.plant_type.maximum_soil_moisture)
+	plant.gauge_ratings.light = check_rating(sensor_data.light, plant.plant_type.minimum_light, plant.plant_type.maximum_light)
+	plant.gauge_ratings.humidity = check_rating(sensor_data.humidity, plant.plant_type.minimum_humidity, plant.plant_type.maximum_humidity)
 
 def check_rating(val, min_value, max_value):
 	#If its is below the min value, return 1 and above max value, return 5

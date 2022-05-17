@@ -35,7 +35,7 @@ class Plant(BaseModel):
 
 	plant_type = cast(PlantType | None, relationship("PlantType", uselist=False))
 
-	gauge_rating = cast(GaugeRating | None , relationship("GaugeRating", cascade='all, delete-orphan', uselist=False) )
+	gauge_ratings = cast(GaugeRating | None , relationship("GaugeRating", cascade='all, delete-orphan', uselist=False) )
 
 	name = cast(str | None, Column(
 		String,

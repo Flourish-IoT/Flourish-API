@@ -45,4 +45,3 @@ class PlantUpdateSchema(DisablePostLoadMixin, PlantSchema):
 class DataQuerySchema(CamelCaseSchema):
 	start = fields.DateTime(default = datetime.now())
 	end = fields.DateTime(default = datetime.max)
-	

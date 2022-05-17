@@ -112,12 +112,11 @@ def get_plant_sensor_data(plant_id: int, start_date: datetime, end_date: datetim
 	query = select(SensorData).where(SensorData.plant_id == plant_id, start_date <= SensorData.time, end_date >= SensorData.time) 
 	try:
 		value = session.execute(query).scalars().all()
+		logging.debug(f'Recieved timestampts for {start_date} to {end_date}')
 	except exc.DatabaseError as e:
 		logging.error('Failed to execute query')
 		logging.exception(e)
 		return None
-
-	logging.info(f'Latest value: {value}')
 
 	return value
 

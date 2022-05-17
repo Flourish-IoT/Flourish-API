@@ -1,3 +1,5 @@
+from datetime import datetime
+from email.policy import default
 from typing_extensions import Required
 from marshmallow import Schema, fields, validate, post_load
 from marshmallow_enum import EnumField
@@ -42,3 +44,8 @@ class PlantDetailsSchema(PlantSchema):
 class PlantUpdateSchema(DisablePostLoadMixin, PlantSchema):
 	class Meta:
 		fields = ('plant_id', 'name', 'plant_type_id', 'device_id')
+
+class DataQuerySchema(CamelCaseSchema):
+	start = fields.DateTime(default = datetime.now())
+	end = fields.DateTime(default = datetime.max)
+	

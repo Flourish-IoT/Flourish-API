@@ -3,7 +3,7 @@ import string
 
 from flask import session
 from app.core.errors import NotFoundError, ConflictError
-from app.core.models import Plant, SeverityLevelEnum, Alert, ValueRating, SensorData
+from app.core.models import Plant, SeverityLevelEnum, Alert, ValueRating, SensorData, sensor_data
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy import exc, select, update
 from typing import List
@@ -112,8 +112,18 @@ def delete_plant(plant_id: int, session: ScopedSession):
 		logging.exception(e)
 		raise e
 
-def get_plant_sensor_data(plant_id: int, start_date: str, end_date: str, session: ScopedSession):
-	pass
+def get_plant_sensor_data(plant_id: int, start_date: datetime, end_date: datetime, session: ScopedSession):
+	query = select(SensorData).where(SensorData.plant_id == plant_id, start_date <= SensorData.time, end_date >= SensorData.time) 
+	try:
+		value = session.execute(query).scalars().all()
+	except exc.DatabaseError as e:
+		logging.error('Failed to execute query')
+		logging.exception(e)
+		return None
+
+	logging.info(f'Latest value: {value}')
+
+	return value
 
 def get_last_plant_sensor_data(plant: Plant, plant_id: int, session: ScopedSession):
 	query = select(SensorData).where(SensorData.plant_id == plant_id)

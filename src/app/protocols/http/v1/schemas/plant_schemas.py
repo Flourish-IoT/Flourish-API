@@ -1,7 +1,6 @@
-from typing_extensions import Required
-from marshmallow import Schema, fields, validate, post_load
-from marshmallow_enum import EnumField
-from app.core.models import Plant, sensor_data
+from datetime import datetime
+from marshmallow import fields, post_load
+from app.core.models import Plant
 from app.protocols.http.utils import CamelCaseSchema, DisablePostLoadMixin
 from app.protocols.http.v1.schemas.plant_type_schemas import PlantTypeSchema, PlantTypeSummarySchema
 from app.protocols.http.v1.schemas.gauge_ratings_schemas import GaugeRatingsSchema
@@ -42,3 +41,8 @@ class PlantDetailsSchema(PlantSchema):
 class PlantUpdateSchema(DisablePostLoadMixin, PlantSchema):
 	class Meta:
 		fields = ('plant_id', 'name', 'plant_type_id', 'device_id')
+
+class DataQuerySchema(CamelCaseSchema):
+	start = fields.DateTime(default = datetime.now())
+	end = fields.DateTime(default = datetime.max)
+	

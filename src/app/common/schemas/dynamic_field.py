@@ -1,6 +1,6 @@
 from types import NoneType
 from typing import Any, Dict, List, Optional, Tuple, Type
-from marshmallow.fields import Field, Raw
+from marshmallow.fields import Field, Raw, Dict as DictField
 from marshmallow import ValidationError, Schema
 
 # TODO: should type_mapping and type_name_mapping be unified with TypeField?
@@ -9,7 +9,8 @@ class DynamicField(Field):
 
 	# should list be dynamic?
 	# mapping of qualname to ( Field, field kwargs )
-	type_mapping: Dict[type, Tuple[Type[Field], Dict[str, Any]]] = {**{mapping: (field, {}) for mapping, field in Schema.TYPE_MAPPING.items()}, NoneType: ( Raw, {} )}
+	# TODO: dict type might have to be dynamic field
+	type_mapping: Dict[type, Tuple[Type[Field], Dict[str, Any]]] = {**{mapping: (field, {}) for mapping, field in Schema.TYPE_MAPPING.items()}, NoneType: ( Raw, {} ), dict: (DictField, {})}
 
 	# mapping of qualname to python type. Used to lookup type when deserializing
 	type_name_mapping: Dict[str, type] = {mapping.__qualname__: mapping for mapping in type_mapping.keys()}

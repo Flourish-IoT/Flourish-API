@@ -83,6 +83,22 @@ class TestDynamicField:
 				'ValueRating': 'High',
 			}
 		}),
+		(Foo(foo={'foo': 'bar'}), {
+			'foo': {
+				'dict': {
+					'foo': 'bar'
+				},
+			}
+		}),
+		(Foo(foo={'foo': {'bar': 12}}), {
+			'foo': {
+				'dict': {
+					'foo': {
+						'bar': 12
+					}
+				},
+			}
+		}),
 	])
 	def test_dump(self, value, expected):
 		res = FooSchema().dump(value)
@@ -181,6 +197,22 @@ class TestDynamicField:
 				'ValueRating': 'High',
 			}
 		}, Foo(foo=ValueRating.High)),
+		({
+			'foo': {
+				'dict': {
+					'foo': 'bar'
+				}
+			}
+		}, Foo(foo={'foo': 'bar'})),
+		({
+			'foo': {
+				'dict': {
+					'foo': {
+						'bar': 12
+					}
+				}
+			}
+		}, Foo(foo={'foo': {'bar': 12}})),
 	])
 	def test_load(self, value, expected):
 		res = FooSchema().load(value)

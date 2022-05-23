@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import logging
 from typing import Optional
 
 from . import ActionSchema, Action
@@ -10,6 +9,9 @@ from app.core.services.alert_service import create_alert
 
 from marshmallow import fields, post_load, INCLUDE
 from marshmallow_enum import EnumField
+
+import logging
+logger = logging.getLogger(__name__)
 
 #######################
 # Schemas
@@ -99,12 +101,12 @@ class GenerateAlertAction(Action):
 		Returns:
 				bool: Whether or not action executed succesfully
 		"""
-		logging.info('Executing GenerateAlertAction')
+		logger.info('Executing GenerateAlertAction')
 		if not self.can_execute():
 			return False
 
 		alert = self.generate(event)
-		logging.info(f'Persisting alert: {alert}')
+		logger.info(f'Persisting alert: {alert}')
 
 		# persist alert
 		create_alert(event.user_id, alert, event.session)

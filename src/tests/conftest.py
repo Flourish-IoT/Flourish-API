@@ -2,6 +2,10 @@
 from copy import copy, deepcopy
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock
+
+from alembic.command import upgrade
+from alembic.config import Config
+
 import pytest
 from app import Environment, db, create_rest_app
 from app.common.schemas.dynamic_field import DynamicField
@@ -17,16 +21,44 @@ from app.core.event_engine.triggers import EqualsTrigger, AndTrigger, LessThanTr
 
 @pytest.fixture(scope='session')
 def app():
-	# TODO: this should be Environment.test when we figure out how it will work
-	a = create_rest_app(Environment.local)
-	with a.app_context():
+	app = create_rest_app(Environment.test)
+	yield app
+
+@pytest.fixture(scope='session')
+def app_context(app):
+	with app.app_context():
 		yield
 
-	return
+@pytest.fixture(scope='session')
+def db_context(app_context):
+	# run migrations
+	config = Config('alembic.ini')
+	upgrade(config, 'head')
 
-@pytest.fixture
-def session(app):
-	return db.session
+@pytest.fixture(scope='function', autouse=True)
+def session(db_context):
+	connection = db.engine.connect()
+	transaction = connection.begin()
+
+	options = {
+		'bind': connection,
+		'binds': {}
+	}
+	session_ = db.create_scoped_session(options=options)
+
+	db.session = session_
+	yield session_
+
+	transaction.rollback()
+	connection.close()
+	session_.remove()
+
+	# return db.session
+
+
+@pytest.fixture()
+def client(app):
+	return app.test_client()
 
 @pytest.fixture
 def default_plant():
@@ -99,3 +131,11 @@ def pytest_collection_modifyitems(config, items):
 	for item in items:
 		if 'db' in item.keywords:
 			item.add_marker(skip_db)
+
+@pytest.fixture(scope='function')
+def user(session):
+	# TODO: use actual password hash?
+	user = models.User(email='foo@bar.com', username='George', password_hash='123', user_verified=True)
+	session.add(user)
+	session.commit()
+	return user

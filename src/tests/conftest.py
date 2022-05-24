@@ -139,3 +139,18 @@ def user(session):
 	session.add(user)
 	session.commit()
 	return user
+
+@pytest.fixture(scope='function')
+def device(session, user):
+	device = models.Device(user_id=user.user_id, device_type=models.DeviceTypeEnum.Sensor, device_state=models.DeviceStateEnum.Connected, api_version='1.2.3', software_version='3.2.1', name='Paul', model='Flourish Device')
+	session.add(device)
+	session.commit()
+	return device
+
+@pytest.fixture(scope='function')
+def plant(session, user, device):
+	# TODO: add plant_type_id (another fixture?)
+	plant = models.Plant(user_id=user.user_id, device_id=device.device_id, plant_type_id=None, name='Momo')
+	session.add(plant)
+	session.commit()
+	return plant

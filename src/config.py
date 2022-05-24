@@ -26,6 +26,7 @@ class DevConfig(Config):
 	FLASK_ENV = 'development'
 	DEBUG = True
 	TESTING = True
+	AUTH_ENABLED = False
 	SECRET_KEY = os.environ.get('SECRET_KEY')
 
 	SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
@@ -51,4 +52,9 @@ class TestConfig(Config):
 	SECRET_KEY='skbGoMfmaQzJTM'
 	AUTH_ENABLED = False
 
-	SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+	SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:password@localhost/postgres'
+	SQLALCHEMY_ENGINE_OPTIONS = {
+		'pool_size': 1,
+		'future': True,
+		'echo': False
+	}

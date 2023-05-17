@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from werkzeug.exceptions import Unauthorized
+
 from app import db
 from flask import current_app
 from flask_httpauth import HTTPTokenAuth
@@ -7,7 +9,16 @@ from app.core.services import login
 from datetime import datetime, timedelta
 import jwt
 
+# User authentication
 authenticator: HTTPTokenAuth = HTTPTokenAuth(scheme="Bearer")
+# Device Authentication
+deviceAuthenticator: HTTPTokenAuth = HTTPTokenAuth(scheme="Bearer")
+
+'''''''''''''''''''''''''''
+    
+    User Authentication
+
+'''''''''''''''''''''''''''
 
 def verify_user_credentials(username: str, password: str) -> bool:
     """
@@ -23,7 +34,15 @@ def verify_token(token: bytes):
     if not current_app.config['AUTH_ENABLED']:
         return True
 
-    return check_jwt_valid(token)
+    valid = check_jwt_valid(token)
+    if not valid:
+        raise Unauthorized
+
+    return valid
+
+    
+
+    
 
 def belongs_to_user(request, user_id: int):
     if not current_app.config['AUTH_ENABLED']:
@@ -39,8 +58,6 @@ def belongs_to_user(request, user_id: int):
 def create_jwt(username, userId):
 
     encoded_jwt = jwt.encode({"user": username, "userId": userId, "expiryTime": str(datetime.now() + timedelta(days=3))}, current_app.config['SECRET_KEY'], algorithm="HS256")
-
-    print(encoded_jwt)
 
     return encoded_jwt
 
@@ -61,3 +78,32 @@ def check_jwt_valid(enc_jwt):
         return False
 
     return True
+
+
+'''''''''''''''''''''''''''
+    
+    Device Authentication
+
+'''''''''''''''''''''''''''
+
+@deviceAuthenticator.verify_token
+def check_device_token_valid(token):
+
+    if not current_app.config['AUTH_ENABLED']:
+        return True
+
+    try:
+        decoded_jwt = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+        if decoded_jwt['deviceId'] is None or decoded_jwt['deviceId'] == None:
+            raise Unauthorized
+    except:
+        raise Unauthorized
+        
+    return True
+
+def create_device_jwt(deviceId, userId):
+    encoded_jwt = jwt.encode({ "deviceId": deviceId, "userId": userId }, current_app.config['SECRET_KEY'], algorithm="HS256")
+    return encoded_jwt
+
+def decode_device_jwt(enc_jwt):
+    return jwt.decode(enc_jwt, current_app.config['SECRET_KEY'], algorithms=['HS256'])
